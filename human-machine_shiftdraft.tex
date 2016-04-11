@@ -23,7 +23,8 @@
 \newcommand{\vdag}{(v)^\dagger}
 \newcommand\aastex{AAS\TeX}
 \newcommand\latex{La\TeX}
-
+\newcommand{\rr}[1]{$r_{#1}$}
+\newcommand{\M}[1]{$M_{#1}$}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -88,7 +89,6 @@ miscellaneous --- catalogs --- surveys}
 
 
 \section{Introduction} \label{sec:intro}
-
 \textbf{In the context of Computer Science and/or Astrophysics?} \\
 \\
 Galaxy evolution. We want to study all the things and sometimes you need some morphologies to really probe how dat galaxy be living its life. So you gotta get dem morphologies. Bolster this with a couple of examples of major insights which have stemmed directly from morphological studies. Make morphology fucking important!\\
@@ -170,13 +170,29 @@ Machine learning algorithms require a feature vector for each training example. 
 
 This method is quite distinct from \textit{deep learning} methods which learn on every pixel of an image through a series of non-linear transformations of the image as opposed to features derived from the galactic light profiles as discussed in Huertas-Company and Company. However, one drawback to these methods is the difficulty of interpretting the results of such classification. While features like CAS, G-M20 are well demonstrated to correlate with specific galaxy stuffs like SFH and ... whatnots.. and described below. 
 
-Concetration measures the 
+Concetration measures the ... 
+\begin{equation}
+C = 5\log(r_{80}/ r_{20})
+\end{equation}
+where \rr{80} and \rr{20} are the radii containing 80\% and 20\% of the galaxy light respectively.  Large values of this ratio tend to indicate disky galaxies, while smaller values correlate with early-type ellipticals. 
 
-Asymmetry is ... 
+Asymmetry quantifies the degree of rotational symmetry in the galaxy light distribution (not necessarily the physical shape of the galaxy as this parameter is not highly sensitive to low surface brightness features).  
+\begin{equation}
+A = \frac{\sum_{x,y} |I - I_{180}|}{ 2\sum|I|} - B_{180}
+\end{equation}
+where $I$ is the galaxy flux in each pixel $(x, y)$, $I_{180}$ is the image rotated by 180 degrees about the galaxy's central pixel, and $B_{180}$ is the average asymmetry of the background. 
 
-The Gini coefficient is... 
+The Gini coefficient, $G$, describes how uniformly distributed a galaxy's flux is.  If $G$ is 0, the flux is distrubuted homogeneously among all galaxy pixels.; while if $G$ is 1,  all of the light is contained within a single pixel. This term correlates with $C$, however, unlike concentration, $G$ does not require that the flux be concentrated within the central region of the galaxy.  We calculate $G$ by first ordering the pixels by increasing flux value, and then computing
+\begin{equation}
+G = \frac{1}{|\bar X|n(n-1)}\sum_i^n(2i-n-1)|X_i|
+\end{equation}
+where $n$ is the number of pixels assigned to the galaxy, and $\bar X$ is the mean pixel value. 
 
-M20 is ... 
+\M{20} is the second order moment of the brightest 20\% of the galaxy flux. 
+\begin{eqnarray}
+ M_{tot} & = & \sum_i^nf_i[(x_i-x_c)^2 + (y_i-y_c)^2]  \\
+ M_{20} & = & \log_{10} (\frac{\sum_iM_i}{M_{tot}}), ~~\textrm{while} \sum_ifi < 0.2f_{tot}
+\end{eqnarray}
 
 We measure these parameters for 272K galaxy cutouts  in the SDSS shits. Quality characteristics are described in Appendix A.  
 
