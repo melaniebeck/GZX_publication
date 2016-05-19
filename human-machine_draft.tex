@@ -19,6 +19,8 @@
 %   appendixfloats: Needed. Resets figure and table counters to zero
 
 \usepackage{verbatim}
+\usepackage{amsmath}
+\usepackage{graphicx}
 
 \newcommand{\vdag}{(v)^\dagger}
 \newcommand\aastex{AAS\TeX}
@@ -120,27 +122,145 @@ simulation \\
 \indent simulation results? \\
 
 
-\section{Overview of the Method?}
-Figure \ref{fig:schematic} shows a simple schematic of a single collaborative `filter' which demostrates the flow of classification data in our hybrid system.  A human classifier is shown an image pulled randomly from a pool of images to be classified. She provides her input in the form of a simple yes/noanswer to a \textit{single} question. Simultaneously, several other human classifiers are responding to their randomly assigned galaxy image. These binary responses are then used to both assess the quality of the human classifier's vote as well as the probability of their assigned galaxy to contain the characterstic of choice. If any galaxy obtains a probability that crosses either the upper threshold (thus having a very high probability of exhibiting the feature of interest) or the lower threshold (thus having a very high probability of NOT exhibiting the feature of interest) it is then passed to the machine classifier. Those galaxy images which do not cross either threshold are sent back to the pool to be further examined by human eyes. Those that move on to the machine classifer become a well defined training sample on which the machine learns. The fully trained machine is then applied to the remaining galaxy images in the  pool. Those that the machine classifies with high confidence are set aside; the rest remain in the pool for additional scrutiny by human classifiers.  In practice we have only run a single collaborative filter at a time, however these could be run in series or parallel; each with its own machine classifier. We now examine each stage of the process in detail. 
 
+%%%-------------------------------------------------------
+%%% GZ EXPRESS Schematic
+%%%-------------------------------------------------------
 \begin{figure*}[ht!]
 %\figurenum{1}
 \plotone{GZExpress_schematic.jpg}
 \caption{Schematic of our hybrid system. Human classifiers are shown images of galaxies via the Galaxy Zoo web interface. These  classifications are recorded and processed according to section XXX. As a result of the processing, those subjects whose probabilties cross the classification thresholds are passed to the machine classifier as a training sample. The trained machine is then applied to the remaining subjects in the database (test sample). Those subjects which the machine classifies with high confidence are removed from the sample and considered fully classified. The rest remain in the database to be seen by human classifiers. \label{fig:schematic}}
 \end{figure*}
 
-\section{Gotta talk about the DATA} \label{sec:data}
-Our simulations utilize original user classifications from the Galaxy Zoo 2 database (KyleWillett). This dataset is characterized as follows. 
-Each user-provided classification follows a decision tree (show a picture of this probs). Each classification consists of answers to several tasks whereby the tasks are determined by answers to the previous task. All users answer task 1 and task XX. Answers to each task vary in complexity from a binary choice in the case of Task XX: is the galaxy edge on? to several possible choices in the case of Task XX: dominance of galaxy bulge. In total, the data consist of XX milltion full galaxy classifications on 285K unique galaxy subjects. These classifications are composed of 16 million unique answers to X number of tasks. 
+\section{Overview of the Method?}
+Figure \ref{fig:schematic} shows a simple schematic of a single collaborative `filter' which demostrates the flow of classification data in our hybrid system.  A human classifier is shown an image pulled randomly from a pool of images to be classified. She provides her input in the form of a simple yes/noanswer to a \textit{single} question. Simultaneously, several other human classifiers are responding to their randomly assigned galaxy image. These binary responses are then used to both assess the quality of the human classifier's vote as well as the probability of their assigned galaxy to contain the characterstic of choice. If any galaxy obtains a probability that crosses either the upper threshold (thus having a very high probability of exhibiting the feature of interest) or the lower threshold (thus having a very high probability of NOT exhibiting the feature of interest) it is then passed to the machine classifier. Those galaxy images which do not cross either threshold are sent back to the pool to be further examined by human eyes. Those that move on to the machine classifer become a well defined training sample on which the machine learns. The fully trained machine is then applied to the remaining galaxy images in the  pool. Those that the machine classifies with high confidence are set aside; the rest remain in the pool for additional scrutiny by human classifiers.  In practice we have only run a single collaborative filter at a time, however these could be run in series or parallel; each with its own machine classifier. We now examine each stage of the process in detail. 
+
+Add a part about skipping sections because there are going to be ALOT of details. 
 
 
+%%----------------------------------------------------------------------------------------------------------------------------------------------------
+%%   Galaxy Zoo 2 Data Description
+%%----------------------------------------------------------------------------------------------------------------------------------------------------
+\section{Galaxy Zoo 2 Classification Data} \label{sec:data}
+
+Our simulations utilize original classifications made by volunteers during the GZ2 project. 
+These data are described in detail in \citep{Willett2013} though we provide a brief overview here.  
+The GZ2 subject sample was designed to consist of the brightest 25\% ($r$ band magnitude $< 17$) 
+of resolved galaxies residing in the SDSS North Galactic Cap region from Data Release 7 
+and included both subjects with spectroscopic and photometric redshifts out to $z < 0.25$.
+In total, 285,962 subjects were classified in the GZ2 Main Sample catalogs (reference website?). 
+Of these, 243,500 have spectroscopic redshifts while 42,462 have only photometric redshifts.  
+
+Subjects were shown as color composite images via a web-based interface wherein 
+volunteers answered a series of questions pertaining to the morphology of the subject.
+In terms of GZ2, a \textit{classification} is defined as the total amount of information about a subject 
+obtained by completing all tasks in the decision tree. A \textit{task} represents a segment of the
+tree consisting of a \textit{question} and possible \textit{responses}. 
+With the exception of the first task, subsequent tasks were
+dependent on volunteer responses from the previous task creating the decision tree 
+as shown in Fig~\ref{fig: decisiontree}.
+ In total, the data consist of over 14 million classifications from 83,943 individual volunteers. 
+
+%%%-------------------------------------------------------
+%%% GZ EDECISION TREE
+%%%-------------------------------------------------------
+%\begin{figure*}[]
+%\figurenum{1}
+%\plotone{gz2_decisiontree.pdf}
+%\caption{.Galaxy Zoo 2 decision tree. For our first simulation we use only the top level task: ``Is the galaxy simply smooht and rounded, with no sign of a disk?" \label{fig: decisiontree}}
+%\end{figure*}
+
+
+Our first simulated run considers only the first task in the decision tree: 
+`Is the galaxy simply smooth and rounded, with no sign of a disk?', to which possible 
+responses include `smooth', `feature or disk', and `star or artifact'.  Because all 
+volunteers see the first task, our simulations are run with as many as 14,144,941 
+classifications.  These classifications consist of volunteer ID, subject ID, 
+timestamp of the classification,  and the volunteer's vote.
+
+
+
+%%----------------------------------------------------------------------------------------------------------------------------------------------------
+%%   Talk About SWAP 
+%%----------------------------------------------------------------------------------------------------------------------------------------------------
 \section{Post-processing of human classifications}
-\subsection{ i.e., commandeering SWAP for our nefarious purposes}
-In order to reach classification concensus, Galaxy Zoo requires a large number of independent votes for each galaxy. Typically this number is around 40 classificactions per galaxy. Once a particular project is complete, GZ team scientists perform a weighting of user votes once the project is complete (see KyleWillet/Brooke Simmons for description of this process) [Describe in two sentences.]  While This process reduces input from malicious users and `bots' from the overall classification vote; it doesn't up-weight consistent / correct users. Furthermore, waiting until project completion isn't an efficient use of user input (cite the F out of this? and demonstrate with my own shits, obvs!). 
 
-GZ:EXPRESS instead tracks user statistics while the project is live by adapting software originally created for the Space Warps Zooniverse project (Phillip Marshall all the way). The Space Warps project demonstrated an efficient technique for finding lenses in galaxy images from CHTFTSLS. The core of the software, Space Warps Analysis Pipeline (SWAP), used Bayesian statistics to compute the likelihood of an image to contain a lens. Additionally, the software assigned an agent to each user. The agent continually updated a confusion matrix for each user tracking the probability that a particular user would correctly identify a lens or not.  
+In this section we compare and contrast volunteer classification post-processing
+ methods between standard GZ projects and what is implement on our simulations. 
+In order to reach concensus for all tasks, Galaxy Zoo decision trees require a large 
+number of independent classifications for each subject, i.e.  approximately forty individual 
+volunteers classify each subject in every Galaxy Zoo project including GZ2, Galaxy Zoo: 
+Hubble \citep{Willett_submitted}, and Galaxy Zoo: CANDELS \citep{Simmons_submitted}. 
+Once a project reaches completion, GZ team scientists down-weight inconsistent and unreliable 
+volunteers while the vast majority of volunteers are treated equally and no volunteers are up-weighted.
+While this process reduces input from malicious users and `bots' from contributing to the classification, 
+it doesn't reward consistent and correct volunteers. Additionally, waiting until project completion 
+doesn't allow for efficient utilization of super-users, those volunteers who are exceptional at 
+classification tasks. [Do I need to cite something here?]
 
-For our simulations we have adapted SWAP to run on a regular timestep (in our simulations we've chosen t=1day). At each timestep, all new user classifications since the previous timestep are processed. For each vote, SWAP updates that user's agent's confusion matrix as well as the probability of that image to contain the characteristic of choice (i.e., Featured). Because of the nature of the agent confusion matrix,  users that are correct more often than not contribute significantly more than users who are not consistent. Additonally, due to the nature of Bayesian shits, malicious users can contribute just as much as "good" users because SWAP "takes the opposite" of their response as the truth for that galaxy. Users which are neither good nor malicious contribute to a galaxy's probability relatively less.
+Instead, GZ:EXPRESS employs software adapted from the Space Warps Zoonivere project 
+\citep{Marshall2016} which searched for and successfully found several gravitational lens 
+candidates in the CFHTLS survey.  Dubbed SWAP (Space Warps Analysis Pipeline),  
+the software predicted the probability that an image contained a gravitational lens given 
+volunteers' classifations as well as their past experience. While full details found in 
+\cite{Marshall2016}, however, we briefly outline the method here.  
+
+The software assigns each volunteer an \textit{agent} which interpret's that volunteer's 
+classifications. Each agent assigns a 2 by 2 confusion matrix to their volunteer which encodes
+that volunteer's probability of correctly identifying feature `A'  given that the subject 
+actually exhibits feature A and the data (i.e., the volunteer's classification history). 
+The confusion matrix also encodes that volunteer's probabiliy of correctly identifying
+the absense of feature A given that the subject does not exhibit feature A and the data. 
+\textbf{wtf won't bmatrix work?!}. The agent updates these probabilities every time a 
+volunteer makes a classification by estimating those probabilities as 
+
+\begin{equation}
+P(``X" | X, d) \approx \frac{N_{``X"}}{N_{X}}
+\end{equation}
+
+where $``X"$ is the classification made by the volunteer and $X$ denotes the true 
+classification of the subject. Each subject begins with a prior probability that 
+it exhibits feature A: $P(A) = p_0$. When a volunteer makes a classification $C$, 
+Bayes' Theorem is used to derive how the agent should update the subject's prior 
+probability into a posterior: 
+
+\begin{equation}
+P(A|C) = \frac{ P(C|A) P(A) }{P(C|A) P(A) + P(C|NOT) P(NOT)}
+\end{equation}
+
+where this value can then be calculated using the elements of the agent's 
+confusion matrix. \cite{Marshall2016} show that perfect volunteers (i.e., those 
+with $P(``A"| A) = 1.0$ and $P(``NOT" | NOT) = 1.0$ would calculate the posterior
+probability of the subject to be $1.0$ which is not surprising (perfect classifiers 
+are perfect!). However, they also show that \textit{obtuse} classifiers (those with 
+$P(``A" | A) = 0.0$ and $P(``NOT" | NOT) = 0.0$ also produce a posterior probability 
+of $1.0$; demonstrating that obtuse volunteers are just as helpful as perfect volunteers.
+
+As the project progresses, each subject moves from its prior probability and is 
+nudged to higher or lower probability depending on volunteer classifications. 
+Eventually most subjects cross a ``classification" threshold, i.e. they have either
+been \textit{accepted} or \textit{rejected} as having the FoI. At this point, the 
+software retires the subject from being seen by volunteers. We now describe how 
+this software is used in practice, incorporated into GZ:EXPRESS, and bridged with 
+various machine classifiers. 
+
+
+%%----------------------------------------------------------------------------------------------------------------------------------------------------
+%%   Subsection: specifics of SWAP in context of simulations (sans Machine)
+%%----------------------------------------------------------------------------------------------------------------------------------------------------
+\subsection{XXX in the simulation}
+In order to use \cite{Marshall2016} software we make a few modifications including 
+generalizing which features the software recognizes (not just gravitational lenses), as well as
+mimicking ``real" time by allowing the software to run on a regular timestep. 
+For our particular simulation we choose a $\Delta t = 1$ day. At each timestep, 
+the software pulls all volunteer classifications between that and the previous timestep. 
+For each vote, SWAP assigns and/or updates that volunteers's agent's confusion 
+matrix as well as the probability that image contains the feature of interest (FoI). 
+
+Before the simulation can be run, a number of SWAP parameters must first be chosen,
+including the initial confusion matrix assigned to each volunteer, the classification
+thresholds for the subject, and the prior probability for the FoI. 
+
 
 Each user's vote contributes some fraction to the probability that a galaxy image contains a characteristic of choice. The prior probability for all galaxies is determined by an educated guess for the relative frequency of that characteristic (elliptical galaxies comprise approx. 30\% of the local universe). As users vote yes/no, this probability is updated; decreasing if the user votes nay and increasing if yay. An important aspect of this software is that care must be taken when choosing the classification thresholds. The original SWAP set the rejection and acceptanace thresholds equidistant in log-space because their prior was significantly small to begin with (lenses are expected to be very rare; the probability for finding one in a random sky image was estimated at p = 2e-4).  Spiral arms or elliptical galaxies are not rare galaxy characteristics; thus determining proper thresholds for retiring an image from the pool must considered lots and I actually haven't done that whatsoever. I just picked some numbers that seemed pretty sweet. 
 
@@ -149,26 +269,87 @@ As we show in Fig XXX, the value of the thresholds significantly changes the num
 Anyway. In SWAP they were called "rejection" and "acceptance" thresholds. Here we interpret these differently  -- we aren't rejecting anything, simply acknowledging that it's probability strongly suggests that it does not have the characteristic of interest. Thus, we instead consider these "classification" thresholds. Any subject image which crosses one of these thresholds is then passed on to the next stage. 
 
 
-
-
+%%----------------------------------------------------------------------------------------------------------------------------------------------------
+%%   INTEGRATING MACHINE CLASSIFIERS 
+%%----------------------------------------------------------------------------------------------------------------------------------------------------
 \section{Machine Classifier} \label{sec:machine}
-\subsection{Supervised Learning}
+
+%\subsection{Supervised Learning}
 Supervised learning is the machine learning task of inference from labeled traning data. The training data consist of a set of training examples, consisting of an input vector and a desired output (or label).  In general, a supervised learning algorithm analyzes the training data and produces an inferred function that can then mapped to new examples. An optimized algorithm will correctly determine class labels for unseen data. In the case of a collaborative filter, the task requires designation of an image to either have a feature of interest or not and is thus a discrete, binary task.  \textit{can I dig up any references which show support for binary tasks being easier for machines to learn?} As such, there are a wide variety of algorithms which are suitable and we discuss our initial choices later on. 
 
 \subsection{Training and Validation Samples}
 
 Any supervised learning algorithm requires some form of input and associated label upon which the classifier will attempt to learn the appropriate characteristics which identify a subject as, in our case, either having the feature of interest or not.  In order to learn a model which will generalize well to unseen examples, one should provide the largest, most representative training sample possible. In our case, however, this is not immediately possible as the size of the training sample is highly dependent on the rate of human classifications. During the initial stages of the project, human classifiers have not yet provided adequate information to generate sufficiently large training examples.  The size of the training sample contains exactly zero subjects at the first timestep but continually grows as human classifications are processed. With a timestep of T and the SWAP parameters XXX discussed above, we achieve a training sample of about 10K subjects within a 7 days of user classifications. Figure XXX shows how the sample size grows as a function of time for various timesteps and parameters of such and things. 
 
+
+
+ 
+\subsection{Feature Representation and Pre-Processing}
+Machine learning algorithms require a feature vector for each training example. This vector is composed of D individual numeric quantities associated with the subject which the machine will use to discern that subject from others in the training sample. These features can be composed of any set of parameters which inform or corrolate with individual galaxy morphology. Good examples include various color metrics, Sersic index, and B/T ratio, among others. Individually, these metrics are naive determinations of overall galaxy morphology. Though we plan to incorporate these and other characteristics in the future, our current feature set draws on ZEST \citep{Scarlata2007} and  is composed of well-known morphological parameters including Concentration, Asymmetry, Gini, M20 and ellipticity. Thus, our feature vector is constructed from aggregated measurements of each galaxy's light profile. The details of these measurements can be found in the Appendix.  Altogether, these features describe a five dimensional feature space in which the machine attempts to learn. 
+
+\textbf{Should this paragraph be here? Probably not. But it should be somewhere.}
+This is quite distinct from \textit{deep learning} methods which learn on every pixel of an image through a series of non-linear transformations as explored by Huertas-Company and Company and Dieleman. Though deep learning methods promise new heights of classification accuracy, there are some drawbacks. Most notably, the interpration of these methods in the context of physical quantities is lacking. Because of the complex suite of layered non-linear transformations, it is difficult to backstrapolate what qualities of the image were most successful at understanding that galaxy's morphology. Moreover, connecting that to physical mechanisms within the galaxy remains to be seen. On the other hand, much work has been invested in connecting aggregate features such as CAS, G-M20 which are well demonstrated to correlate with specific galaxy stuffs like SFH and ... whatnots.. and described below.
+
+
+Before we feed the algorithm with these feature vectors we first perform two pre-processing steps. First, we clean the data as there are some very few number of cases where our algorithm failed to recover appropriate values for the Petrosian radius, C, A, G, or M20. Our code represents these failures as infs or nans and we thus remove these subjects from all samples.  The second transformation puts each of the features on equal footing. Taken at face value, each of the five morphology parameters resides in a different range of values:  M20 is nearly always negative as it is logarithmic, while Asymmetry and Gini are always between 0 and 1.  In order for the machine classifier to treat all features equally we scale each feature along columns. If a row represents an individual subject, then a column represents the same feature for all subjects. We normalize each subject's features in the standard way: 
+\begin{equation}
+z_{feature} = \frac{f_i - \mu}{\sigma}
+\end{equation} 
+Where $f_i$ is the $i$th subject's feature value, $\mu$ is the mean of the entire feature sample, and $\sigma$ is the standard deviation of the entire feature sample. This scales each feature to values between 0 and 1. 
+
+I might actually change this, however. It may be that you don't WANT a machine to treat each feature equally -- some features may better separate classes within the feature space. 
+
+
+\subsection{Algorithms}
+In this section we briefly describe a handful of the supervised classification algorithms we employ. 
+
+
+
+\subsubsection{K-nearest neighbors}
+One of the simplest algorithms to conceptualize and use is the K-nearest neighbors (KNN) classifier. This classifier works simply by considering the K neighbors nearest to the test point in Euclidean space. As we have only a binary classification challenge, the test point is classified according to the majority of its K neighbors. In the event of a tie, the label if the closest neighbor to the test point determines its class. Though simplistic, this algorithm is surprisingly powerful in that it performs well in higher-dimensional space and is relatively fast to train. Obviously, the most important parameter to consider is the number of nearest neighbors to assign to each test point. But this is pretty much the only knob to turn in this method which is another benefit -- ease of interpretation. 
+
+
+We use scikit-learn's implementation of K-Nearest Neighbor Classifier (KNC) and optimize the K parameter. 
+
+\subsubsection{Random forests}
+Random forests (RFs) are an ensemble classifier in that they take an average of several individual classifiers, in this case, decision trees. The training data is bootstrapped (sampled with replacement) and a decision tree is performed on each sub-sample. The resulting classifications of each decision tree are combined. A decision tree 
+
+
+This model requires optimization of several parameters including the number of trees, the depth of each tree and BLANK. 
+
+Again we use scikit-learn's Random Forest implementation. 
+
+
 Discuss how this affects the accuracy of the machine classifier. 
 
 Discuss the validation set -- Nair / GZ2 / Expert user classification set
 
 
- 
-\subsection{Feature Representation and Pre-Processing}
-Machine learning algorithms require a feature vector for each training example. This vector is composed of D individual numeric quantities associated with the subject which the machine will use to discern that subject from others in the training sample. These features can be composed of any set of parameters which inform or corrolate with individual galaxy morphology. Good examples include various color metrics, Sersic index, and B/T ratio, among others. Though we plan to incorporate some of these characteristics in the future, our current feature list is composed of well-known morphologicial parameters including Concentration, Asymmetry, Gini, M20 and ellipticity in a similar fashion as ZEST. In essence, we construct the feature vector based on measurements of the individual image pixels. 
+\subsection{Cross-validation}
+Cross-validation goes here? \\
+Another fundamental characteristic of any machine learning algorithm is the various parameters used to guide the training of the machine. For example, the number of k neighbors in a k-nearest neighbors algorithm; or the depth, d, of a tree in a Random Forest algorithm. These parameters cannot be chosen a priori as they must be tuned to reflect the nature of the classification and to optimize the accuracy of the output. Ideally, one would train a machine classifier with every possible combination of parameters and test the resulting accuracy of each combination against another sample withheld from the training set so as not to bias the results. For this, we choose a subset of the GZ subject sample designated as a validation sample which we describe in detail in the next section. 
 
-This method is quite distinct from \textit{deep learning} methods which learn on every pixel of an image through a series of non-linear transformations of the image as opposed to features derived from the galactic light profiles as discussed in Huertas-Company and Company. However, one drawback to these methods is the difficulty of interpretting the results of such classification. While features like CAS, G-M20 are well demonstrated to correlate with specific galaxy stuffs like SFH and ... whatnots.. and described below. 
+
+At each time step, the machine classifier will have some some number, N, of training galaxies. The machine is then trained using several parameter sets (enough to sample the parameter space) and each trained machine is applied to the validation set. The resulting accuracy, completeness, and contamination are recorded. This process repeats at each time step until the machine has achieved a large enough training sample thus allowing the machine to reach its maximum accuracy. Only once the machine has reached its peak performance is it finally applied to the test set (remaining galaxy images in the pool). 
+
+\subsection{Machine Output?}
+Along with a prediction, the machine also returns an associated probability (discussed below). If this probability, or confidence, is above some threshold (the machine threshold, not to be confused with the post-processing thresholds), then those galaxy images are considered classified and
+
+
+
+
+\subsection{modularity?}
+we used a super simple algorithm for this but guess what? If you structure your code a certain way, we can modularize and insert your favorite machine. Additionally, I'd really like it to be able to run multiple machines simultaneously. 
+
+
+
+
+\appendix
+
+\section{Measuring Morphological Parameters on SDSS Cutouts}
+
+So we did a LOT of work to measure all that shit. 
+
 
 Concetration measures the ... 
 \begin{equation}
@@ -194,72 +375,7 @@ where $n$ is the number of pixels assigned to the galaxy, and $\bar X$ is the me
  M_{20} & = & \log_{10} (\frac{\sum_iM_i}{M_{tot}}), ~~\textrm{while} \sum_ifi < 0.2f_{tot}
 \end{eqnarray}
 
-We measure these parameters for 272K galaxy cutouts  in the SDSS shits. Quality characteristics are described in Appendix A.  
 
-Combined, these features describe a 5-D feature space in which the machine attempts to do its thang. 
-
-Before we feed the algorithm with these feature vectors we first perform two pre-processing steps. First, we must clean the data as there are some very few number of cases where our algorithm failed to recover appropriate values for the Petrosian radius, C, A, G, or M20. Our code represents these failures as infs and we thus remove these subjects from all samples.  The second transformation puts each of the features on equal footing. Taken at face value, each of the five morphology parameters resides in a different range of values:  M20 is nearly always negative as it is logarithmic while Asymmetry and Gini are always between 0 and 1.  In order for the machine classifier to treat all features equally we scale each feature along columns. If a row represents an individual subject and its corresonding unique features, then a column represents the same feature for all subjects. We normalize each subject's feature in the standard way: 
-\begin{equation}
-z_{feature} = \frac{f_i - \mu}{\sigma}
-\end{equation} 
-Where $f_i$ is the $i$th subject's feature value, $\mu$ is the mean of the entire feature sample, and $\sigma$ is the standard deviation of the entire feature sample. This scales each feature to values between 0 and 1. 
-
-
-\subsection{Algorithms}
-
-
-
-\subsubsection{K-nearest neighbors}
-One of the simplest algorithms to conceptualize and use is the K-nearest neighbors (KNN) classifier. This classifier works simply by considering the K neighbors nearest to the test point in Euclidean space. As we have only a binary classification challenge, the test point is classified according to the majority of its K neighbors. In the event of a tie, the label if the closest neighbor to the test point determines its class. Though simplistic, this algorithm is surprisingly powerful in that it performs well in higher-dimensional space and is relatively fast to train. Obviously, the most important parameter to consider is the number of nearest neighbors to assign to each test point. But this is pretty much the only knob to turn in this method which is another benefit -- ease of interpretation. 
-
-We use scikit-learn's implementation of K-Nearest Neighbor Classifier (KNC) and optimize the K parameter. 
-
-\subsubsection{Random forests}
-Random forests (RFs) are an ensemble classifier in that they take an average of several individual classifiers, in this case, decision trees. The training data is bootstrapped (sampled with replacement) and a decision tree is performed on each sub-sample. The resulting classifications of each decision tree are combined. A decision tree 
-
-This model requires optimization of several parameters including the number of trees, the depth of each tree and BLANK. 
-
-Again we use scikit-learn's Random Forest implementation. 
-
-
-\subsection{Cross-validation}
-Cross-validation goes here? \\
-Another fundamental characteristic of any machine learning algorithm is the various parameters used to guide the training of the machine. For example, the number of k neighbors in a k-nearest neighbors algorithm; or the depth, d, of a tree in a Random Forest algorithm. These parameters cannot be chosen a priori as they must be tuned to reflect the nature of the classification and to optimize the accuracy of the output. Ideally, one would train a machine classifier with every possible combination of parameters and test the resulting accuracy of each combination against another sample withheld from the training set so as not to bias the results. For this, we choose a subset of the GZ subject sample designated as a validation sample which we describe in detail in the next section. 
-
-At each time step, the machine classifier will have some some number, N, of training galaxies. The machine is then trained using several parameter sets (enough to sample the parameter space) and each trained machine is applied to the validation set. The resulting accuracy, completeness, and contamination are recorded. This process repeats at each time step until the machine has achieved a large enough training sample thus allowing the machine to reach its maximum accuracy. Only once the machine has reached its peak performance is it finally applied to the test set (remaining galaxy images in the pool). 
-
-\subsection{Machine Output?}
-Along with a prediction, the machine also returns an associated probability (discussed below). If this probability, or confidence, is above some threshold (the machine threshold, not to be confused with the post-processing thresholds), then those galaxy images are considered classified and
-
-
-
-\subsection{modularity?}
-we used a super simple algorithm for this but guess what? If you structure your code a certain way, we can modularize and insert your favorite machine. Additionally, I'd really like it to be able to run multiple machines simultaneously. 
-
-\appendix
-
-\section{Measuring Morphological Parameters on SDSS Cutouts}
-
-So we did a LOT of work to measure all that shit. 
-
-\begin{equation}
-I = \frac{1}{1 + d_{1}^{P (1 + d_{2} )}}
-\end{equation}
-
-Appendix tables and figures should not be numbered like equations. Instead
-they should continue the sequence from the main article body.
-
-\section{Author publication charges} \label{sec:pubcharge}
-
-Finally some information about the AAS Journal's publication charges.
-In April 2011 the traditional way of calculating author charges based on 
-the number of printed pages was changed.  The reason for the change
-was due to a recognition of the growing number of article items that could not 
-be represented in print. Now author charges are determined by a number of
-digital ``quanta''.  A single quantum is 350 words, one figure, one table,
-and one enhanced digital item.  For the latter this includes machine readable
-tables, figure sets, animations, and interactive figures.  The current cost
-is \$27 per word quantum and \$30 for all other quantum type.
 
 %% The reference list follows the main body and any appendices.
 %% Use LaTeX's thebibliography environment to mark up your reference list.
@@ -286,15 +402,9 @@ is \$27 per word quantum and \$30 for all other quantum type.
 %% delimit the year from the author name used in the citation.
 %% See the natbib documentation for more details and options.
 
-\begin{thebibliography}{}
 
-\bibitem[Corrales(2015)]{2015ApJ...805...23C} Corrales, L.\ 2015, \apj, 805, 23
-\bibitem[Hanisch \& Biemesderfer(1989)]{1989BAAS...21..780H} Hanisch, R.~J., \& Biemesderfer, C.~D.\ 1989, \baas, 21, 780 
-\bibitem[Lamport(1994)]{lamport94} Lamport, L. 1994, LaTeX: A Document Preparation System, 2nd Edition (Boston, Addison-Wesley Professional)
-\bibitem[Schwarz et al.(2011)]{2011ApJS..197...31S} Schwarz, G.~J., Ness, J.-U., Osborne, J.~P., et al.\ 2011, \apjs, 197, 31  
-\bibitem[Vogt et al.(2014)]{2014ApJ...793..127V} Vogt, F.~P.~A., Dopita, M.~A., Kewley, L.~J., et al.\ 2014, \apj, 793, 127  
-
-\end{thebibliography}
+\bibliographystyle{apj}
+\bibliography{apj-jour,human-machine}
 
 %% This command is needed to show the entire author+affilation list when
 %% the collaboration and author truncation commands are used.  It has to
