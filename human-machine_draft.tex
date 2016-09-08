@@ -23,6 +23,7 @@
 \usepackage{graphicx}
 \usepackage{cleveref}
 \usepackage{hyperref}
+\usepackage[normalem]{ulem}
 
 \usepackage{xcolor}
 
@@ -139,7 +140,7 @@ work for the local universe... putting galaxies into categories helps us learn
 about the way dem galaxies be living their lives. 
 
 %%%-------------------------------------------------------
-%%% GZ EXPRESS Schematic
+%%% FIGURE:     GZ EXPRESS Schematic
 %%%-------------------------------------------------------
 \begin{figure*}[ht!]
 %\figurenum{1}
@@ -287,8 +288,63 @@ As the project progresses, each subject's prior probability is continually updat
 and is nudged to higher or lower probability depending on volunteer classifications. 
 Eventually most subjects cross a classification threshold which define wthether that
 subject has been confirmed or rejected for exhibiting feature \A~and the subject
-is considered to be retired.  The 
-software no longer records volunteer information for these subjects. 
+is considered to be retired.  The software no longer records volunteer information 
+for these subjects. 
+
+\subsection{Volunteer Training Sample}
+
+Finally, another key feature of the original Space Warps project was the training of 
+individual volunteers through the use of simulated lensed galaxies. Volunteers were 
+shown simulated images interspersed with actual data with the simulated data shown
+predominately at the beginning of the project. After a volunteer submitted their 
+classification, the system provided feedback depending depending on their answer. 
+In the next section we describe how we egineered the GZ2 data to mimic the Space 
+Warps setup as closely as possible.
+
+We found that the SWAP software does not perform well there are no designated 
+training images. Furthermore, the software requires that these training images
+be introduced at the beginning of the project to allow volunteer confusion matrices
+to update sufficiently before intense classification of test images commences. 
+To mimic this behavior we select a sample of $\sim$3500 SDSS galaxies which 
+overlaps the \cite{NairAbraham2010} catalog. This catalog contains $\sim$14K 
+galaxies classified by expert eyes into various TTypes. Thoug helpful, this particular
+classification isn't quite apples to apples, as Nair was not being asked the same 
+question that GZ2 volunteers were asked.  Instead, we classified this subsample 
+amongst the Galaxy Zoo science team by building a small project on the Zooniverse
+platform. The question posed to our science team was identical to the original 
+question posed to the volunteers. Approximately 15 members of the GZ science team
+contributed to these classifications and at least five experts saw each galaxy. Experts 
+this case range from advanced graduate students, post docs, and several 
+seasoned faculty members. Once
+classification was complete, the votes were aggregated and a simple majority was 
+used to provide `expert' labels (`Featured` or `Not`) to the 3500 galaxies. 
+
+While 3500 galaxies is a sizeable undertaking for a handful of experts, it is not a
+large sample compared to the GZ2 data set. Thus, not every volunteer saw at least 
+one of these ad-hoc training images. Because we wish to recreate the conditions 
+of the Space Warps project, we remove from our data all volunteers who never 
+classify at leaset one of these 3500 galaxies. This reduces our raw data set from
+16 million clicks to 14 million; from XXX unique volunteers to 33K. 
+
+We now have a retroactively designated training sample. When considering the 
+raw data base, however, the classifications for these particular galaxies could 
+have timestamps anywhere within the 14 month time span during which the original project ran.
+As previously stated, SWAP does not perform adequately unless the bulk of the
+training occurs at the beginning of a project's life. We therefore adjust the order
+of the classification timestamps such that annotations of training sample galaxies
+have timestamps well before all other GZ2 galaxies. Since it is implicitly assumed
+that a galaxy's classifications are independent and random (galaxy images are 
+shown randomly to volunteers), the order of the classifications should have only
+as small effect, if any, on the results.  When running a simulation, which
+pulls from the database according to timestamps, the training images will be the 
+first to be processed through SWAP. 
+
+We have done our best to mimic the Space Warps project with the goal of producing 
+meaningful results in a similar format. What we cannot reproduce at this time, however,
+is actual volunteer feedback. Space Warps gently guided their volunteers towards 
+proper classification in real time by providing pop-up comments during the project. 
+We obviously cannot reproduce this behavior after the fact though this difference
+should be kept in mind. We discuss this topic further is Section XXX Future Shits. 
 
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
 %%   Subsection: specifics of SWAP in context of simulations (sans Machine)
@@ -296,8 +352,8 @@ software no longer records volunteer information for these subjects.
 \subsection{SWAP Requirements}
 
 To simulate a live project we run SWAP on a regular timestep which we set as $\Delta t = 1$ day. 
-At each timestep, the software pulls from the database all volunteer classifications within that range. 
-Before the simulation can be run, a number 
+At each timestep, the software pulls from the database all volunteer classifications which
+have timestamps within that range. Before the simulation can be run, a number 
 of parameters which control the behavior of SWAP must first be chosen. These include
  the initial confusion matrix assigned to each volunteer, the classification
 thresholds and the prior probability of the subject. Specifically, we must choose 
@@ -308,31 +364,13 @@ thresholds and the prior probability of the subject. Specifically, we must choos
 \item \ts, the threshold defining the minimum probability for a subject to be classified `Smooth'
 \item \tn, the threshold defining the maximum probability for a subject to be classified `Not Smooth'
 \end{itemize}
-Additionally, one must choose whether to run in Supervised mode or Supervised and 
-Unsupervised mode. We explore the outcomes of these choices in the next section.
-
-Finally, the SWAP software requires a subset of images to
-be used as a training sample for the volunteers. Space Warps accomplished this with 
-a collection of simulated lens images where a portion were designed to contain lenses
-while the rest did not. The original GZ2 project did not employ a training mechanism 
-though we attempt
-to simulate this process by selecting a subsample of the SDSS imaging that overlaps
-the \cite{NairAbraham2010} catalog. This catalog contains $\sim14$K galaxies 
-expertly classified by eye into TTypes along with detailed annotations of a slew of 
-features. We select subset of the overlapping population most representative of 
-the 'Smooth'/'Not' question. We choose only those galaxies with TTypes $< -2$ 
-(for 'Smooth') and TType $>= 1$ as being 'Not'. We thus exclude S0/a galaxies
-to remove ambiguity from our training sample. 
-
-{\color{red} Where should the above conversation go? We need to talk about training samples but we have two different ones and I use them both ... }
 
 
 %%%-------------------------------------------------------
-%%% SWAP outcome
+%%%  FIGURE:    SWAP retired_per_day
 %%%-------------------------------------------------------
 \begin{figure*}[ht!]
-\figurenum{1}
-\plotone{retired_per_day_sup_75_redo_76days.png}
+\plotone{retired_per_day_sup_PLPD5_p5_standard2_raw_92days.png}
 \caption{Simulation of top level GZ2 question reprocessed using the SWAP software only. In shaded grey are the actual number of volunteer votes. The blue shows the cumulative number of retired subjects according to the original GZ2 retirement scheme whereby a subject must achieve forty volunteer votes. The orange and yellow shading represents the cumulative number of retired subjects according to the SWAP retirement system, in that subject probabilities must cross an appropriate threshold for being labeled as having a feature or not. \label{fig:swapresults}}
 \end{figure*}
 
@@ -340,63 +378,93 @@ We perform several simulations to explore SWAP performance compared to the
 original GZ2 project in terms of overall accuracy achieved and, perhaps more importantly, 
 in terms of time efficiency. Thus, to evaluate SWAP performance we consider two basic metrics:
 the cumulative sum of classified subjects at a given point in GZ2 project time, $c_{tot}$, and the 
-accuracy of those classifications as compared to the original GZ2 published labels, $c_{acc}$. 
+accuracy of those classifications as compared to the GZ2  labels, $c_{acc}$. \citep{Willett2013}
+advise caution when using the GZ2 catalog to select subsamples of galaxies with a given
+morphology.  They define various thresholds to aid the community in sample selection of
+clean or complete samples. In this case, we want to give a label to every object in the catalog. 
+Every subject is given three different type of vote fractions: raw, weighted, and debiased. 
+GZ2 debiased vote fractions are calculated to correct morphological classifications for the
+ effects of redshift bias, a task that SWAP was not built to handle. 
+GZ2 weighted vote fractions serve to downgrade malicious volunteers and/or bots, a task
+SWAP was intended to perform as well.  However, because the mechanism for
+determining malicious volunteers is entirely different between the two schemes, we 
+use GZ2 raw vote fractions as the closest apples to apples comparison. 
 
-Figure \ref{fig:swapresults} shows how SWAP retirement works as a function of GZ2
-project time and compares this output to the original retirement scheme. The blue
+Specifically, we take the majority raw vote fraction as the label for that galaxy. If the 
+majority resided under `star or artifact' or 'feature or disk', it was labeled as `Featured'; 
+otherwise it was labeled as `Not'. We note that under this definition, only 512 subjects
+had a majority of `star or artifact' and thus comprise an exceedingly small portion of the
+overall sample. 
+
+Figure \ref{fig:swapresults} shows SWAP subject retirement as a function of GZ2
+project time compared with the original GZ2 retirement scheme. GZ2 retirement was 
+defined as a predetermined number of volunteer classifications. Galaxy Zoo projects
+typically require an average of 40 volunteer classifications for consensus. The blue
 shaded region represents the cumulative number of retired subjects as a function
-of GZ2 project time. GZ2 retirement was defined by the number of invididual 
-volunteers who had provided a classification for that subject. This value was set
-at forty, and more than 99.9\% of GZ2 subjects have at least 25 unique classifications. 
-For this figure we use the more lenient definition, that is, we consider a subject
-retired by GZ2 if it had at least 25 individual volunteer votes on a given day
-of the project. In yellow and orange are the cumulative number of subjects retired
-via the SWAP software. It is immediately obvious that by clever and adaptive 
-processing of volunteer classifications we can dramatically increase the speed 
-with which subjects are classified. 
+of GZ2 project time where we use a more lenient retirement definition: 
+namely, if on that day of the GZ2 project, a galaxy had at least 30 classifications, 
+it was considered retired. 
+ In yellow and orange are the cumulative number of subjects retired
+via the SWAP software where retirement is defined by a galaxy's probability
+crossing a retirement threshold.  It is immediately obvious that by clever and adaptive 
+processing of volunteer classifications speed and efficiency of subject retirement
+can be dramatically increased. 
 
-In figure \ref{fig:swapaccuracy} we show the accuracy of the SWAP software by 
-comparing the label ultimately assigned via SWAP compared to the published label
-in the GZ2 Main Sample catalog [Link??]. The red line tracks the accuracy of SWAP 
-as a function of project time. At the start of the project SWAP's accuracy is quite
-high reaching nearly 100\% accuracy. As the project progresses, the accuracy 
-decreases slightly, dropping to about 85\%. This behavior may seem counterintuitive
-when compared to an actual machine learning algorithm which general increases
-accuracy but is actually easily understood. There are several subjects that 
-volunteers find very obvious to classify, which can be seen as several unanimous
-votes. Several unanimous votes have the effect of quickly increasing the subject's
-probability which in turn quickly pushes that subject over the retirement threshold. 
-Subjects which are this easy to classify are more likely to have the same label as
-they did in the original GZ2 project. On the other hand, there are several subjects 
-which volunteers find difficult to classify as evidenced by a split vote count; 
-nearly half of the volunteers vote one way the other half the opposite. In this 
-case the subject probability is kicked back and forth between the retirement 
-thresholds. Eventually, it could find itself crossing one of them but when we 
-compare this subject's SWAP label with its GZ2 label, they are less likely to match
-as the volunteers had such a difficult time classifying it in the first place. Thus we 
-see that, over time, the easiest to classify subjects pop out first with the more 
-difficult subjects trickling out later. The easiest are more likely to match GZ2 
-while the more difficult are less likely to match. These curves are, in part, a 
+
+In figure \ref{fig:swapeval} we evaluate the SWAP software by considering
+its accuracy, recall and precision (red, blue and green respectively) as compared 
+to the GZ2 labels defined by raw vote fractions.  This being a Smooth or Not run
+instead of a Featured or Not run, I'm not going to talk about the overall shape
+because it's going to change. BOO. These curves are, in part, a 
 function of the parameters listed above and we now turn to a discussion of 
-how this output changes when one or more of these parameters is adjusted. 
+how these figures change when one or more of the SWAP parameters is adjusted. 
+
+
+%%%-------------------------------------------------------
+%%%    FIGURE:   SWAP evaluation 
+%%%-------------------------------------------------------
+\begin{figure}[t!]
+\includegraphics[width=3.5in]{GZX_evaluation_sup_PLPD5_p5_standard2_raw.png}
+\caption{GZX evaluation. \label{fig:swapeval}}
+\end{figure}
 
 {\color{red} LOTS of TO DO:
 
-1. I'm comparing SWAP label to the debiased GZ2 label -- try it with RAW label
+\sout{1. I'm comparing SWAP label to the debiased GZ2 label -- try it with RAW label}
 
 2. I'm comparing SWAP label to the full GZ2 vote but when I show the retired subjects,
 I'm being generous to GZ2 by allowing GZ2 to only have 25 votes instead of the full 40+ -- 
 so how would GZ2's own labels change if they had only 25 votes instead of the full 40?!!
 
-3. Then, obviously, check SWAP against the GZ2[25only] label
-
-4. How do you debias SWAP labels?! It's one thing to downweight shitty users but 
-GZ2 also debiases votes as a function of redshift. How would we do that now???}
+\sout{3. How do you debias SWAP labels?! It's one thing to downweight shitty users but 
+GZ2 also debiases votes as a function of redshift. How would we do that now?} -- Simulated data - C.S. }
 
 %% ----------------------------------------------------------------------------------------------------------------------------------------------
 %% DISCUSSION OF CHANGING SWAP PARAMETERS
 %% ----------------------------------------------------------------------------------------------------------------------------------------------
 \subsection{SWAP Simulation Outcomes}
+
+\textbf{Initial agent confusion matrix.} 
+\begin{figure}[t!]
+\includegraphics[width=3.5in]{GZX_eval_and_retirement_spread_initialconfusionmatrix_4paper.png}
+\caption{GZX/SWAP output as a function of GZ2 project days for a range of initial
+confusion matrix values.  \label{fig:confusionmatrixanalysis}}
+\end{figure}
+Space Warps agents assigned each volunteer $P(``A"|A), P(``N"|N) = (0.5, 0.5)$, 
+assuming that humans started out no better than random classifiers.  We explored a range
+of initial confusion matrix probabilities. We find that we are largely insensitive to the 
+initial agent confusion matrix values.  The majority of GZ2 volunteers achieve confusion
+matrices designating them as astute classifiers, regardless of their initial assigned values. 
+The  small variations observed in the SWAP output can be visualized in 
+Figure \ref{fig:confusionmatrixanalysis}. The bottom figure depicts the cumulative 
+number of retired subjects as a function of the number of GZ2 project days where the light blue range 
+shows the spread due to the initial \Ps~and \Pn~ranging from 0.4 to 0.6. 
+Regardless of the initial input values, we achieve a total classification of $\sim225$K  $\pm 3.5\%$ subjects. 
+The top figure explores various evaluation metrics as a function of the number of 
+GZ2 project days including the overall classification accuracy, completeness, and 
+purity of the classification. The spread is within a couple percentage points for any
+metric. Overall we maintain accuracy around $95\%$, and completeness of $99\%$
+while maintaining purity around $84\%$. 
 
 
 \textbf{Subject prior probability, $p_0$.}
@@ -419,19 +487,8 @@ remainder of this paper we choose a value of $p_0 = 0.3$.
 
 {\color{red} TO DO: 1. A FEW RUNS WITH DIFF $p_0$}
 
-\textbf{Initial agent confusion matrix.} 
-Space Warps agents assigned each volunteer $P(``A"|A), P(``N"|N) = (0.5, 0.5)$, 
-assuming that humans started out no better than random classifiers.  We explored a range
-of initial confusion matrix probabilities. In general, we find that regardless 
-of how lowe we initilize \Ps~and\Pn, GZ2 volunteers all become astute at discerning
-between `Smooth' and `Not Smooth'.  When initilizing \Ps~and \Pn~to lower values
-it requires more simulation time (measured in GZ2 `days`) for them to become good
-classifiers which affects how quickly subjects can be retired. For example, 
-when \Ps,~\Pn $= (0.4, 0.4)$, XXX subjects are retired by day XXX in GZ2 project time. 
-When \Ps,~\Pn $= (0.6, 0.6)$, that number increases to XXX by the same GZ2 day. In
-both cases, $c_{acc} \sim 85\%$ 
 
-{\color{red} TO DO: 2. I did these runs but they were S only -- try in S\&U? Won't work in that mode unless I'm using "expertsample"}
+
 
 \textbf{Retirement thresholds.}
 The Space Warps project set their retirement thresholds equidistant in logspace. 
