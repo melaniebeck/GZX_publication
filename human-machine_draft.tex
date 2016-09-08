@@ -36,6 +36,7 @@
 \newcommand{\N}{\textit{N}}
 \newcommand{\Ps}{$P_{S,0}$}
 \newcommand{\Pn}{$P_{N,0}$}
+\newcommand{\p}{$p_0$}
 \newcommand{\ts}{$t_s$}
 \newcommand{\tn}{$t_n$}
 
@@ -428,17 +429,6 @@ how these figures change when one or more of the SWAP parameters is adjusted.
 \caption{GZX evaluation. \label{fig:swapeval}}
 \end{figure}
 
-{\color{red} LOTS of TO DO:
-
-\sout{1. I'm comparing SWAP label to the debiased GZ2 label -- try it with RAW label}
-
-2. I'm comparing SWAP label to the full GZ2 vote but when I show the retired subjects,
-I'm being generous to GZ2 by allowing GZ2 to only have 25 votes instead of the full 40+ -- 
-so how would GZ2's own labels change if they had only 25 votes instead of the full 40?!!
-
-\sout{3. How do you debias SWAP labels?! It's one thing to downweight shitty users but 
-GZ2 also debiases votes as a function of redshift. How would we do that now?} -- Simulated data - C.S. }
-
 %% ----------------------------------------------------------------------------------------------------------------------------------------------
 %% DISCUSSION OF CHANGING SWAP PARAMETERS
 %% ----------------------------------------------------------------------------------------------------------------------------------------------
@@ -446,9 +436,9 @@ GZ2 also debiases votes as a function of redshift. How would we do that now?} --
 
 \textbf{Initial agent confusion matrix.} 
 \begin{figure}[t!]
-\includegraphics[width=3.5in]{GZX_eval_and_retirement_spread_initialconfusionmatrix_4paper.png}
+\includegraphics[width=3.5in]{GZX_eval_and_retirement_PLPD_spread_4paper.png}
 \caption{GZX/SWAP output as a function of GZ2 project days for a range of initial
-confusion matrix values.  \label{fig:confusionmatrixanalysis}}
+confusion matrix values.  \label{fig: confusionMatrixAnalysis}}
 \end{figure}
 Space Warps agents assigned each volunteer $P(``A"|A), P(``N"|N) = (0.5, 0.5)$, 
 assuming that humans started out no better than random classifiers.  We explored a range
@@ -456,38 +446,58 @@ of initial confusion matrix probabilities. We find that we are largely insensiti
 initial agent confusion matrix values.  The majority of GZ2 volunteers achieve confusion
 matrices designating them as astute classifiers, regardless of their initial assigned values. 
 The  small variations observed in the SWAP output can be visualized in 
-Figure \ref{fig:confusionmatrixanalysis}. The bottom figure depicts the cumulative 
+Figure \ref{fig: confusionMatrixAnalysis}. The bottom figure depicts the cumulative 
 number of retired subjects as a function of the number of GZ2 project days where the light blue range 
 shows the spread due to the initial \Ps~and \Pn~ranging from 0.4 to 0.6. 
 Regardless of the initial input values, we achieve a total classification of $\sim225$K  $\pm 3.5\%$ subjects. 
 The top figure explores various evaluation metrics as a function of the number of 
 GZ2 project days including the overall classification accuracy, completeness, and 
 purity of the classification. The spread is within a couple percentage points for any
-metric. Overall we maintain accuracy around $95\%$, and completeness of $99\%$
+metric. Overall we maintain accuracy around $95\%$, as well as completeness of $99\%$
 while maintaining purity around $84\%$. 
 
 
-\textbf{Subject prior probability, $p_0$.}
-The prior probability for all galaxies is determined by an educated guess for the
-relative frequency of that characteristic (elliptical galaxies comprise approx. 30\% of the local universe)
-In the case of Space Warps, the prior was simply computed as the number of 
-expected lenses to the number of images in the CFHT Lensing Survey.  
-In the case of galaxy morphologies, this number should represent the probability
-that a galaxy is elliptical, has a bar, or whatever feature one is considering. 
-This, of course, varies as a function of mass, redshift, 
-star-formation rate, surface brightness, as well as a host of other things 
-depending on the feature in question. 
+\textbf{Subject prior probability, \p.}
+\begin{figure}[t!]
+\includegraphics[width=3.5in]{GZX_eval_and_retirement_prior_spread_4paper.png}
+\caption{GZX/SWAP output as a function of GZ2 project days for a range of subject prior probabilities.  \label{fig: priorAnalysis}}
+\end{figure}
+The prior probability assigned to each subject is determined by an educated guess of 
+the frequency of that characteristic in the scope of the data at hand. 
+For galaxy morphologies, this number should be an estimate of the probability
+of observing a desired feature (bar, disk, ring, etc.) within a dataset. In our case, 
+we desire to simply find galaxies with any feature at all, however, this is dependent 
+on mass and redshift, among other characteristics. The original GZ2 sample was selected
+primarily on magnitude, then redshift.  As there was no cut on the galaxy size
+(with the exception that each galaxy be larger than the SDSS PSF), the sample
+includes a large range of galaxy masses and sizes. As such, designating a single 
+prior is not clear-cut. We thus explore how various \p~affect the SWAP outcome.
 
-How sensitive are we to significant changes in the prior? We ran several simulations
-allowing the prior to take on values from $0.01$ to $0.9$ to demonstrate 
-that the subject prior is not a dominant source of variability. Comparing the 
-output of each run to the original GZ2 results, an order of magnitude change 
-in the prior results in only XXX change in the output accuracy of SWAP.  For the
-remainder of this paper we choose a value of $p_0 = 0.3$. 
+The bottom panel of figure \ref{fig: priorAnalysis} shows that the overall number
+of retired subjects changes very little regardless of \p. In fact, \p~has a smaller effect 
+than \Ps~and \Pn~retiring $\sim226$K $\pm1\%$ of subjects over the course of the 
+simulated project time. Instead, \p~can change what label a subject is given which, 
+in turn, has an effect on evaluation metrics. More subjects are classified as `Not' 
+when \p~is small since their prior is already closer to the rejection threshold; 
+these same subjects are classifed as `Featured' when \p~is larger.
+This explains the larger spread of the evaluation metrics in the top panel of figure 
+\ref{fig: priorAnalysis}.  Overall, the average values of accuracy, completeness, 
+and purity remain similar over the course of the project compared to figure 
+\ref{fig: confusionMatrixAnalysis}. Instead, the spread can 
+be as large as $5\%$, in the case of purity. If the desired science is highly contingent
+on a pure sample, it falls to the user to choose a prior wisely in order to maximize 
+this output. 
 
-{\color{red} TO DO: 1. A FEW RUNS WITH DIFF $p_0$}
+How should one go about this task? We find that the prior is, in essence, a reflection
+of the dataset at hand. The raw GZ2 classification data are skewed towards labeling 
+subjects as `Not', rather than `Featured'. Overall, only 35\% of volunteer votes for 
+any subject are \textbf{not} `Smooth'. Knowing this \textit{a priori}, we can set the 
+value of \p~$= 0.35$. Everything else remaining constant, we find that this does, 
+indeed, maximize SWAP output. 
 
-
+Thus one could develop a prescription for determining the best \p~for a given dataset
+by initializing batches of subjects with various (though intelligently chosen) \p~to 
+discover, in real time, which value precisely maximizes output and performance. 
 
 
 \textbf{Retirement thresholds.}
