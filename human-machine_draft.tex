@@ -371,7 +371,7 @@ thresholds and the prior probability of the subject. Specifically, we must choos
 %%%  FIGURE:    SWAP retired_per_day
 %%%-------------------------------------------------------
 \begin{figure*}[ht!]
-\plotone{retired_per_day_sup_PLPD5_p5_standard2_raw_92days.png}
+\plotone{GZX_GZ2_comparison_NSFreport2016.png}
 \caption{Simulation of top level GZ2 question reprocessed using the SWAP software only. In shaded grey are the actual number of volunteer votes. The blue shows the cumulative number of retired subjects according to the original GZ2 retirement scheme whereby a subject must achieve forty volunteer votes. The orange and yellow shading represents the cumulative number of retired subjects according to the SWAP retirement system, in that subject probabilities must cross an appropriate threshold for being labeled as having a feature or not. \label{fig:swapresults}}
 \end{figure*}
 
@@ -420,14 +420,6 @@ because it's going to change. BOO. These curves are, in part, a
 function of the parameters listed above and we now turn to a discussion of 
 how these figures change when one or more of the SWAP parameters is adjusted. 
 
-
-%%%-------------------------------------------------------
-%%%    FIGURE:   SWAP evaluation 
-%%%-------------------------------------------------------
-\begin{figure}[t!]
-\includegraphics[width=3.5in]{GZX_evaluation_sup_PLPD5_p5_standard2_raw.png}
-\caption{GZX evaluation. \label{fig:swapeval}}
-\end{figure}
 
 %% ----------------------------------------------------------------------------------------------------------------------------------------------
 %% DISCUSSION OF CHANGING SWAP PARAMETERS
@@ -503,29 +495,25 @@ discover, in real time, which value precisely maximizes output and performance.
 \textbf{Retirement thresholds.}
 The Space Warps project set their retirement thresholds equidistant in logspace. 
 Their prior was significantly small to begin with as lenses are expected to be very rare.
-However, `Smooth' galaxies (which roughly correspond with early-types) are nearly 
-equal to the `Not Smooth' within a factor of 2 at low redshift. Thus care must be taken when 
-setting \ts~and \tn~for retirement. The SWAP output is most sensitive to these
-parameters as they are directly responsible for the label assigned to a given subject. 
+However, `Smooth' galaxies are almost as equally likely to exist 
+as `Featured' galaxies at low redshift (for appropriate choices of mass or luminosity). 
+Thus care must be taken when setting \ts~and \tn~for retirement. 
+These parameters are directly responsible for the label assigned to a given subject. 
 When these thresholds are low, subjects more easiliy attain the appropriate 
-probability to cross that threshold. This can increase speed of classification however
-it also greatly affects accuracy. If the next volunteer disagreed with the previous 
-volunteer on the nature of the subject, her vote could bring the probability of
-the subject below the threshold and thus it wouldn't yet be classified. 
-Therefore setting these values is crucial. 
+probability to cross that threshold. This can increase speed of classification, however
+it also greatly affects accuracy. If the one volunteer disagreed with the previous 
+volunteer on the nature of the subject, her vote could reverse the subject's probability
+away from the threshold, thus prolonging it's classification phase.  
 
-{\color{red} TO DO: 3. I haven't don't any real analysis of changing thresholds. So get on it!!!}
-
-Summary of this section? Segue into Machine Classifier. Regardless of the parameters
-with which one begins (within reason) the number of retired subjects grows significantly. 
-GZ2 required at least 48 days before it could retire ~50K subjects whereas SWAP
-can retire that many within 4 days, depending on parameter choice / with some 
-\% difference? / something like that. It is instructive to consider the number of
-volunteer `clicks` instead of the physical timescale as this is a quanity that 
-spans multiple projects regardless of the number of volunteers that project may
-have. In this light, GZ2 requires nearly $2.5\times10^6$ votes to retire 60K
-subjects while, to match it, SWAP requires only $4\times10^5$, an ORDER OF MAGNITUDE REDUCTION BITCHES! 
-
+Regardless of the parameters with which one begins (within reason) the number of 
+retired subjects grows rapidly. GZ2 requires nearly 50 days of volunteer input before 
+a significant number of subjects can be retired (~10K) whereas processing that input
+through SWAP retires 175K - 225K subjects, depending on the initial conditions. 
+Perhaps of greater merit is the drastically reduced workload on the volunteers. 
+Retiring subjects through traditional means requires nearly $2.5\times10^6$ 
+volunteer votes to retire 60K subjects while SWAP requires only $4\times10^5$, 
+\textbf{an order of magnitude reduction in human effort!} We now turn towards
+our implementation of a supervised machine to further classification efficiency. 
 
 
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -545,22 +533,21 @@ done to predict the entirety of GZ2 classification labels using deep learning
 to predict fewer labels than it is to predict several dozen. \textbf{[citation?]} 
 Fortunately, by handling individual features and processing human classifications
 through SWAP, we arrive with a discrete, binary task for a machine to tackle.
-However, in the future we plan to explore more sophisticated algorithms which 
-are optimized to handle a continuum since the actual output of the SWAP software
-is a probability for any given subject to exhibit a particular feature. 
+However, in the future we will explore more sophisticated algorithms which 
+are optimized to handle a input continuum since the actual output of SWAP
+is a smoothly ranging probability for each subject. 
 
 \subsection{Random Forests}
 Because our task is simple, we choose a simple machine. In particular, we use 
 a Random Forest (RF) algorithm,  an ensemble classifier that operates by bootstrapping
 the training data and constructing a multitude of individual decision tree algorithms, 
 one for each subsample.  An individual decision tree works by deciding which of 
-the input features best separates the classes. It does this by only performing 
-splits on the values of the input feature that most decrease the classification 
-error. These feature splits proceed recursively, always with the goal of decreasing 
-the classification error. As such, decision trees alone are prone to overfitting the 
-training data which precludes them from generalizing well to new data. 
-Random Forests mitigate this effect by combining the output label from the 
-multitude of decision trees.  In particular we use the 
+the input features best separates the classes. It does this by performing 
+splits on the values of the input feature that minimize the classification 
+error. These feature splits proceed recursively. As such, decision trees alone are
+ prone to overfitting the training data thus precluding them from generalizing 
+well to new data. Random Forests mitigate this effect by combining the 
+output label from a multitude of decision trees.  In particular we use the 
 \texttt{RandomForestClassifier} from the Python module \texttt{scikit-learn}
 \citep{scikit-learn}. 
 
