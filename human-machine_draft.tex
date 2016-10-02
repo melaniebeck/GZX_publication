@@ -79,8 +79,9 @@
 
 %% Authors with the same affiliation can be grouped in a single
 %% \author and \affil call.
-\author{Melanie Beck, Claudia Scarlata, Lucy Fortson}%\altaffilmark{1}
+\author{Melanie Beck, Claudia Scarlata, Lucy Fortson, Melanie Galloway, Kyle Willett, Hugh Dickenson}%\altaffilmark{1}
 \affil{Minnesota Institute for Astrophysics, University of Minnesota, Minneapolis, MN 55454}
+
 
 \author{Chris Lintott}
 \affil{Department of Physics, University of Oxford, Oxford OX1 3RH}
@@ -145,7 +146,7 @@ about the way dem galaxies be living their lives.
 %%%-------------------------------------------------------
 \begin{figure*}[ht!]
 %\figurenum{1}
-\plotone{GZExpress_schematic_v2.jpg}
+\plotone{figures/GZExpress_schematic_v2.jpg}
 \caption{Schematic of our hybrid system. Human classifiers are shown images of galaxies via the Galaxy Zoo web interface. These  classifications are recorded and processed according to section XXX. As a result of the processing, those subjects whose probabilties cross the classification thresholds are passed to the machine classifier as a training sample. The trained machine is then applied to the remaining subjects in the database (test sample). Those subjects which the machine classifies with high confidence are removed from the sample and considered fully classified. The rest remain in the database to be seen by human classifiers. \label{fig:schematic}}
 \end{figure*}
 
@@ -219,10 +220,13 @@ as shown in Fig~\ref{fig: decisiontree}.
 
 Our first simulated run considers only the first task in the decision tree: 
 `Is the galaxy simply smooth and rounded, with no sign of a disk?', to which possible 
-responses include `smooth', `feature or disk', and `star or artifact'.  Because all 
-volunteers see the first task, our simulations are run with as many as 14,144,941 
-classifications.  The SWAP software requires that each classification consist of at least
-volunteer ID, subject ID, timestamp of the classification,  and the volunteer's vote.
+responses include `smooth', `feature or disk', and `star or artifact'.  
+
+As we discuss in detail below, the software we use requires that every volunteer see a
+subset of subjects expertly identified by a member of the GZ team. We examine only those
+classifications made by one of the  30,894 volunteers that identified one or more of
+our gold standard sample. We note that these volunteers represent 36\% of all users 
+yet provided nearly 90\% of the total Galaxy Zoo classification data. 
 
 
 
@@ -371,7 +375,7 @@ thresholds and the prior probability of the subject. Specifically, we must choos
 %%%  FIGURE:    SWAP retired_per_day
 %%%-------------------------------------------------------
 \begin{figure*}[ht!]
-\plotone{GZX_GZ2_comparison_NSFreport2016.png}
+\plotone{figures/GZX_GZ2_comparison_NSFreport2016.png}
 \caption{Simulation of top level GZ2 question reprocessed using the SWAP software only. In shaded grey are the actual number of volunteer votes. The blue shows the cumulative number of retired subjects according to the original GZ2 retirement scheme whereby a subject must achieve forty volunteer votes. The orange and yellow shading represents the cumulative number of retired subjects according to the SWAP retirement system, in that subject probabilities must cross an appropriate threshold for being labeled as having a feature or not. \label{fig:swapresults}}
 \end{figure*}
 
@@ -428,7 +432,7 @@ how these figures change when one or more of the SWAP parameters is adjusted.
 
 \textbf{Initial agent confusion matrix.} 
 \begin{figure}[t!]
-\includegraphics[width=3.5in]{GZX_eval_and_retirement_PLPD_spread_4paper.png}
+\includegraphics[width=3.5in]{figures/GZX_eval_and_retirement_PLPD_spread_4paper.png}
 \caption{GZX/SWAP output as a function of GZ2 project days for a range of initial
 confusion matrix values.  \label{fig: confusionMatrixAnalysis}}
 \end{figure}
@@ -451,7 +455,7 @@ while maintaining purity around $84\%$.
 
 \textbf{Subject prior probability, \p.}
 \begin{figure}[t!]
-\includegraphics[width=3.5in]{GZX_eval_and_retirement_prior_spread_4paper.png}
+\includegraphics[width=3.5in]{figures/GZX_eval_and_retirement_prior_spread_4paper.png}
 \caption{GZX/SWAP output as a function of GZ2 project days for a range of subject prior probabilities.  \label{fig: priorAnalysis}}
 \end{figure}
 The prior probability assigned to each subject is determined by an educated guess of 
@@ -571,24 +575,29 @@ Formally, we perform k-fold cross-validation whereby the training sample is spli
 into $k$ subsamples. One such subsample is withheld while the remaining data is
 used to train the machine. This is performed $k$ times and the average performance
 value is recorded. The entire process is repeated for every combination of the 
-
-
-
-specified hyperparameter space and the optimal values can be recovered. 
+specified hyperparameter space and values that optimize the output are choosen. 
 
  
 \subsection{Feature Representation and Pre-Processing}
 Machine learning algorithms require a feature vector for each training example. 
 This vector is composed of D individual numeric quantities associated with the 
 subject which the machine will use to discern that subject from others in the 
-training sample. To segregate `Smooth` from `Not Smooth` our feature set draws 
+training sample. To segregate `Featured` from `Not` our feature set draws 
 on ZEST \citep{Scarlata2007} and  is composed of Concentration, Asymmetry, Gini, 
 M20 and ellipticity (See Appendix \ref{sec:Appendix} for details concerning the 
-measurement process). Altogether, these features describe a five dimensional 
-parameter space in which the machine attempts to distinguish the two classes. 
-The RF algorithm is capabale of handling a considerable number of features and in
-a future paper we will explore increasing this feature space to include parameters
-like Sersic index, B/T ratio, color, etc. 
+measurement process). These non-parametric indicators have long been used to 
+quantify galaxy morphology in an automated fashion \textbf{citations: Peth? Huertas-company?}. 
+Altogether, these features describe a five dimensional parameter space in 
+which the machine attempts to distinguish between the two classes. 
+As the RF algorithm is capabale of handling high-dimensional parameter spaces, in
+a future paper we will explore increasing our feature space to include parametric
+morphology indicators such as Sersic index and B/T ratio. 
+
+Another benefit of the RF algorithm is the flexibility with which it can accept input 
+features. Most algorithms require that feature vectors be processed so as to all 
+be on the same scale or between 0 and 1. This is not necessary with an RF. The only
+preprocessing required in our case is the removal of morphological paramters which
+were not well-measured, i.e. catastrophic failures. 
 
 %\textbf{Should this paragraph be here? Probably not. But it should be somewhere?}
 %This is quite distinct from \textit{deep learning} methods which can learn on every 
@@ -603,45 +612,95 @@ like Sersic index, B/T ratio, color, etc.
 
 %Though deep learning methods promise new heights of classification accuracy, there are some drawbacks. Most notably, the interpration of these methods in the context of physical quantities is lacking. Because of the complex suite of layered non-linear transformations, it is difficult to backstrapolate what qualities of the image were most successful at understanding that galaxy's morphology. Moreover, connecting that to physical mechanisms within the galaxy remains to be seen. On the other hand, much work has been invested in connecting aggregate features such as CAS, G-M20 which are well demonstrated to correlate with specific galaxy stuffs like SFH and ... whatnots.. and described below.
 
-\textbf{THIS STEP NO LONGER NEEDS TO BE DONE -- RF SHOULDN'T CARE:}
 
-{\color{red} TO DO: 4. Check that I'm right! }
-Before we feed the algorithm with these feature vectors we first perform two pre-processing steps. First, we clean the data as there are some very few number of cases where our algorithm failed to recover appropriate values for the Petrosian radius, C, A, G, or M20. Our code represents these failures as infs or nans and we thus remove these subjects from all samples.  The second transformation puts each of the features on equal footing. Taken at face value, each of the five morphology parameters resides in a different range of values:  M20 is nearly always negative as it is logarithmic, while Asymmetry and Gini are always between 0 and 1.  In order for the machine classifier to treat all features equally we scale each feature along columns. If a row represents an individual subject, then a column represents the same feature for all subjects. We normalize each subject's features in the standard way: 
+%Before we feed the algorithm with these feature vectors we first perform two pre-processing steps. First, we clean the data as there are some very few number of cases where our algorithm failed to recover appropriate values for the Petrosian radius, C, A, G, or M20. Our code represents these failures as infs or nans and we thus remove these subjects from all samples.  The second transformation puts each of the features on equal footing. Taken at face value, each of the five morphology parameters resides in a different range of values:  M20 is nearly always negative as it is logarithmic, while Asymmetry and Gini are always between 0 and 1.  In order for the machine classifier to treat all features equally we scale each feature along columns. If a row represents an individual subject, then a column represents the same feature for all subjects. We normalize each subject's features in the standard way: 
+\begin{comment}
 \begin{equation}
 z_{feature} = \frac{f_i - \mu}{\sigma}
 \end{equation} 
 Where $f_i$ is the $i$th subject's feature value, $\mu$ is the mean of the entire feature sample, and $\sigma$ is the standard deviation of the entire feature sample. This scales each feature to values between 0 and 1. 
-
+\end{comment}
 
 \subsection{Training and Validation Samples}
 We are now ready to discuss the training sample. As we showed in the previous 
-section, the SWAP software retires subjects much more quickly than the GZ2 project
+section, SWAP retires subjects far more rapidly than GZ2
 by adaptively tracking volunteer skill and subject probabilities. This provides us
 with a way of quickly generating considerably large subject samples with accurate
-labels provided by human classifications. These retired subjets are the basis of the 
+labels provided by human classifications. These retired subjects are the basis of the 
 machine's training sample. That training sample is dynamically generated as a function
-of project time. Within the first week of a project there are perhaps only a few 
-subjects which reach retirement, but as the project progresses, that number 
-soon becomes thousands.  
+of project time. Specifically, within 10 days, SWAP has accumulated ~20K 
+subjects which can form the basis for machine training. 
 
 As discussed above, in addition to a training sample we also need a validation 
 sample to estimate the generalization (true) error of our trained machine. For 
 this purpose we maximize the utility of our expertly classified sample. This sample
 thus provides training to our volunteers and verification for our machine. 
 
-\subsection{MachineShop Simulation}
+\subsection{Decision Engine}
+A number of decisions must be made before attempting to train the machine. 
+Which SWAP subjects should be included in the training sample? 
+What should be the minimum number of training subjects before a first attempt?
+When should the trained machine be applied to our test sample, i.e. subjects
+in the dataset which have not yet been seen? 
 
-As before, we simulate a live project by running our machine directly after
-running SWAP and in timesteps of $\Delta t = 1$ day. 
-As the simulation progresses each night, a flag associated with each subject is 
-triggered in the SWAP software if it reaches retirement. This then signals the 
-machine software that it indeed has some amount of training data to consider. 
-For our first run, any subject retired by SWAP is immediately considered part of
-the machine's training sample, however we do not allow the machine to begin 
-learning until it has reached a minimum number of training subjects. For our first
-run this number is set to 10K. Once SWAP has reached that number of retired subjects
-the machine begins learning. 
+\textbf{Which subjects should provide the training sample?} As mentioned above, SWAP
+yields a probability that a subject exhibits the feature of choice. With a 
+different choice of machine, one could incorporate every subject with the
+whole spectrum of probabilities as input labels. However, an RF requires a
+distinct label and thus we use only those subjects which have crossed either
+the detection or rejection thresholds and are thus most likely to be `Featured`
+or `Not`.  However, subjects do not cross these thresholds  with equal likelihood. 
+At any given stage in the simulation, the balance of `Featured` to `Not` is not
+guaranteed to be even. This would then provide an unbalanced training sample
+which could hamper the learning process. However, as a first test, we allow
+the machine to learn on all high probability subjects. 
 
+\textbf{What should be the minimum number of training subjects before a first attempt at training?}
+On the first few days in the simulation, SWAP retires a few hundred subjects.
+Though one can, in principle, train a machine with such a small sample, the resulting
+predictions on the test sample will be exceptionally poor. Furthermore, the machine
+won't know that is performing poorly. For example, if a training sample of 100 `Featured`
+subjects is provided, the machine will `learn` and predict that every member of the 
+test sample is also `Featured` with high probability. This is obviously wrong. 
+In practice, a much larger training size is required for the machine to learn the 
+true parameter space in which the feature vectors reside. Because RF is a simple
+model, we initially require that the training sample consist of at least 10K subjects
+before attempting the first training session. 
+
+\textbf{When should the trained machine be applied to the test sample?} Again, there is
+no magic size that a training sample should be before attempting classification
+of the test sample. We instead attempt to assess the machine's learning
+before applying it to the test sample. We do this by considering the machine's
+learning curve, which illustrates a model's performance with 
+increasing sample size for fixed model complexity. An example is shown in \textbf{Fig XXX}
+for an RF with fixed hyperparameters. The cross-validation score is the accuracy
+resulting from k-fold cross-validation. The training score is the resulting machine
+applied to the training sample. When the sample size is small, the cross-validation
+score is low while the training score is high. This is a clear demonstration of a model
+overfitting the data. As the training sample size 
+increases, the cross-validation score increases while the training score decreases. 
+Eventually both plateau, regardless of how large the training sample grows. This 
+demonstrates that, after a certain point, for a fixed complexity model, the accuracy
+of the method will plateau and larger training sets yield little gain. That the training
+score reduces almost to the cross-validation score signifies that this particular
+model is not well suited to capturing the complexity of the data set. 
+A more sophisticated model would, in turn, likely require a larger training
+sample. 
+
+We use this general feature of any machine learning process to help guide our 
+decision making process. We technically cannot reproduce a true learning curve
+because the cross-validation procedure can, in principle and in practice, yield a
+different set of machine hyperparameters that are most appropriate for the training
+sample delivered to it that "night".  Instead, we look for the characteristic 
+cross-validation score plateau. At each timestep, a record of the machine's 
+training is kept including its performance on the current training sample, 
+cross-validation score, and the best hyperparameters. When the machine's 
+cross-validations score remains within a 1\% range on three concurrent runs, 
+we deem the machine is as learned as it will be for the simple model we have 
+supplied. At this point the trained machine is then applied to the test sample. 
+
+
+\begin{comment}
 The machine is allowed to learn at each timestep. Thus, the machine classifier will 
 have some some number, N, of training galaxies. K-fold cross-validation is performed
 at each time step to determine optimal hyperparameters. The machine is then trained 
@@ -656,6 +715,9 @@ considers the growing history of the machine's learning and judges the machine
 learned after its accuracy varies by less than 1\% over the course of 3 consecutive
 timesteps. We will discuss how varying this criterion changes the outcome of the 
 classification results. 
+\end{comment}
+
+
 
 Once the machine has been fully trained, it is then applied to the test sample. 
 In this case, the test sample is any subject which has either not reached retirement
@@ -663,17 +725,38 @@ through the SWAP processing, or is not part of the validation sample. Since the
 total number of subjects in GZ2 is XXX, the validation sample comprises XXX, 
 the initial training sample is 10K, thus the first test sample contains XXX subjects. 
 The test sample decreases as a function of project time in tandem with the increasing
-training sample. Thus the further into the project one goes, the more trained the 
-machine becomes and the easier time it has predicting the test sample since that
-sample shrinks. 
+training sample. 
 
-\subsection{Machine Output}
-Once the machine is happily applying itself to the test sample at each timestep, 
-we first simply record its predictions along with the probability associated to that
-prediction.  Nearly every machine classification algorithm can output a confidence
-score or decision function associated with its prediction. In the case of a RF, 
-this is calculated as \textbf{[Look this shit up.]} 
 
+\subsection{The Machine Shop / Feedback Loop}
+A typical run which incorporates the machine begins with human classifications 
+processed through SWAP for several days. During that time, the available training set
+builds up until it crosses the 10K threshold. At this point, the machine trains for the 
+first time. A suite of performance metrics are recorded by a machine \textit{agent}, similar
+in construction to SWAP's \textit{agents}. Each night, the machine agent determines 
+whether or not the machine has properly trained by assessing all previous nights of 
+training, comparing the variation in performance metrics. Once the machine has
+passed the criterion laid out above, the agent introduces the machine to the test sample.
+
+At this point, another decision must be made. What constitutes a confident machine
+classification? Some models allow one to obtain a probability for each respective label. 
+In the case of an RF, this probability is simply the average of the probabilities of each 
+individual decision tree where the probability of a single tree is determined as the fraction
+of subjects of class X on a leaf node.  We use this probability to assess which subjects
+the machine is most confident about (though we note it is not a true measure of confidence).
+Only subjects which receive a class prediction with $p_{machine} >= 0.9$ are considered
+retired and are removed from the system. Subjects which are not retired by the machine 
+are subsequently fed back to human classifiers for further input during the next timestep.  
+
+This is the embodiment of our feedback loop. Those subjects on which the machine
+is least confident are judged by human classifiers, potentially becoming part of the
+training sample during the next cycle. Ideally, this increased training sample now 
+covers an additional portion of the parameter space that the machine was unfamiliar
+with or unable to learn. With additional subjects spanning all of the parameter space, 
+the machine can quickly achieve its maximum performance. 
+
+
+\begin{comment}
 In figure \ref{fig:testmetrics},
 we can see how the machine is performing on the test sample as a function of 
 project time. Understandably, the performance is poor the first time the machine 
@@ -690,7 +773,6 @@ This allows us to set a criterion for which subjects the machine should be allow
 to retire from the system. We don't necessarily trust it on all subjects but can we 
 trust it when it's most confident? Explore this more? 
 
-\subsection{Feedback Loop}
 Our system has now incorporated both clever use of human classifications and 
 integrated machine classification. We now simulate the final element which is the
 feedback mechanism. Those subjects which the machine is most confident about are 
@@ -699,14 +781,57 @@ elseware. Those which the machine is not confident, however, remain in the pool
 such that, during the next timestep, volunteers can contribute to the classification 
 of that subject. This will increase the diversity of the training sample thus 
 providing the machine with a larger sample space in which to learn. 
+\end{comment}
 
-We now perform full simulations, culminating all steps in the method and examine 
-the overall performance. 
-
-{\color{red} TO DO: Implement and run this. OY! That's a tall order...}
 
 \section{Results}
-Results of a FULL RUN -- including the feedback loop. 
+
+We perform a full run incorporating both SWAP and the machine using the fiducial SWAP run.
+The machine attempts its first training on Day 7 of the run. The machine attempts several 
+additional nights of training, with a larger training sample each night. By Day 13, 
+the machine \textit{agent} has assessed that the machine is suitably prepared to 
+analyze the test sample. At that point, SWAP has already retired ~68K subjects 
+(this is the machine's training sample). The machine predicts classes for the remaining
+subjects, approximately 200K. Of those, the machine strongly predicts classes for 
+nearly 70K subjects, thus dramatically increasing the overall sample of retired 
+subjects for the run. As the simulation progresses, retirement by both SWAP and
+the machine tapers off. We end the simulation after 23 days, having sufficiently 
+classified over 200K subjects. 
+
+%%%-------------------------------------------------------
+%%%  FIGURE:    SWAP retired_per_day
+%%%-------------------------------------------------------
+\begin{figure}[t!]
+\includegraphics[width=3.65in]{figures/moneyplot.png}
+\caption{Incorporating the machine reduces the total time to classify over 200K subjects in the GZ2 sample to 23 days. \label{fig: money}}
+\end{figure}
+
+The bottom panel of Fig~\ref{fig: money} compares  Galaxy Zoo Express, 
+SWAP only, and Galaxy Zoo 2 subject retirement.
+By dynamically generating a training sample
+through a more sophisticated analysis of human classifications, we are able
+to retire over 200K GZ2 subjects in 23 days.  With SWAP alone, we retired this
+many subjects in 60 days. GZ2 took 9 months to retire as many and 14 months 
+to classify the entire catalog of 295K subjects. 
+
+The top panel of Fig~\ref{fig: money} shows our usual quality metrics for both 
+SWAP-only and GZX.  Even incorporating such a simplistic model as a RF allows
+us to dramatically increase our classification efficiency without sacrificing much 
+in terms of quality. Accuracy for the combined system remains above 90\%, while
+purity and completeness remain above 85\%. Furthermore, we note that 
+incorporating the machine yields similar over-all quality metrics as when we 
+allow SWAP to handle the entirety of the sample. Both yield purity ~85\%. 
+Instead we seem to make a small sacrifice in the completeness of the sample
+when incorporating the machine: whereas SWAP alone provides nearly perfect
+completeness, the machine cannot keep up with that.
+ \textbf{Why is the machine so bad? If we're getting completeness for the machine ~70\% it's not better than just assuming the the majority-class.... I need to dig into this a bit more.}
+
+
+
+\section{Discussion}
+
+What are we getting wrong? 
+Limitations of GZ2 classifications. 
 
 
 \subsection{Performance \#s}
@@ -731,7 +856,9 @@ Less front-loading (how far apart can the training images be staggered and still
 
 This is all qualitative (not fitting functions to anything)
 
-\section{So fucking what?}
+\subsection{Classification Limitations or \textit{How to stop classifying what can't be classified}}
+
+\section{Implications for Future Surveys}
 All you did was classify Smooth and Not Smooth. Anyone and their mom can do that!
 
 
@@ -741,6 +868,10 @@ should be diverted to experts. If a machine can't classify it, then those subjec
 can be relegated back to humans. Thus we have a cute little chain of command!
 
 Apply all these performance metrics to the datasets expected from Euclid, LSST, etc. Estimate reduction in classification time. 
+
+\section{Conclusions}
+
+recap all the things. 
 
 
 
