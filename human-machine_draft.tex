@@ -785,6 +785,13 @@ providing the machine with a larger sample space in which to learn.
 
 
 \section{Results}
+How well does the overall human/machine system perform together and separately. 
+
+what are sensible criteria for using the machine? If we change these criteria, how does performance change? 
+
+When does the machine kick in? How quickly does it learn? 
+
+Efficency of classification increased by order of magnitude. 
 
 We perform a full run incorporating both SWAP and the machine using the fiducial SWAP run.
 The machine attempts its first training on Day 7 of the run. The machine attempts several 
@@ -799,7 +806,7 @@ the machine tapers off. We end the simulation after 23 days, having sufficiently
 classified over 200K subjects. 
 
 %%%-------------------------------------------------------
-%%%  FIGURE:    SWAP retired_per_day
+%%%  FIGURE:    FULL GZX PERFORMANCE
 %%%-------------------------------------------------------
 \begin{figure}[t!]
 \includegraphics[width=3.65in]{figures/moneyplot.png}
@@ -830,37 +837,230 @@ completeness, the machine cannot keep up with that.
 
 \section{Discussion}
 
-What are we getting wrong? 
-Limitations of GZ2 classifications. 
+\subsection{Identifying the Point of No Classification}
+
+We now turn to a discussion of what subjects can and can't be classified and why. 
+We argue that our method provides a quick way to determine which subjects will
+inevitably be suitable for either visual or machine classification and which subjects
+simply provide too little information for robust classification. This knowledge, coupled
+with the fast classification rate will enable large scale surveys to efficiently and effectively
+tackle morphological classification tasks. 
+
+%%%-------------------------------------------------------
+%%%  FIGURE:   SWAP vote distributions
+%%%-------------------------------------------------------
+\begin{figure}[t!]
+\includegraphics[width=3.65in]{figures/clicks_till_retirement_GZ2_sup_PLPD5_p5_flipfeature2b_10.png}
+\caption{SWAP vote distributions are totally sick. \textbf{Make this a gif in the online journal version! Cuz it's super cool and stuff. }\label{fig: swap vote distributions}}
+\end{figure}
+
+%%%-------------------------------------------------------
+%%%  FIGURE:   SWAP failures
+%%%-------------------------------------------------------
+\begin{figure*}[t!]
+\plotone{figures/incorrect_subjects_sup_PLPD5_p5_flipfeature2b_norandom2.png}
+\caption{Why and when does SWAP fail?  \label{fig: SWAP sucks}}
+\end{figure*}
+
+\textbf{What does SWAP get wrong? Why? }
+Galaxy Zoo's strength comes, in part, from
+the consensus of dozens of volunteers voting on each subject. Processing votes
+with SWAP effectively reduces the consensus to its bare mininum. Though we typically
+are able to recover the original GZ2 class label, that is not alway the case. Of those 
+subjects that fail, a small portion of them are due to unlikely ordering of volunteer
+votes. We found \%?? of subjects in which the first N volunteers classified them as X, 
+yet the next 2*N classified them as Y. Thus, the majority class label given to the subject 
+in GZ2 will be Y, but SWAP will yield a class label of X because it processes only a fraction
+of the votes that GZ2 does. This is one of the ways SWAP increases efficiency but at a 
+small price. We can see this in Fig~\ref{fig: swap vote distributions}
 
 
-\subsection{Performance \#s}
-How well does the overall human/machine system perform together and separately. 
+To prevent this, one could a.) require each user classify a certain number of subjects
+to smooth out their burn-in phase thus yielding a better-trained visual classifier, 
+b.) require each subject reach a bare minimum of classifications before allowing 
+it's probability to reach a threshold. The difference between waiting out a user's burn-in 
+phase versus a subject's burn-in phase.
+The latter is preferable as the majority of Zooniverse volunteers contribute only 
+a small amount of classifications to any given project. Requiring they achieve a 
+minimum classification count before assessing their data would hamstring
+the effectiveness of the citizen science ethos. 
 
-what are sensible criteria for using the machine? If we change these criteria, how does performance change? 
+Another way that SWAP fails to match with the GZ2 label is through the classification
+of subjects which are ``on the edge". These subjects receive between 40-60\% vote 
+fractions as assessed by GZ2. When GZ2 is unsure about a subject, SWAP isn't sure either
+and the SWAP class label will instead depend on the skill and confusion matrix of the 
+volunteers who contribute to that subject. For example, a subject which GZ2 labels as 
+`Smooth' with a smooth vote fraction of 0.6 can end up classified by SWAP as being `Featured'. 
+This is most likely due to a.) the original GZ2 label is inherently uncertain and 
+b.) the particular volunteers who classified this subjects have exceptionally high 
+confusion matrices allowing them to more forcefully `nudge' subjects over a threshold. 
 
-When does the machine kick in? How quickly does it learn? 
+%%%-------------------------------------------------------
+%%%  FIGURE:    Machine-Only Performance
+%%%-------------------------------------------------------
+\begin{figure}[t!]
+\includegraphics[width=3.65in]{figures/MLevaluation_GZ2_sup_PLPD5_p5_flipfeature2b_RF_accuracy.png}
+\caption{Incorporating the machine reduces the total time to classify over 200K subjects in the GZ2 sample to 23 days. \label{fig: machine accuracy}}
+\end{figure}
 
-Efficency of classification increased by order of magnitude. 
+\textbf{What does the Machine get wrong? Why?}  In Fig~\ref{fig: machine accuracy} 
+we show the accuracy of the machine classifier for the 10 days it predicts on the test sample. 
+We see that the first application yields exceptionally good accuracy considering
+the machine of choice. However, that accuracy drops down to 75\% by the end of the simulation.
+We examine in the size-magnitude plane those  subjects retired by machine as 
+shown in Fig~\ref{fig: machine classified}.  We see see the first classification by
+the machine includes a healthy mix of both `Featured` and `Not' subjects over a 
+broad range of magnitude and sizes. These subjects are "easy to classify" as they are
+large and bright. However, by the end of the run the machine (combined with SWAP)
+have classifed the easiest subjects; those with the most information stored in their images. 
+On the last day we peform the simulation, the machine is only classifying small, faint 
+subjects; all the larger and brighter subjects have been retired. Small, faint subjects are 
+notoriously difficult to classify. As such, when comparing the resulting prediction from
+the machine to the original label provided by GZ2, it is less likely that machine matches
+that prediction. Indeed, it is just as likely that the original GZ2 classifications are inherently 
+wrong themselves. \textbf{Show a random sample of original jpg images? } 
+This trend can even be seen in the SWAP-only output. 
+Fig~\ref{fig: swap} shows the accuracy of the SWAP output slowly decreases 
+over the life of the project coupled with the strong tapering of classifications 
+are both sure signs that the easiest to classify galaxies have been retired leaving
+more difficult, if even classifiable, subjects in the queue. 
+
+%%%-------------------------------------------------------
+%%%  FIGURE:    Machine-Only Performance
+%%%-------------------------------------------------------
+\begin{figure}[t!]
+\includegraphics[width=3.65in]{figures/GZ2_sup_PLPD5_p5_flipfeature2b_2009-02-25_00:00:00_RF_accuracy_size-mag.png}
+\caption{You can't classify what isn't there... Lack of information leads to sub-par classifications by the machine.\textbf{Make this a GIF in the online manuscipt?} \label{fig: machine classified}}
+\end{figure}
+
+We also examine those subjects which are not classified at all, either in the SWAP-only
+run or the combine run. I am sure they will all suck but need to throw up some distributions
+REDSHIFT, MAGNITUDE, SIZE.  Indeed, the original GZ2classifications were never intended 
+to be used directly as a catalog. The authors strongly urge cuts down the decision tree as
+as well as in magnitude and redshift. Even the power of human consensus  cannot 
+classify information which is not provided by an image. \textbf{The third way we increase 
+efficiency is to effectively identify those subjects for which additional human or 
+machine intervention is not practical and will not yield appropriate classifications.} 
 
 
-\subsection{The effect of human training}
+\subsection{Limitations of GZX}
 
-this all relies on training humans in addition to training machines. 
+\textbf{Classifications are not debiased.}  
+It is a known issue that any visual 
+classification will be biased by several effects, especially redshift and size. 
+Lack of depth and resolution at higher redshift tend to produce classifications 
+which lack observable features. Galaxy Zoo 2 is able to account for redshift bias
+by adjusting the vote fractions produced by the volunteers. This step is done after
+the fact by considering for every Galaxy Zoo catalog
+ \cite{Willett2013}, \cite{Willett2016}, \cite{Simmons2016}. 
+Throughout this paper, we compare predicted classes to a majority raw GZ2 vote fractions.
+These vote fractions are not corrected for redshift bias. As states above, we chose
+these vote fractions because SWAP processes the original votes and does not 
+have functionality to debias these votes. Thus, this step must still be done 
+after subjects are retired or the project completes. 
 
-Fewer users trained
 
-Fewer training images
+\textbf{Where does the gold standard sample come from?}
+Of utmost importance to GZX is the establishment of a gold standard sample. 
+We utilized this sample both to provide "training" for volunteers and to provide 
+validation for the machine. Applications of GZX to other surveys and projects will
+require PIs to develop appropriate gold standard samples of their own data. 
+How should these samples be developed?
+How should the labels be applied? Luckily, the Zooniverse Project Builder is an 
+open source, free to use, web based service which allows teams to build and classify
+their own data.
+ How large should the sample be?  Unfortunately, it is outside the scope of this paper
+to produce a larger gold standard sample for testing purposes. However, we have 
+unequivocally demonstrated that with a sample of ~3500 subjects, we are able to 
+achieve adequate results. 
+\textbf{It would be soooo cool to run SWAP again with fewer gold standard subjects; 
+or play around with how the classifications on gold standard subjects are distributed throughout the data. :(}
 
-Less front-loading (how far apart can the training images be staggered and still produce good results?)
 
-This is all qualitative (not fitting functions to anything)
+\textbf{We didn't actually train volunteers.}
+The Space Warps project provided feedback to volunteers after their classification
+of simulated data thus providing practical training for their volunteers. We stress 
+that, although we have strived to mimic this process, we are reprocessing data and
+thus could not provide feedback in real time. The extent of this effect outside the scope
+of this paper, however, results of an application of SWAP to a live project 
+are explored in Wright2016, in prep \ref{Wright2016}. 
+\textbf{Notes: Fewer users trained. Fewer training images. 
+Less front-loading (how far apart can the training images be staggered and still produce good results?)}
 
-\subsection{Classification Limitations or \textit{How to stop classifying what can't be classified}}
+
+\textbf{Low redshift regime -- what can we do for higher z data?}
+GZ2 is a low redshift sample of galaxies, those to which the Hubble tuning fork 
+could be applied. At higher redshift, these class labels break down. 
+Similarly, standard methods of quantifying morphological structure also 
+suffer as M20 and Gini coefficient are susceptible to noise (I think, cite XXX).
+Additionally, as the shapes of galaxies are significantly different at higher 
+redshift, different metrics of morphology would be more appropriate. 
+We could easily extend our machine to perform on high redshift samples
+by incorporating the MID statistics \ref{Freedman2013}. Another future
+test will be to examine how GZX performs on Galaxy Zoo: Hubble and 
+Galaxy Zoo: CANDELS datasets. 
+
+\textbf{Naive machinery -- RF is too simplistic}
+Fig~\ref{fig: machine too simple} shows the pseudo-learning curve for fiducial
+GZX simulation. We note that it is not a true learning curve because the RF 
+model is not fixed for each night of training, though the range of hyperparameters
+found does not vary drastically. \textbf{My Prediction:} As in the example shown
+in Fig~\ref{fig: other figure}, we see that the cross-validation score increases as a
+function of training sample size (which is a proxy for project time) while the training score decreases. 
+That these two curves meet and plateau is a strong indication that this particular
+model is simply unable to adequately reflect the data. A more sophisticated model 
+should instead of used, however, this is beyond the scope of this paper. 
+
+
+\subsection{My Vision for GZExpress/Galaxy Classifications}
+Every iteration since the original Galaxy Zoo project has adopted a decision tree
+which yield dozens of individual class labels from several tasks asked of their users. 
+This was adopted for several reasons (I am assuming): 1. Maximizing the information 
+that could be gathered for each subject, 2. Minimizing the effort volunteers must 
+spend on each classification. To ``not waste time", most tasks in the decision tree
+are directly dependent on the preceding task and only ask volunteers questions that
+are sensible for the subject at hand, i.e., not asking whether a subject has spiral arms
+when the volunteer classified it as `Smooth'. The downside to this structure is the 
+complications in both analysis of the volunteer votes for the creation of GZ catalogs
+and the ability and extent to which one can use a GZ catalog. True 
+statistical samples cannot be created because not all subjects are asked the same 
+question. Users of the GZ catalogs can mine for purity but cannot hope to achieve
+completeness. Selecting samples for scientific analysis requires a slew of cuts on 
+every task in the GZ decision tree preceding the question of interest. 
+
+To alleviate these concerns, our vision for the future of Galaxy Zoo classifications
+would consist of several, simple, binary questions. Each question would be tracked by a 
+separate version of SWAP and, if appropriate, a machine (or several). The questions
+themselves would need to be redesigned though the spirit could remain unchanged. 
+An answer of `Featured` = Yes would automatically provide an answer of  `No' to every 
+subsequent question down the `Smooth' path of the decision tree. 
+If a volunteer answers "Could this be an edge on disk?" with "Yes", a series of `No's 
+would be entered for the questions which would have followed, had the volunteer answered 'No'.
+In this way, volunteers will still only see questions which they believe are pertinent to the 
+subject but the various SWAP agent(s) assigned to this user will interpret and 
+extrapolate their answers such that ALL questions in the ``tree" are answered thus
+providing statistical reliability, ease of classification analysis, and straightforward 
+data products.  
+
+Additional modification of the existing SWAP software will be necessary to achieve
+these goals. First, SWAP3D will need to be developed in order to handle questions to 
+which a binary option doesn't make sense, i.e. "How many spiral arms...". It should be 
+relatively trivial to extend SWAP's confusion matrices into the third dimension. 
+Secondly, architecture will need to be put in place to  allow agents assigned to a 
+volunteer in one task to communicate the anti-answer to agents in another task. 
+Alternatively, the architecture could be redistributed such that a single agent is
+still assigned to a volunteer but participates in several analysis chains independently. 
+
+Each thread or task can also be assigned different machine learning algorithms. 
+It is important to keep in mind that different machines will achieve various 
+performance levels depending on what they train on. Our particular machine would
+not be able to answer the question "Is there a bar or not?" because G, M20, CAS, etc.
+are not suited for detecting bars. Providing the machine with information 
+pertinent to the subject will be crucial. This is an area where deep learning 
+techniques could lend additional benefits. 
+
 
 \section{Implications for Future Surveys}
-All you did was classify Smooth and Not Smooth. Anyone and their mom can do that!
-
 
 We've now identified several ways to suss out those subjects which require 
 additional intervention. If SWAP can't classify it, then potentially these subjects 
@@ -871,7 +1071,29 @@ Apply all these performance metrics to the datasets expected from Euclid, LSST, 
 
 \section{Conclusions}
 
-recap all the things. 
+recap all the things. \\
+
+-- This doesn't have to be done on the Zooniverse platform. The code is (will be) 
+publicly available and free to use or incorporate as the user sees fit. It can be used
+with small groups of experts or with your favorite citizen scientists. However, 
+work has already begun by Zooniverse developers to incorporate these techniques
+into the backend of their existing, stable platform. They have a well-defined base 
+of volunteers, significant funding and nearly ten years of expertise in citizen science. 
+
+
+-- Take advantage of the initial peak of classifications characteristic of every
+Zooniverse project. The larger the excitement generated for the project, the greater
+the surge in volunteer classifications at the outset, the more quickly SWAP and
+machine can tackle substantial data sets. 
+
+\section{Acknowledgements}
+NSF Grant
+
+Thesis Research Travel Grant / University of Minnesota
+
+Balzan Fellowship / Oxford Uni
+
+
 
 
 
