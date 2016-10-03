@@ -1011,6 +1011,12 @@ That these two curves meet and plateau is a strong indication that this particul
 model is simply unable to adequately reflect the data. A more sophisticated model 
 should instead of used, however, this is beyond the scope of this paper. 
 
+In principle, any desired machine could be used including deep neural networks such 
+as that provided by Google's TensorFlow or Python's Theano. Though the standard 
+complications remain concerning the interpretation of CNNs, crowd-sourcing with
+SWAP provides a convenient and efficient way to quickly accumulate the large training 
+samples that CNNs require.  
+
 
 \subsection{My Vision for GZExpress/Galaxy Classifications}
 Every iteration since the original Galaxy Zoo project has adopted a decision tree
@@ -1071,7 +1077,34 @@ Apply all these performance metrics to the datasets expected from Euclid, LSST, 
 
 \section{Conclusions}
 
-recap all the things. \\
+We outline and test a novel, new system for efficiently classifying galaxy morphologies, 
+a task that will surly prove difficult with the onset of such surveys as LSST, Euclid, 
+and WFIRST. Our system incorporates the native ability of the human mind to identify
+the abstract and novel with machine learning algorithms who provide speed and 
+brute force. These, coupled with a more sophisticated analysis of volunteer votes 
+through SWAP and a decision engine which delegates tasks between human and 
+machine combine to create a classification system which is more than an order of
+magnitude faster than anything presented before. Efficiency is achieved through 
+the dynamic generation in real time of a training sample by human classifiers which
+allows the machine to quickly understand the parameter space. 
+
+Classification efficiency is achieved in three ways: 
+
+1. sophisticated analysis of human visual classifications; reducing the amount of time
+humans would be required to contribute. 
+
+2. Sharing the burden of classification with a work-horse machine learning algorithm, 
+in this case, a simple Random Forest. This quick and easy algorithm is fast to train, 
+requiring little in the way of computation time, yet accounts for more than 50\% of 
+the overall subject retirement count. 
+
+3. Rapid identification of subjects for which classifications, visual or machine, are
+unrealistic. 
+
+
+-- We demonstrate that even a simplistic and naive machine can still provide a 
+significant boost to classification efficiency without dramatically deteriorating 
+classification quality. Furthermore, simple machines are quick and easy to train. 
 
 -- This doesn't have to be done on the Zooniverse platform. The code is (will be) 
 publicly available and free to use or incorporate as the user sees fit. It can be used
@@ -1087,15 +1120,11 @@ the surge in volunteer classifications at the outset, the more quickly SWAP and
 machine can tackle substantial data sets. 
 
 \section{Acknowledgements}
-NSF Grant
-
-Thesis Research Travel Grant / University of Minnesota
-
-Balzan Fellowship / Oxford Uni
-
-
-
-
+This work is funded by NSF Grant XXXXX. Additional funding was awarded to MB 
+under the University of Minnesota's Thesis Research Travel Grant as well as
+New College and Oxford University's support through a Balzan Junior Visiting 
+Research Fellowship. Partial funding was also supplied through the University of
+Minnesota's Doctoral Dissertation Fellowship awarded to MB. 
 
 
 
@@ -1107,7 +1136,8 @@ Balzan Fellowship / Oxford Uni
 \section{Measuring Morphological Parameters on SDSS Cutouts}
 \label{sec:Appendix}
 
-So we did a LOT of work to measure all that shit. 
+We measure all these things on cleaned postage stamps of SDSS i-band imaging. 
+Images were obtained from DR12. 
 
 
 Concetration measures the ... 
