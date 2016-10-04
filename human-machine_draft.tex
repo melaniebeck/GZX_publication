@@ -147,7 +147,7 @@ about the way dem galaxies be living their lives.
 \begin{figure*}[ht!]
 %\figurenum{1}
 \plotone{figures/GZExpress_schematic_v2.jpg}
-\caption{Schematic of our hybrid system. Human classifiers are shown images of galaxies via the Galaxy Zoo web interface. These  classifications are recorded and processed according to section XXX. As a result of the processing, those subjects whose probabilties cross the classification thresholds are passed to the machine classifier as a training sample. The trained machine is then applied to the remaining subjects in the database (test sample). Those subjects which the machine classifies with high confidence are removed from the sample and considered fully classified. The rest remain in the database to be seen by human classifiers. \label{fig:schematic}}
+\caption{Schematic of our hybrid system. Human classifiers are shown images of galaxies via the Galaxy Zoo web interface. These  classifications are recorded and processed according to section XXX. As a result of the processing, those subjects whose probabilties cross the classification thresholds are passed to the machine classifier as a training sample. The trained machine is then applied to the remaining subjects in the database (test sample). Those subjects which the machine classifies with high confidence are removed from the sample and considered fully classified. The rest remain in the database to be seen by human classifiers. \label{fig: schematic}}
 \end{figure*}
 
 The idea of combing human and machine classifications IS NOT NEW. That shit's
@@ -376,7 +376,7 @@ thresholds and the prior probability of the subject. Specifically, we must choos
 %%%-------------------------------------------------------
 \begin{figure*}[ht!]
 \plotone{figures/GZX_GZ2_comparison_NSFreport2016.png}
-\caption{Simulation of top level GZ2 question reprocessed using the SWAP software only. In shaded grey are the actual number of volunteer votes. The blue shows the cumulative number of retired subjects according to the original GZ2 retirement scheme whereby a subject must achieve forty volunteer votes. The orange and yellow shading represents the cumulative number of retired subjects according to the SWAP retirement system, in that subject probabilities must cross an appropriate threshold for being labeled as having a feature or not. \label{fig:swapresults}}
+\caption{Simulation of top level GZ2 question reprocessed using the SWAP software only. In shaded grey are the actual number of volunteer votes. The blue shows the cumulative number of retired subjects according to the original GZ2 retirement scheme whereby a subject must achieve forty volunteer votes. The orange and yellow shading represents the cumulative number of retired subjects according to the SWAP retirement system, in that subject probabilities must cross an appropriate threshold for being labeled as having a feature or not. \label{fig: swapresults}}
 \end{figure*}
 
 We perform several simulations to explore SWAP performance compared to the
@@ -401,7 +401,7 @@ otherwise it was labeled as `Not'. We note that under this definition, only 512 
 had a majority of `star or artifact' and thus comprise an exceedingly small portion of the
 overall sample. 
 
-Figure \ref{fig:swapresults} shows SWAP subject retirement as a function of GZ2
+Figure \ref{fig: swapresults} shows SWAP subject retirement as a function of GZ2
 project time compared with the original GZ2 retirement scheme. GZ2 retirement was 
 defined as a predetermined number of volunteer classifications. Galaxy Zoo projects
 typically require an average of 40 volunteer classifications for consensus. The blue
@@ -431,11 +431,16 @@ how these figures change when one or more of the SWAP parameters is adjusted.
 \subsection{SWAP Simulation Outcomes}
 
 \textbf{Initial agent confusion matrix.} 
+
+%% -------------------------------------------------------------------------------
+%%   FIGURE:  SWAP -- adjust CONFUSION MATRIX
+%% -------------------------------------------------------------------------------
 \begin{figure}[t!]
 \includegraphics[width=3.5in]{figures/GZX_eval_and_retirement_PLPD_spread_4paper.png}
 \caption{GZX/SWAP output as a function of GZ2 project days for a range of initial
 confusion matrix values.  \label{fig: confusionMatrixAnalysis}}
 \end{figure}
+
 Space Warps agents assigned each volunteer $P(``A"|A), P(``N"|N) = (0.5, 0.5)$, 
 assuming that humans started out no better than random classifiers.  We explored a range
 of initial confusion matrix probabilities. We find that we are largely insensitive to the 
@@ -452,12 +457,16 @@ purity of the classification. The spread is within a couple percentage points fo
 metric. Overall we maintain accuracy around $95\%$, as well as completeness of $99\%$
 while maintaining purity around $84\%$. 
 
-
+%% -------------------------------------------------------------------------------
+%%   FIGURE:  SWAP -- vary SUBJECT PRIOR
+%% -------------------------------------------------------------------------------
 \textbf{Subject prior probability, \p.}
 \begin{figure}[t!]
 \includegraphics[width=3.5in]{figures/GZX_eval_and_retirement_prior_spread_4paper.png}
 \caption{GZX/SWAP output as a function of GZ2 project days for a range of subject prior probabilities.  \label{fig: priorAnalysis}}
 \end{figure}
+
+
 The prior probability assigned to each subject is determined by an educated guess of 
 the frequency of that characteristic in the scope of the data at hand. 
 For galaxy morphologies, this number should be an estimate of the probability
@@ -926,7 +935,7 @@ are both sure signs that the easiest to classify galaxies have been retired leav
 more difficult, if even classifiable, subjects in the queue. 
 
 %%%-------------------------------------------------------
-%%%  FIGURE:    Machine-Only Performance
+%%%  FIGURE:    Machine classifies SHITTIER SUBJECTS
 %%%-------------------------------------------------------
 \begin{figure}[t!]
 \includegraphics[width=3.65in]{figures/GZ2_sup_PLPD5_p5_flipfeature2b_2009-02-25_00:00:00_RF_accuracy_size-mag.png}
@@ -1011,6 +1020,12 @@ That these two curves meet and plateau is a strong indication that this particul
 model is simply unable to adequately reflect the data. A more sophisticated model 
 should instead of used, however, this is beyond the scope of this paper. 
 
+In principle, any desired machine could be used including deep neural networks such 
+as that provided by Google's TensorFlow or Python's Theano. Though the standard 
+complications remain concerning the interpretation of CNNs, crowd-sourcing with
+SWAP provides a convenient and efficient way to quickly accumulate the large training 
+samples that CNNs require.  
+
 
 \subsection{My Vision for GZExpress/Galaxy Classifications}
 Every iteration since the original Galaxy Zoo project has adopted a decision tree
@@ -1071,7 +1086,34 @@ Apply all these performance metrics to the datasets expected from Euclid, LSST, 
 
 \section{Conclusions}
 
-recap all the things. \\
+We outline and test a novel, new system for efficiently classifying galaxy morphologies, 
+a task that will surly prove difficult with the onset of such surveys as LSST, Euclid, 
+and WFIRST. Our system incorporates the native ability of the human mind to identify
+the abstract and novel with machine learning algorithms who provide speed and 
+brute force. These, coupled with a more sophisticated analysis of volunteer votes 
+through SWAP and a decision engine which delegates tasks between human and 
+machine combine to create a classification system which is more than an order of
+magnitude faster than anything presented before. Efficiency is achieved through 
+the dynamic generation in real time of a training sample by human classifiers which
+allows the machine to quickly understand the parameter space. 
+
+Classification efficiency is achieved in three ways: 
+
+1. sophisticated analysis of human visual classifications; reducing the amount of time
+humans would be required to contribute. 
+
+2. Sharing the burden of classification with a work-horse machine learning algorithm, 
+in this case, a simple Random Forest. This quick and easy algorithm is fast to train, 
+requiring little in the way of computation time, yet accounts for more than 50\% of 
+the overall subject retirement count. 
+
+3. Rapid identification of subjects for which classifications, visual or machine, are
+unrealistic. 
+
+
+-- We demonstrate that even a simplistic and naive machine can still provide a 
+significant boost to classification efficiency without dramatically deteriorating 
+classification quality. Furthermore, simple machines are quick and easy to train. 
 
 -- This doesn't have to be done on the Zooniverse platform. The code is (will be) 
 publicly available and free to use or incorporate as the user sees fit. It can be used
@@ -1087,15 +1129,11 @@ the surge in volunteer classifications at the outset, the more quickly SWAP and
 machine can tackle substantial data sets. 
 
 \section{Acknowledgements}
-NSF Grant
-
-Thesis Research Travel Grant / University of Minnesota
-
-Balzan Fellowship / Oxford Uni
-
-
-
-
+This work is funded by NSF Grant XXXXX. Additional funding was awarded to MB 
+under the University of Minnesota's Thesis Research Travel Grant as well as
+New College and Oxford University's support through a Balzan Junior Visiting 
+Research Fellowship. Partial funding was also supplied through the University of
+Minnesota's Doctoral Dissertation Fellowship awarded to MB. 
 
 
 
@@ -1107,7 +1145,8 @@ Balzan Fellowship / Oxford Uni
 \section{Measuring Morphological Parameters on SDSS Cutouts}
 \label{sec:Appendix}
 
-So we did a LOT of work to measure all that shit. 
+We measure all these things on cleaned postage stamps of SDSS i-band imaging. 
+Images were obtained from DR12. 
 
 
 Concetration measures the ... 
