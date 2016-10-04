@@ -147,7 +147,7 @@ about the way dem galaxies be living their lives.
 \begin{figure*}[ht!]
 %\figurenum{1}
 \plotone{figures/GZExpress_schematic_v2.jpg}
-\caption{Schematic of our hybrid system. Human classifiers are shown images of galaxies via the Galaxy Zoo web interface. These  classifications are recorded and processed according to section XXX. As a result of the processing, those subjects whose probabilties cross the classification thresholds are passed to the machine classifier as a training sample. The trained machine is then applied to the remaining subjects in the database (test sample). Those subjects which the machine classifies with high confidence are removed from the sample and considered fully classified. The rest remain in the database to be seen by human classifiers. \label{fig:schematic}}
+\caption{Schematic of our hybrid system. Human classifiers are shown images of galaxies via the Galaxy Zoo web interface. These  classifications are recorded and processed according to section XXX. As a result of the processing, those subjects whose probabilties cross the classification thresholds are passed to the machine classifier as a training sample. The trained machine is then applied to the remaining subjects in the database (test sample). Those subjects which the machine classifies with high confidence are removed from the sample and considered fully classified. The rest remain in the database to be seen by human classifiers. \label{fig: schematic}}
 \end{figure*}
 
 The idea of combing human and machine classifications IS NOT NEW. That shit's
@@ -376,7 +376,7 @@ thresholds and the prior probability of the subject. Specifically, we must choos
 %%%-------------------------------------------------------
 \begin{figure*}[ht!]
 \plotone{figures/GZX_GZ2_comparison_NSFreport2016.png}
-\caption{Simulation of top level GZ2 question reprocessed using the SWAP software only. In shaded grey are the actual number of volunteer votes. The blue shows the cumulative number of retired subjects according to the original GZ2 retirement scheme whereby a subject must achieve forty volunteer votes. The orange and yellow shading represents the cumulative number of retired subjects according to the SWAP retirement system, in that subject probabilities must cross an appropriate threshold for being labeled as having a feature or not. \label{fig:swapresults}}
+\caption{Simulation of top level GZ2 question reprocessed using the SWAP software only. In shaded grey are the actual number of volunteer votes. The blue shows the cumulative number of retired subjects according to the original GZ2 retirement scheme whereby a subject must achieve forty volunteer votes. The orange and yellow shading represents the cumulative number of retired subjects according to the SWAP retirement system, in that subject probabilities must cross an appropriate threshold for being labeled as having a feature or not. \label{fig: swapresults}}
 \end{figure*}
 
 We perform several simulations to explore SWAP performance compared to the
@@ -401,7 +401,7 @@ otherwise it was labeled as `Not'. We note that under this definition, only 512 
 had a majority of `star or artifact' and thus comprise an exceedingly small portion of the
 overall sample. 
 
-Figure \ref{fig:swapresults} shows SWAP subject retirement as a function of GZ2
+Figure \ref{fig: swapresults} shows SWAP subject retirement as a function of GZ2
 project time compared with the original GZ2 retirement scheme. GZ2 retirement was 
 defined as a predetermined number of volunteer classifications. Galaxy Zoo projects
 typically require an average of 40 volunteer classifications for consensus. The blue
@@ -431,11 +431,16 @@ how these figures change when one or more of the SWAP parameters is adjusted.
 \subsection{SWAP Simulation Outcomes}
 
 \textbf{Initial agent confusion matrix.} 
+
+%% -------------------------------------------------------------------------------
+%%   FIGURE:  SWAP -- adjust CONFUSION MATRIX
+%% -------------------------------------------------------------------------------
 \begin{figure}[t!]
 \includegraphics[width=3.5in]{figures/GZX_eval_and_retirement_PLPD_spread_4paper.png}
 \caption{GZX/SWAP output as a function of GZ2 project days for a range of initial
 confusion matrix values.  \label{fig: confusionMatrixAnalysis}}
 \end{figure}
+
 Space Warps agents assigned each volunteer $P(``A"|A), P(``N"|N) = (0.5, 0.5)$, 
 assuming that humans started out no better than random classifiers.  We explored a range
 of initial confusion matrix probabilities. We find that we are largely insensitive to the 
@@ -452,12 +457,16 @@ purity of the classification. The spread is within a couple percentage points fo
 metric. Overall we maintain accuracy around $95\%$, as well as completeness of $99\%$
 while maintaining purity around $84\%$. 
 
-
+%% -------------------------------------------------------------------------------
+%%   FIGURE:  SWAP -- vary SUBJECT PRIOR
+%% -------------------------------------------------------------------------------
 \textbf{Subject prior probability, \p.}
 \begin{figure}[t!]
 \includegraphics[width=3.5in]{figures/GZX_eval_and_retirement_prior_spread_4paper.png}
 \caption{GZX/SWAP output as a function of GZ2 project days for a range of subject prior probabilities.  \label{fig: priorAnalysis}}
 \end{figure}
+
+
 The prior probability assigned to each subject is determined by an educated guess of 
 the frequency of that characteristic in the scope of the data at hand. 
 For galaxy morphologies, this number should be an estimate of the probability
@@ -926,7 +935,7 @@ are both sure signs that the easiest to classify galaxies have been retired leav
 more difficult, if even classifiable, subjects in the queue. 
 
 %%%-------------------------------------------------------
-%%%  FIGURE:    Machine-Only Performance
+%%%  FIGURE:    Machine classifies SHITTIER SUBJECTS
 %%%-------------------------------------------------------
 \begin{figure}[t!]
 \includegraphics[width=3.65in]{figures/GZ2_sup_PLPD5_p5_flipfeature2b_2009-02-25_00:00:00_RF_accuracy_size-mag.png}
