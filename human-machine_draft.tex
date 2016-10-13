@@ -505,6 +505,15 @@ by initializing batches of subjects with various (though intelligently chosen) \
 discover, in real time, which value precisely maximizes output and performance. 
 
 
+%% -------------------------------------------------------------------------------
+%%   FIGURE:  SWAP -- Retirement Thresholds
+%% -------------------------------------------------------------------------------
+\begin{figure}[t!]
+\includegraphics[width=3.5in]{figures/GZX_ROC_sup_PLPD5_p5_flipfeature2b_norandom2_9.png}
+\caption{Retirement thresholds are adequate for our purposes.  \label{fig: retirement thresholds}}
+\end{figure}
+
+
 \textbf{Retirement thresholds.}
 The Space Warps project set their retirement thresholds equidistant in logspace. 
 Their prior was significantly small to begin with as lenses are expected to be very rare.
@@ -527,6 +536,52 @@ Retiring subjects through traditional means requires nearly $2.5\times10^6$
 volunteer votes to retire 60K subjects while SWAP requires only $4\times10^5$, 
 \textbf{an order of magnitude reduction in human effort!} We now turn towards
 our implementation of a supervised machine to further classification efficiency. 
+
+\subsection{What does SWAP get wrong?}
+%%%-------------------------------------------------------
+%%%  FIGURE:   SWAP vote distributions
+%%%-------------------------------------------------------
+\begin{figure}[t!]
+\includegraphics[width=3.65in]{figures/clicks_till_retirement_GZ2_sup_PLPD5_p5_flipfeature2b_10.png}
+\caption{SWAP vote distributions are totally sick. \textbf{Make this a gif in the online journal version! Cuz it's super cool and stuff. }\label{fig: swap vote distributions}}
+\end{figure}
+
+%%%-------------------------------------------------------
+%%%  FIGURE:   SWAP failures
+%%%-------------------------------------------------------
+\begin{figure*}[t!]
+\plotone{figures/incorrect_subjects_sup_PLPD5_p5_flipfeature2b_norandom2.png}
+\caption{Why and when does SWAP fail?  \label{fig: SWAP sucks}}
+\end{figure*}
+
+\textbf{What does SWAP get wrong? Why? }
+Galaxy Zoo's strength comes, in part, from
+the consensus of dozens of volunteers voting on each subject. Processing votes
+with SWAP effectively reduces the consensus to its bare mininum. Though we typically
+are able to recover the original GZ2 class label, that is not alway the case. Of those 
+subjects that fail, a small portion of them are due to unlikely ordering of volunteer
+votes. We found \%?? of subjects in which the first N volunteers classified them as X, 
+yet the next 2*N classified them as Y. Thus, the majority class label given to the subject 
+in GZ2 will be Y, but SWAP will yield a class label of X because it processes only a fraction
+of the votes that GZ2 does. This is one of the ways SWAP increases efficiency but at a 
+small price. We can see this in Fig~\ref{fig: swap vote distributions}
+
+
+To prevent this, one could a.) require each user classify a certain number of subjects
+to smooth out their burn-in phase thus yielding a better-trained visual classifier, 
+b.) require each subject reach a bare minimum of classifications before allowing 
+it's probability to reach a threshold. The difference between waiting out a user's burn-in 
+phase versus a subject's burn-in phase.
+The latter is preferable as the majority of Zooniverse volunteers contribute only 
+a small amount of classifications to any given project. Requiring they achieve a 
+minimum classification count before assessing their data would hamstring
+the effectiveness of the citizen science ethos. 
+
+Another way that SWAP fails to match with the GZ2 label is through the classification
+of subjects which are ``on the edge". These subjects receive between 40-60\% vote 
+fractions as assessed by GZ2. When GZ2 is unsure about a subject, SWAP isn't sure either
+
+
 
 
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -855,48 +910,9 @@ simply provide too little information for robust classification. This knowledge,
 with the fast classification rate will enable large scale surveys to efficiently and effectively
 tackle morphological classification tasks. 
 
-%%%-------------------------------------------------------
-%%%  FIGURE:   SWAP vote distributions
-%%%-------------------------------------------------------
-\begin{figure}[t!]
-\includegraphics[width=3.65in]{figures/clicks_till_retirement_GZ2_sup_PLPD5_p5_flipfeature2b_10.png}
-\caption{SWAP vote distributions are totally sick. \textbf{Make this a gif in the online journal version! Cuz it's super cool and stuff. }\label{fig: swap vote distributions}}
-\end{figure}
-
-%%%-------------------------------------------------------
-%%%  FIGURE:   SWAP failures
-%%%-------------------------------------------------------
-\begin{figure*}[t!]
-\plotone{figures/incorrect_subjects_sup_PLPD5_p5_flipfeature2b_norandom2.png}
-\caption{Why and when does SWAP fail?  \label{fig: SWAP sucks}}
-\end{figure*}
-
-\textbf{What does SWAP get wrong? Why? }
-Galaxy Zoo's strength comes, in part, from
-the consensus of dozens of volunteers voting on each subject. Processing votes
-with SWAP effectively reduces the consensus to its bare mininum. Though we typically
-are able to recover the original GZ2 class label, that is not alway the case. Of those 
-subjects that fail, a small portion of them are due to unlikely ordering of volunteer
-votes. We found \%?? of subjects in which the first N volunteers classified them as X, 
-yet the next 2*N classified them as Y. Thus, the majority class label given to the subject 
-in GZ2 will be Y, but SWAP will yield a class label of X because it processes only a fraction
-of the votes that GZ2 does. This is one of the ways SWAP increases efficiency but at a 
-small price. We can see this in Fig~\ref{fig: swap vote distributions}
 
 
-To prevent this, one could a.) require each user classify a certain number of subjects
-to smooth out their burn-in phase thus yielding a better-trained visual classifier, 
-b.) require each subject reach a bare minimum of classifications before allowing 
-it's probability to reach a threshold. The difference between waiting out a user's burn-in 
-phase versus a subject's burn-in phase.
-The latter is preferable as the majority of Zooniverse volunteers contribute only 
-a small amount of classifications to any given project. Requiring they achieve a 
-minimum classification count before assessing their data would hamstring
-the effectiveness of the citizen science ethos. 
 
-Another way that SWAP fails to match with the GZ2 label is through the classification
-of subjects which are ``on the edge". These subjects receive between 40-60\% vote 
-fractions as assessed by GZ2. When GZ2 is unsure about a subject, SWAP isn't sure either
 and the SWAP class label will instead depend on the skill and confusion matrix of the 
 volunteers who contribute to that subject. For example, a subject which GZ2 labels as 
 `Smooth' with a smooth vote fraction of 0.6 can end up classified by SWAP as being `Featured'. 
@@ -1016,6 +1032,7 @@ model is not fixed for each night of training, though the range of hyperparamete
 found does not vary drastically. \textbf{My Prediction:} As in the example shown
 in Fig~\ref{fig: other figure}, we see that the cross-validation score increases as a
 function of training sample size (which is a proxy for project time) while the training score decreases. 
+
 That these two curves meet and plateau is a strong indication that this particular
 model is simply unable to adequately reflect the data. A more sophisticated model 
 should instead of used, however, this is beyond the scope of this paper. 
@@ -1076,14 +1093,13 @@ techniques could lend additional benefits.
 
 
 \section{Implications for Future Surveys}
-
-We've now identified several ways to suss out those subjects which require 
+We've now identified several ways to suss out those subjects which require
 additional intervention. If SWAP can't classify it, then potentially these subjects 
 should be diverted to experts. If a machine can't classify it, then those subjects
 can be relegated back to humans. Thus we have a cute little chain of command!
 
-Apply all these performance metrics to the datasets expected from Euclid, LSST, etc. Estimate reduction in classification time. 
-
+Apply all these performance metrics to the datasets expected from Euclid, LSST, etc. 
+Estimate reduction in classification time. 
 \section{Conclusions}
 
 We outline and test a novel, new system for efficiently classifying galaxy morphologies, 
