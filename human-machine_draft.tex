@@ -808,106 +808,79 @@ Where $f_i$ is the $i$th subject's feature value, $\mu$ is the mean of the entir
 \subsection{Training and Validation Samples}
 We are now ready to discuss the training sample in more detail. As we showed in the previous 
 section, SWAP retires subjects far more rapidly than GZ2
-by adaptively tracking volunteer skill and subject probabilities. This provides us
-with a way of quickly generating large subject samples with accurate
-labels provided by human classifications. These retired subjects are the basis of the 
-machine's training sample which is dynamically generated as a function
-of project time according to figure~\ref{fig: fiducial run}. For the following
-analysis we again build off of our fiducial model where, within 10 days,
-SWAP has accumulated ~20K 
-subjects which can form the basis for machine training. 
+by adaptively tracking volunteer skill and subject probabilities in a Bayesian framework.
+This provides us with a way of quickly generating large subject samples with accurate
+labels provided by human classifications that are dynamically generated as a function
+of GZ2 project time. For the following analysis we again build
+off of our fiducial model where, according to figure~\ref{fig: fiducial run},
+SWAP retires XXX subjects within 10 days. 
 
-As discussed above, in addition to a training sample we also need a validation 
+As discussed above, in addition to a training sample we also desire a validation 
 sample to estimate the generalization (true) error of our trained machine. For 
 this purpose we maximize the utility of our expertly classified sample. This sample
 thus provides training to our volunteers and verification for our machine. 
 
 \subsection{Decision Engine}\label{sec: decision engine}
 A number of decisions must be made before attempting to train the machine. 
-Which SWAP subjects should be included in the training sample? 
-What should be the minimum number of training subjects before a first attempt?
-When should the trained machine be applied to our test sample, i.e. subjects
-in the dataset which have not yet been seen? 
+Which SWAP subjects should be designated as the training sample? 
+When should we attempt the first training session? 
+How do we decide when the machine has successfully trained enough to be
+applied to unseen subjects? These are the core issues that we address
+in our machine learning decision engine.
 
 \textbf{Which subjects should provide the training sample?} As mentioned above, SWAP
-yields a probability that a subject exhibits the feature of choice. With a 
-different choice of machine, one could incorporate every subject with the
-whole spectrum of probabilities as input labels. However, an RF requires a
-distinct label and thus we use only those subjects which have crossed either
-the detection or rejection thresholds and are thus most likely to be `Featured`
-or `Not`.  However, subjects do not cross these thresholds  with equal likelihood. 
-At any given stage in the simulation, the balance of `Featured` to `Not` is not
-guaranteed to be even. This would then provide an unbalanced training sample
-which could hamper the learning process. However, as a first test, we allow
-the machine to learn on all high probability subjects. 
+yields a probability that a subject exhibits the feature of choice. A RF requires a
+distinct label so we use only those subjects which have crossed either of the 
+retirement thresholds. However, subjects do not cross these thresholds with equal rates. 
+At any given stage in the simulation, the ratio of retired~\feat~to~\notfeat~is not
+guaranteed to be balanced, thus yielding an unbalanced training sample.
+ However, as a first test, we allow the machine to learn on all high probability subjects. 
 
-\textbf{What should be the minimum number of training subjects before a first attempt at training?}
-On the first few days in the simulation, SWAP retires a few hundred subjects.
-Though one can, in principle, train a machine with such a small sample, the resulting
+\textbf{When should we attempt the first training session?}
+During the couple days of the simulation, SWAP retires a few hundred subjects.
+One could, in principle, train a machine with such a small sample, but the resulting
 predictions on the test sample will be exceptionally poor. Furthermore, the machine
-won't know that is performing poorly. For example, if a training sample of 100 `Featured`
-subjects is provided, the machine will `learn` and predict that every member of the 
-test sample is also `Featured` with high probability. This is obviously wrong. 
+won't know that it's performing poorly. For example, if a training sample consists of
+100~\feat~subjects, the machine will subsequently predict that every member of the 
+test sample is also~\feat~with high probability. This is obviously wrong. 
 In practice, a much larger training size is required for the machine to learn the 
-true parameter space in which the feature vectors reside. Because RF is a simple
-model, we initially require that the training sample consist of at least 10K subjects
-before attempting the first training session. 
+true parameter space in which the feature vectors reside, but there is no hard rule
+for choosing this number. Because RF is a simple model, we initially require that 
+the training sample consist of at least 10K subjects before attempting the first training session. 
 
-\textbf{When should the trained machine be applied to the test sample?} Again, there is
-no magic size that a training sample should be before attempting classification
-of the test sample. We instead attempt to assess the machine's learning
-before applying it to the test sample. We do this by considering the machine's
-learning curve, which illustrates a model's performance with 
-increasing sample size for fixed model complexity. An example is shown in \textbf{Fig XXX}
-for an RF with fixed hyperparameters. The cross-validation score is the accuracy
+\textbf{When has the machine trained enough?} 
+We assess our machine's learning status by first considering a learning curve, 
+an illustration of a model's performance with increasing sample size for fixed 
+model complexity. An example is shown in \textbf{Fig XXX} 
+for a RF with fixed hyperparameters. The cross-validation score is the accuracy
 resulting from k-fold cross-validation. The training score is the resulting machine
 applied to the training sample. When the sample size is small, the cross-validation
 score is low while the training score is high. This is a clear demonstration of a model
 overfitting the data. As the training sample size 
 increases, the cross-validation score increases while the training score decreases. 
-Eventually both plateau, regardless of how large the training sample grows. This 
-demonstrates that, after a certain point, for a fixed complexity model, the accuracy
-of the method will plateau and larger training sets yield little gain. That the training
+Eventually both plateau, regardless of how large the training sample grows. 
+This demonstrates that, after a certain point, for a fixed complexity model, 
+larger training sets yield little additional gain. That the training
 score reduces almost to the cross-validation score signifies that this particular
 model is not well suited to capturing the complexity of the data set. 
 A more sophisticated model would, in turn, likely require a larger training
 sample. 
 
-We use this general feature of any machine learning process to help guide our 
-decision making process. We technically cannot reproduce a true learning curve
-because the cross-validation procedure can, in principle and in practice, yield a
-different set of machine hyperparameters that are most appropriate for the training
-sample delivered to it that "night".  Instead, we look for the characteristic 
-cross-validation score plateau. At each timestep, a record of the machine's 
-training is kept including its performance on the current training sample, 
-cross-validation score, and the best hyperparameters. When the machine's 
-cross-validations score remains within a 1\% range on three concurrent runs, 
-we deem the machine is as learned as it will be for the simple model we have 
-supplied. At this point the trained machine is then applied to the test sample. 
-
-
-\begin{comment}
-The machine is allowed to learn at each timestep. Thus, the machine classifier will 
-have some some number, N, of training galaxies. K-fold cross-validation is performed
-at each time step to determine optimal hyperparameters. The machine is then trained 
-with the optimal parameters and is applied to the validation sample. 
-A slew of performance metrics are recorded including the validation accuracy, 
-completeness, and contamination. This process repeats at each time step until 
-the machine has learned all it can. This requires some discussion.  While it is
-true that increasing the sample size will, in general, increase the optimal performance 
-of the machine, this behavior eventually reaches a plateau. In order to judge our 
-machine as being `fully learned`, we  implement a learning criterion, which 
-considers the growing history of the machine's learning and judges the machine
-learned after its accuracy varies by less than 1\% over the course of 3 consecutive
-timesteps. We will discuss how varying this criterion changes the outcome of the 
-classification results. 
-\end{comment}
-
-
+We use this general feature of any machine learning process to guide our 
+decision making process. We cannot reproduce a true learning curve
+because the cross-validation procedure we perform can, in principle and in practice, 
+yield a different set of machine hyperparameters that are most appropriate
+for the training sample it receive that night.  Instead, we look for the characteristic 
+cross-validation score plateau. At each timestep, our software keeps record of 
+the machine's training performance, including how well it scores on the 
+training sample (to estimate overfitting), cross-validation score, 
+and the best hyperparameters. When the machine's 
+cross-validations score remains within 1\% on three consecutive nights, 
+we deem the machine has learned all it can for being the simple model that it is. 
 
 Once the machine has been fully trained, it is then applied to the test sample. 
 In this case, the test sample is any subject which has either not reached retirement
-through the SWAP processing, or is not part of the validation sample. Since the 
+through SWAP, or is not part of the validation sample. Since the 
 total number of subjects in GZ2 is XXX, the validation sample comprises XXX, 
 the initial training sample is 10K, thus the first test sample contains XXX subjects. 
 The test sample decreases as a function of project time in tandem with the increasing
