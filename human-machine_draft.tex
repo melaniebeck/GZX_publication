@@ -705,21 +705,23 @@ classifiers utilizing these SWAP-retired subjects as training samples.
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
 \section{Efficiency through incorporation of machine classifiers} \label{sec:machine}
 
-Supervised learning is the machine learning task of inference from labeled 
-training data. The training data consist of a set of training examples, including
-an input (feature) vector and a desired output (or label).  Generally speaking,
+In this section we construct the full Galaxy Zoo Express by incorporating supervised 
+learning, the machine learning task of inference from labeled training data. 
+The training data consist of a set of training examples, and must include
+an input feature vector and a desired output label.  Generally speaking,
 a supervised learning algorithm analyzes the training data and produces an inferred 
 function that can then be mapped to new examples. An optimized algorithm will 
 correctly determine class labels for unseen data. In general, most classification 
 algorithms can handle prediction of several labels simultaneously. Work has been
 done to predict the entirety of GZ2 classification labels using deep learning 
 \citep{Dieleman2015} with great success. However, it is still simpler for a machine
-to predict fewer labels than it is to predict several dozen. \textbf{[citation?]} 
-Fortunately, by handling individual features and processing human classifications
-through SWAP, we arrive with a discrete, binary task for a machine to tackle.
-However, in the future we will explore more sophisticated algorithms which 
-are optimized to handle a input continuum since the actual output of SWAP
-is a smoothly ranging probability for each subject. 
+to predict fewer labels than it is to predict several dozen, \textbf{[citation?]}, 
+with the additional bonus that fewer class labels require less training data. 
+By processing human classifications through SWAP we obtain a discrete, binary task
+for a machine to tackle. We briefly outline the technical details of our machine
+classifier before turning towards the decision engine we develop for GZX in 
+section~\ref{sec: decision engine}. 
+
 
 \subsection{Random Forests}
 Because our task is simple, we choose a simple machine. In particular, we use 
@@ -762,11 +764,12 @@ specified hyperparameter space and values that optimize the output are choosen.
 Machine learning algorithms require a feature vector for each training example. 
 This vector is composed of D individual numeric quantities associated with the 
 subject which the machine will use to discern that subject from others in the 
-training sample. To segregate `Featured` from `Not` our feature set draws 
+training sample. To segregate~\feat~from~\notfeat~our feature set draws 
 on ZEST \citep{Scarlata2007} and  is composed of Concentration, Asymmetry, Gini, 
-M20 and ellipticity (See Appendix \ref{sec:Appendix} for details concerning the 
-measurement process). These non-parametric indicators have long been used to 
-quantify galaxy morphology in an automated fashion \textbf{citations: Peth? Huertas-company?}. 
+M$_{20}$ and Source Extractor's ellipticity 
+(See Appendix \ref{sec:Appendix} for details concerning the measurement process). 
+These non-parametric indicators have long been used to 
+quantify galaxy morphology in an automated fashion \textbf{citations: Conselice? Peth? Huertas-company?}. 
 Altogether, these features describe a five dimensional parameter space in 
 which the machine attempts to distinguish between the two classes. 
 As the RF algorithm is capabale of handling high-dimensional parameter spaces, in
@@ -774,8 +777,8 @@ a future paper we will explore increasing our feature space to include parametri
 morphology indicators such as Sersic index and B/T ratio. 
 
 Another benefit of the RF algorithm is the flexibility with which it can accept input 
-features. Most algorithms require that feature vectors be processed so as to all 
-be on the same scale or between 0 and 1. This is not necessary with an RF. The only
+features. Most algorithms require that feature vectors be processed suth that all 
+dimensions lie on the same scale. This is not necessary with an RF. The only
 preprocessing required in our case is the removal of morphological paramters which
 were not well-measured, i.e. catastrophic failures. 
 
@@ -801,14 +804,17 @@ z_{feature} = \frac{f_i - \mu}{\sigma}
 Where $f_i$ is the $i$th subject's feature value, $\mu$ is the mean of the entire feature sample, and $\sigma$ is the standard deviation of the entire feature sample. This scales each feature to values between 0 and 1. 
 \end{comment}
 
+
 \subsection{Training and Validation Samples}
-We are now ready to discuss the training sample. As we showed in the previous 
+We are now ready to discuss the training sample in more detail. As we showed in the previous 
 section, SWAP retires subjects far more rapidly than GZ2
 by adaptively tracking volunteer skill and subject probabilities. This provides us
-with a way of quickly generating considerably large subject samples with accurate
+with a way of quickly generating large subject samples with accurate
 labels provided by human classifications. These retired subjects are the basis of the 
-machine's training sample. That training sample is dynamically generated as a function
-of project time. Specifically, within 10 days, SWAP has accumulated ~20K 
+machine's training sample which is dynamically generated as a function
+of project time according to figure~\ref{fig: fiducial run}. For the following
+analysis we again build off of our fiducial model where, within 10 days,
+SWAP has accumulated ~20K 
 subjects which can form the basis for machine training. 
 
 As discussed above, in addition to a training sample we also need a validation 
@@ -816,7 +822,7 @@ sample to estimate the generalization (true) error of our trained machine. For
 this purpose we maximize the utility of our expertly classified sample. This sample
 thus provides training to our volunteers and verification for our machine. 
 
-\subsection{Decision Engine}
+\subsection{Decision Engine}\label{sec: decision engine}
 A number of decisions must be made before attempting to train the machine. 
 Which SWAP subjects should be included in the training sample? 
 What should be the minimum number of training subjects before a first attempt?
