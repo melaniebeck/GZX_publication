@@ -1,32 +1,33 @@
 # human_machine_paper
 
 #Fig Description					LateX label
-#------------------------------------------------------------------------------
-GZ Express Schematic			fig: schematic
-SWAP Fiducial model				fig: fiducial run
-SWAP; vary conf matrix			fig: confusionMatrixAnalysis
-SWAP; vary prior				fig: priorAnalysis
-GZX performance					fig: money
-SWAP vote distributions			fig: swap vote distributions
-SWAP FAILED						fig: SWAP sucks
-Machine only performance		fig: machine accuracy
-Machine classifies shit 		fig: machine classified
-ROC curve                       fig: retirement thresholds
+-----
+1. GZ Express Schematic			    fig: schematic
+2. volunteer probs                  fig: volunteer training
+2. SWAP Fiducial model				fig: fiducial run
+6. SWAP vote distributions			fig: swap vote distributions
+3. SWAP; vary conf matrix			fig: confusionMatrixAnalysis
+4. SWAP; vary prior				    fig: priorAnalysis
+10. ROC curve                       fig: retirement thresholds
+7. SWAP disagrees with GZ2			fig: SWAP sucks
+5. GZX performance					fig: money
+8. Machine only performance		    fig: machine accuracy
+9. Machine classifies shit 		    fig: machine classified
 
 
 # Needed Figures
-Machine Learning Curve -- justify "learned" decision
-Machine FAILS on what?
-Machine training/learning performance
+1. Machine Learning Curve -- justify "learned" decision
+2. Machine FAILS on what?
+3. Machine training/learning performance
 
 
 # Figures that need desparate tweaking
-~~The Horrible GZ Express "Schematic": this is all kinds of bad~~
-~~SWAP fiducial model: "GZExpress" = "SWAP"~~
-~~SWAP vote distributions: Need to verify these are even from the correct simulation~~
-~~SWAP FAILED: this whole thing is hideous~~
-Machine only performance: X axis is incorrect -- those are dates; not days!
-Show that the UNCLASSIFIED don't have a strong peak anywhere in probability space 
+1. ~~The Horrible GZ Express "Schematic": this is all kinds of bad~~
+2. ~~SWAP fiducial model: "GZExpress" = "SWAP"~~
+3. ~~SWAP vote distributions: Need to verify these are even from the correct simulation~~
+4. ~~SWAP FAILED: this whole thing is hideous~~
+5. Machine only performance: X axis is incorrect -- those are dates; not days!
+6. Show that the UNCLASSIFIED don't have a strong peak anywhere in probability space \\
     (i.e. changing the p_machine from 0.9 won't really help a lot)
 
 # Why do you need a machine at all?
