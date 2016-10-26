@@ -170,21 +170,53 @@ supervised machine learning algorithm black box which I'll actually explain.
 And out will pop some sweet classifications! 
 
 With all that said, start the paper! Section blah will be the components of the method. Section blah will be detail about post-processing visual classifications. Section blah will be about the machine algorithm. Section blah will be testing the method in various circumstances. Section blah will be results. Section blah will be Discussion/Conclusions. 
-What sections do we want? 
 
 
 
 
-\section{Overview of the Method?}
-Any system combining human and machine classifications will have a set of generic features which we must replicate.
 
-First, a set of humans willing to classify data on request. We will simulate this using a database of classifications from the Galaxy Zoo project which we can draw on at will. These classifications are processed by a Bayesian code first developed for the Space Warps project (SWAP).
+\section{Galaxy Zoo Express Overview}
+Any system combining human and machine classifications will have a set of generic features 
+which we must replicate: a group of human classifiers, at least one machine classifier, and a 
+decision engine which determines how these classifications should be combined. 
+In Galaxy Zoo Express (GZX) we combine humans and machines in series such that the 
+subjects humans classify provide the training sample a machine requires in order to learn. 
+The goal of GZX is to increase the efficiency of galaxy morphology classification both
+in terms of the rate of classification over time, and in the amount of human effort required 
+without sacrificing the quality of classification. 
+We present a schematic of GZX in figure~\ref{fig: schematic} and briefly outline 
+our method here. This schematic includes significant section numbers and the savvy 
+reader is encouraged to skip to their section of interest after reading section~\ref{sec: data}.
 
-Secondly, we need a machine classifier; for this project, we have developed a random forest classifier using easily measured physical parameters such as CAS and Gini as input. See Section X for details.
 
-Thirdly, we will need to make decisions about how the two sets of classifications are combined. After a batch of (human) classifications is processed, then the machine will be trained and its performance assessed against a validation sample. This process is repeated and the machine will grow in accuracy as the size of the training sample increases. Once the machine reaches some acceptable level of performance it is run against the remaining galaxy sample. Images reliably classified by machine are not further classified by humans.
+We first simulate human classifiers using a database of classifications 
+(described in section~\ref{sec: data}) from the Galaxy Zoo 2 (GZ2) project which
+we can draw on at will. We increase the classification rate and decrease the 
+required human effort by processing these classification using a Bayesian code first 
+developed for the Space Warps project (SWAP) described in section~\ref{sec: SWAP}.
+These subjects become the basis for the machine's training sample. 
 
-Even with this simple description, one can see that classification will proceed in three phases. At first, the machine will not reach the acceptable level of performance and the only galaxies retired from classified are those for which human classifiers have reached consensus. Secondly, the machine will rapidly improve and both human and machine classifiers will be responsible for image retirement. Finally, improvement in the machine performance will slow, and the remaining images will need to be classified by humans. Working in this allows even moderately successful machine learning routines to be used alongside human classifiers and removes the need for ever-increasing performance in machine classification.
+In section~\ref{sec: machine} we incorporate a machine classifier; where, for this
+project, we have developed a random forest classifier which trains on easily measured 
+physical parameters such as Concentration, Asymmetry, Gini coefficient and M$_{20}$ as input. 
+After a batch of (human) classifications is processed,  the machine is trained and 
+its performance assessed against a validation sample. This procedure is repeated and 
+the machine will grow in accuracy as the size of the training sample increases (to a point). 
+Once the machine reaches an acceptable level of performance it is run against the 
+remaining galaxy sample. Images reliably classified by machine are not further classified by humans.
+
+Even with this simple description, one can see that the classification process 
+will progress in three phases. At first, the machine will not yet have reached the 
+acceptable level of performance and the only galaxies retired from classification
+ are those for which human classifiers have reached consensus. 
+Secondly, the machine will rapidly improve and both humans and machine will be 
+responsible for image retirement. Finally, improvement in the machine performance 
+will slow and the remaining images will likely need to be classified by humans (if they can be 
+classified at all). These results are explored in section~\ref{sec: results}. 
+This blueprint allows even moderately successful machine learning 
+routines to be used alongside human classifiers and removes the need for 
+ever-increasing performance in machine classification.
+
 
 
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -714,7 +746,7 @@ classifiers utilizing these SWAP-retired subjects as training samples.
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
 %%   INTEGRATING MACHINE CLASSIFIERS 
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
-\section{Efficiency through incorporation of machine classifiers} \label{sec:machine}
+\section{Efficiency through incorporation of machine classifiers} \label{sec: machine}
 
 In this section we construct the full Galaxy Zoo Express by incorporating supervised 
 learning, the machine learning task of inference from labeled training data. 
@@ -956,7 +988,7 @@ providing the machine with a larger sample space in which to learn.
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
 %%   RESULTS 
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
-\section{Results}
+\section{Results} \label{sec: results}
 How well does the overall human/machine system perform together? 
 
 When does the machine kick in? How quickly does it learn? 
