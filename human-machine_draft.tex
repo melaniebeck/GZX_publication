@@ -176,24 +176,23 @@ With all that said, start the paper! Section blah will be the components of the 
 
 
 \section{Galaxy Zoo Express Overview}
-Any system combining human and machine classifications will have a set of generic features 
-which we must replicate: a group of human classifiers, at least one machine classifier, and a 
-decision engine which determines how these classifications should be combined. 
-In Galaxy Zoo Express (GZX) we combine humans and machines in series such that the 
-subjects humans classify provide the training sample a machine requires in order to learn. 
-The goal of GZX is to increase the efficiency of galaxy morphology classification both
-in terms of the rate of classification over time, and in the amount of human effort required 
-without sacrificing the quality of classification. 
-We present a schematic of GZX in figure~\ref{fig: schematic} and briefly outline 
-our method here. This schematic includes significant section numbers and the savvy 
-reader is encouraged to skip to their section of interest after reading section~\ref{sec: data}.
+In Galaxy Zoo Express (GZX) we combine humans and machines with the goal of 
+increasing galaxy morphology classification efficiency, both in terms of the rate 
+of classification over time and in the amount of human effort required. 
+Figure~\ref{fig: schematic} presents a schematic of GZX which includes section 
+numbers as a shortcut for the savvy reader. We note that transparent portions
+ of the schematic represent areas of future work which we explore in section~\ref{sec: visions}. 
+
+Any system combining human and machine classifications will have a set of generic 
+features: a group of human classifiers, at least one machine classifier, and a 
+decision engine which determines how these classifications should be combined.
 
 
-We first simulate human classifiers using a database of classifications 
-(described in section~\ref{sec: data}) from the Galaxy Zoo 2 (GZ2) project which
-we can draw on at will. We increase the classification rate and decrease the 
-required human effort by processing these classification using a Bayesian code first 
-developed for the Space Warps project (SWAP) described in section~\ref{sec: SWAP}.
+We draw from the Galaxy Zoo 2 (GZ2) classification database which allows us to 
+ create simulations of human classifiers (described in section~\ref{sec: data}).
+These classifications are used most effectively when processed with SWAP, 
+a Bayesian code described in  section~\ref{sec: SWAP}, first developed for the 
+Space Warps gravitational lens discovery project. 
 These subjects become the basis for the machine's training sample. 
 
 In section~\ref{sec: machine} we incorporate a machine classifier; where, for this
@@ -201,21 +200,21 @@ project, we have developed a random forest classifier which trains on easily mea
 physical parameters such as Concentration, Asymmetry, Gini coefficient and M$_{20}$ as input. 
 After a batch of (human) classifications is processed,  the machine is trained and 
 its performance assessed against a validation sample. This procedure is repeated and 
-the machine will grow in accuracy as the size of the training sample increases (to a point). 
+the machine grows in accuracy as the size of the training sample increases (to a point). 
 Once the machine reaches an acceptable level of performance it is run against the 
 remaining galaxy sample. Images reliably classified by machine are not further classified by humans.
 
 Even with this simple description, one can see that the classification process 
 will progress in three phases. At first, the machine will not yet have reached the 
-acceptable level of performance and the only galaxies retired from classification
+acceptable level of performance and the only subjects classified
  are those for which human classifiers have reached consensus. 
 Secondly, the machine will rapidly improve and both humans and machine will be 
-responsible for image retirement. Finally, improvement in the machine performance 
+responsible for classification. Finally, improvement in the machine performance 
 will slow and the remaining images will likely need to be classified by humans (if they can be 
 classified at all). These results are explored in section~\ref{sec: results}. 
 This blueprint allows even moderately successful machine learning 
-routines to be used alongside human classifiers and removes the need for 
-ever-increasing performance in machine classification.
+routines to make significant contributions alongside human classifiers and 
+removes the need for ever-increasing performance in machine classification.
 
 
 
@@ -227,21 +226,24 @@ ever-increasing performance in machine classification.
 Our simulations utilize original classifications made by volunteers during the GZ2 project. 
 These data are described in detail in~\cite{Willett2013} though we provide a brief overview here.  
 The GZ2 subject sample was designed to consist of the brightest 25\% ($r$ band magnitude $< 17$) 
-of resolved galaxies residing in the SDSS North Galactic Cap region from Data Release 7 
+of galaxies residing in the SDSS North Galactic Cap region from Data Release 7 
 and included both subjects with spectroscopic and photometric redshifts out to $z < 0.25$.
-In total, 285,962 subjects were classified in the GZ2 Main Sample catalogs (reference website?). 
+In total, 285,962 subjects were classified in the GZ2 Main Sample 
+catalogs\footnote{data.galaxyzoo.org} . 
 Of these, 243,500 have spectroscopic redshifts while 42,462 have only photometric redshifts.  
 
 Subjects were shown as color composite images via a web-based interface wherein 
 volunteers answered a series of questions pertaining to the morphology of the subject.
+With the exception of the first question, subsequent queries were 
+dependent on volunteer responses from the previous task creating a complex decision tree. 
 Using GZ2 nomenclature,  a \textit{classification} is defined as the total amount of
 information about a subject obtained by completing all tasks in the decision tree. 
 A \textit{task} represents a segment of the
 tree consisting of a \textit{question} and possible \textit{responses}. 
-With the exception of the first task, subsequent tasks were
-dependent on volunteer responses from the previous task creating a complex decision tree. 
+A subject is \textit{retired} after it has achieved a sufficient amount of classification.
 
-For the analysis in this paper we select the first question in the tree, 
+
+For the analysis in this paper we utilize the first task in the tree, 
 `Is the galaxy simply smooth and rounded, with no sign of a disk?' to which possible 
 responses include `smooth', `features or disk', or `star or artifact'. This choice
 serves two purposes: 1) this question is one of only two questions in the GZ2
@@ -250,21 +252,21 @@ we can work with, and 2) our analysis will assume a
 binary task and this question is simple enough to mold into such a form. 
 
 To force such a binary classification, we group `star or artifact' responses with `features or disk'. 
-We note that only 512 subjects in the GZ2 catalog have a majority `star or artifact' vote 
-fraction, contributing less than half a percent contamination. 
-Additionally, we must also define a set of `true' labels for each GZ2 subject to which
+Additionally, we define a set of `true' labels for each GZ2 subject to which
 we can compare labels assigned by Galaxy Zoo Express (GZX).  
 The GZ2 catalog assigns every subject three types of volunteer vote fractions: 
 raw, weighted, and debiased. 
 Debiased vote fractions are calculated to correct morphological classifications
-for redshift bias, a task that GXZ is not yet built to handle. 
+for redshift bias, a task that GZX is not yet built to handle. 
 The weighted vote fractions serve to downgrade malicious volunteers and bots, 
-a task we perform as well, however, because the mechanism for
-determining malicious volunteers is entirely different between GZ2 and GZX, we 
-use GZ2 raw vote fractions as the closest comparison. 
+a task we perform as well. However, because the mechanism for
+determining malicious volunteers is entirely different between GZ2 and GZX, 
+we use GZ2 raw vote fractions as the closest comparison. 
 Specifically, we take the majority raw vote fraction as the label for that subject. If the 
 majority resided under `star or artifact' or `feature or disk', it was labeled as \feat; 
-otherwise it was labeled~\notfeat. 
+otherwise it was labeled~\notfeat. We note that only 512 subjects in the GZ2 
+catalog have a majority `star or artifact' vote 
+fraction, contributing less than half a percent contamination. 
 
 In total, the data consist of over 16 million classifications from 83,943 individual volunteers. 
 As we discuss in Section~\ref{sec: SWAP}, the software we use requires that every 
@@ -399,6 +401,14 @@ the training image classifications are the first to be processed with SWAP.
 \caption{Volunteer probabilities for our fiducial SWAP run.  \label{fig: volunteer training}}
 \end{figure}
 
+%%%-------------------------------------------------------
+%%%  FIGURE:    SWAP FIDUCIAL RUN
+%%%-------------------------------------------------------
+\begin{figure*}[ht!]
+\plotone{figures/GZX_eval_and_retirement_baseline_4paper.png}
+\caption{Fiducial SWAP simulation demonstrating the dramatic increase in the subject retirement rate as a function of GZ2 project time (in light blue) compared with the original GZ2 project (dark blue) corresponding to the left hand axis. Not only is efficiency increased by nearly an order of magnitude, we maintain high quality classifications as shown by high marks in accuracy, completeness and purity which correspond to the right hand axis.  Specifically, these metrics are computed on the sample obtained \textit{by that day in GZ2 project time}, e.g. on day 20, these metrics are computed on the 120K subjects which SWAP has classified by that time; their SWAP labels being compared to `true' labels derived from published GZ2 data. \label{fig: fiducial run}}
+\end{figure*}
+
 Figure~\ref{fig: volunteer training} demonstrates the volunteer training we achieve
 with this scheme (figure adapted from~\cite{Marshall2016}). 
 This figures shows the achieved confusion matrices for 1000 volunteers
@@ -411,20 +421,10 @@ volunteers who saw only one subject (say,~\feat), their probability in the
 other (\notfeat) remains unchanged.
 
 
-
-
-%%%-------------------------------------------------------
-%%%  FIGURE:    SWAP FIDUCIAL RUN
-%%%-------------------------------------------------------
-\begin{figure*}[ht!]
-\plotone{figures/GZX_eval_and_retirement_baseline_4paper.png}
-\caption{Fiducial SWAP simulation demonstrating the dramatic increase in the subject retirement rate as a function of GZ2 project time (in light blue) compared with the original GZ2 project (dark blue) corresponding to the left hand axis. Not only is efficiency increased by nearly an order of magnitude, we maintain high quality classifications as shown by high marks in accuracy, completeness and purity which correspond to the right hand axis.  Specifically, these metrics are computed on the sample obtained \textit{by that day in GZ2 project time}, e.g. on day 20, these metrics are computed on the 120K subjects which SWAP has classified by that time; their SWAP labels being compared to `true' labels derived from published GZ2 data. \label{fig: fiducial run}}
-\end{figure*}
-
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
 %%   Subsection: specifics of SWAP in context of simulations (sans Machine)
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
-\subsection{Fiducial SWAP simulation}
+\subsection{Fiducial SWAP simulation}\label{sec: fiducial}
 
 To simulate a live project we run SWAP on a regular timestep which we set as $\Delta t = 1$ day. 
 At each timestep, the software pulls from the database all volunteer classifications which
@@ -466,7 +466,7 @@ the number of subjects retired as~\feat.
 
 Using as truth the labels we defined in section~\ref{sec: data}, we compute
 these metrics on the subject set retired \textit{by that day of the GZ2 project.} 
-For example, as shown in figure~\ref{fig: fiducial run}, 
+For example, as shown in Figure~\ref{fig: fiducial run}, 
 on the 20th day of the GZ2 project, 
 SWAP has retired 120K subjects. Comparing those SWAP labels to their GZ2 labels, 
 we find that the sample is 96\% accurate, nearly 100\% complete (that is, of all
@@ -485,7 +485,7 @@ perform these classification tasks. Our SWAP run required $2.3 \times 10^6$ volu
 votes to retire these 225K subjects. GZ2 required nearly $10 \times 10^6$ for the 
 exact same subject set. Again, this is nearly an order of magnitude reduction in 
 the human effort required to classify this data set! This reduction in human effort 
-can be seen directly in figure~\ref{fig: swap vote distributions} which shows the volunteer 
+can be seen directly in Figure~\ref{fig: swap vote distributions} which shows the volunteer 
 vote distributions achieved through SWAP (light blue) compared to GZ2 (dark blue)
 for the $\sim$225K retired subjects. GZ2, as expected, has a distribution that peaks 
 around $\sim$45 unique volunteers classifying each subject with 99\% of subjects 
@@ -537,7 +537,7 @@ random classifiers.  We perform two simulations wherein we allow (\Pf, \Pn) = $(
 slightly obtuse volunteers, and (\Pf, \Pn) = $(0.6, 0.6)$, slightly astute volunteers 
 with everything else remaining constant.  
 Results of these simulations compared to the fiducial run are shown in 
-figure~\ref{fig: confusionMatrixAnalysis}. We find that we are largely insensitive to the 
+Figure~\ref{fig: confusionMatrixAnalysis}. We find that we are largely insensitive to the 
 initial agent confusion matrix probabilities both in terms of the overall number of retired subjects
 and in the quality of their SWAP labels. 
 
@@ -547,7 +547,7 @@ longer for volunteers to become strong, astute classifiers when they are initial
 given values denoting them as obtuse. Even with this handicap, most volunteers 
 become astute classifiers by the end of the simulation. Overall,  we retire 
 $\sim225$K  $\pm 3.5\%$ subjects as shown by the light blue spread in the bottom
-panel of figure~\ref{fig: confusionMatrixAnalysis} where the dashed blue line
+panel of Figure~\ref{fig: confusionMatrixAnalysis} where the dashed blue line
 denotes the fiducial run. 
 
 The top panel depicts the same quality metrics computed before where the dashed 
@@ -595,7 +595,7 @@ prior is not clear-cut. We thus explore how various~\p~affect the SWAP outcome.
 
 We run several simulations where~\p~is allowed to take values 0.2, 0.35, and 0.8 
 and compare these to the fiducial run where~\p~= 0.5, everything else remaining constant.
-The results are shown in figure~\ref{fig: priorAnalysis}, where again we find that 
+The results are shown in Figure~\ref{fig: priorAnalysis}, where again we find that 
 SWAP is consistent in terms of the total number of subjects retired 
 during the simulation which varies by only 1\%. 
 However, as can be seen in the top panel, the variation in our quality metrics is 
@@ -651,7 +651,7 @@ which are nudged back and forth indefinitely through probability space.
 
 
 What thresholds should one choose? To answer this question, we consider
-figure~\ref{fig: retirement thresholds} which depicts the receiver operating 
+Figure~\ref{fig: retirement thresholds} which depicts the receiver operating 
 characteristic (ROC) curve for our fiducial simulation. The solid line shows the 
 curve when considering the~\feat~threshold  while the dotted line
 corresponds to~\notfeat. The square and triangle represent our thresholds, 
@@ -685,7 +685,7 @@ In this section we examine the main effects driving this disagreement whereby we
  turn to our fiducial simulation, isolating all false positives and false negatives. 
 
 We find that the majority of these disagreements are due to uncertainties in the GZ2
-label. This is shown in the left panel of figure~\ref{fig: SWAP sucks} where we show
+label. This is shown in the left panel of Figure~\ref{fig: SWAP sucks} where we show
 the distribution of the \texttt{features\_or\_disk} + \texttt{star\_or\_artifact} GZ2 vote 
 fractions for the entire sample retired by SWAP (solid black lines). 
 Recall that we group these together as~\feat~during  our SWAP simulations and so 
@@ -781,7 +781,6 @@ output label from a multitude of decision trees.  In particular we use the
 \citep{scikit-learn}. 
 
 \begin{comment}
-\subsubsection{K-nearest neighbors}
 %One of the simplest algorithms to conceptualize and use is the K-nearest neighbors (KNN) classifier. This classifier works simply by considering the K neighbors nearest to the test point in Euclidean space. As we have only a binary classification challenge, the test point is classified according to the majority of its K neighbors. In the event of a tie, the label if the closest neighbor to the test point determines its class. Though simplistic, this algorithm is surprisingly powerful in that it performs well in higher-dimensional space and is relatively fast to train. Obviously, the most important parameter to consider is the number of nearest neighbors to assign to each test point. But this is pretty much the only knob to turn in this method which is another benefit -- ease of interpretation. 
 %We use scikit-learn's implementation of K-Nearest Neighbor Classifier (KNC) and optimize the K parameter. 
 \end{comment}
@@ -855,7 +854,7 @@ by adaptively tracking volunteer skill and subject probabilities in a Bayesian f
 This provides us with a way of quickly generating large subject samples with accurate
 labels provided by human classifications that are dynamically generated as a function
 of GZ2 project time. For the following analysis we again build
-off of our fiducial model where, according to figure~\ref{fig: fiducial run},
+off of our fiducial model where, according to Figure~\ref{fig: fiducial run},
 SWAP retires XXX subjects within 10 days. 
 
 As discussed above, in addition to a training sample we also desire a validation 
@@ -910,52 +909,57 @@ A more sophisticated model would, in turn, likely require a larger training
 sample. 
 
 We use this general feature of any machine learning process to guide our 
-decision making process. We cannot reproduce a true learning curve
+decision making. We cannot reproduce a true learning curve
 because the cross-validation procedure we perform can, in principle and in practice, 
 yield a different set of machine hyperparameters that are most appropriate
-for the training sample it receive that night.  Instead, we look for the characteristic 
+for the training sample it received that night.  Instead, we look for the characteristic 
 cross-validation score plateau. At each timestep, our software keeps record of 
 the machine's training performance, including how well it scores on the 
 training sample (to estimate overfitting), cross-validation score, 
 and the best hyperparameters. When the machine's 
 cross-validations score remains within 1\% on three consecutive nights, 
-we deem the machine has learned all it can for being the simple model that it is. 
-
-Once the machine has been fully trained, it is then applied to the test sample. 
-In this case, the test sample is any subject which has either not reached retirement
-through SWAP, or is not part of the validation sample. Since the 
-total number of subjects in GZ2 is XXX, the validation sample comprises XXX, 
-the initial training sample is 10K, thus the first test sample contains XXX subjects. 
-The test sample decreases as a function of project time in tandem with the increasing
-training sample. 
+we deem the machine's performance acceptable. 
 
 
-\subsection{The Machine Shop / Feedback Loop}
-A typical run which incorporates the machine begins with human classifications 
-processed through SWAP for several days. During that time, the available training set
-builds up until it crosses the 10K threshold. At this point, the machine trains for the 
-first time. A suite of performance metrics are recorded by a machine \textit{agent}, similar
+\subsection{The Machine Shop}
+We can now describe a full GZX simulation. A typical run begins with human classifications 
+processed through SWAP for several days. During that time, humans `train' on the 
+gold standard sample and then begin classifying the main sample.  Once they retire 
+at least 10K subjects, these are passed to the machine which trains for the first time. 
+A suite of performance metrics are recorded by a machine \textit{agent}, similar
 in construction to SWAP's \textit{agents}. Each night, the machine agent determines 
-whether or not the machine has properly trained by assessing all previous nights of 
+whether or not the machine has sufficiently trained by assessing all previous nights of 
 training, comparing the variation in performance metrics. Once the machine has
-passed the criterion laid out above, the agent introduces the machine to the test sample.
+passed the criterion laid out above, the agent introduces the machine to the test sample
+which consists of any subject that has not yet been seen by humans, has not yet 
+reached retirement through SWAP, has not been previously classified by itself, 
+and is not part of the gold standard sample.  
 
-At this point, another decision must be made. What constitutes a confident machine
-classification? Some models allow one to obtain a probability for each respective label. 
+What constitutes a machine classification? Once the trained machine is applied to
+the test sample it will provide predictions for every subject therein, but these predictions
+are not made with the same certainty. Most machine algorithms allow one to obtain
+a probability associated with each subject's predicted label. 
 In the case of an RF, this probability is simply the average of the probabilities of each 
 individual decision tree where the probability of a single tree is determined as the fraction
-of subjects of class X on a leaf node.  We use this probability to assess which subjects
-the machine is most confident about (though we note it is not a true measure of confidence).
-Only subjects which receive a class prediction with $p_{machine} >= 0.9$ are considered
-retired and are removed from the system. Subjects which are not retired by the machine 
-are subsequently fed back to human classifiers for further input during the next timestep.  
+of subjects of class X on a leaf node.  We use this probability to assess subjects about which
+the machine is most confident (though we note it is not a true measure of confidence).
+Only subjects that receive a class prediction with $p_{machine} \ge 0.9$ are considered
+retired and hence removed from the system. The remaining subjects have the possibility 
+of being classified by humans (or the machine again) during future timesteps. 
+
 
 This is the embodiment of our feedback loop. Those subjects on which the machine
-is least confident are judged by human classifiers, potentially becoming part of the
-training sample during the next cycle. Ideally, this increased training sample now 
-covers an additional portion of the parameter space that the machine was unfamiliar
-with or unable to learn. With additional subjects spanning all of the parameter space, 
+is least confident can be examined by human classifiers, potentially becoming part of the
+training sample during a future cycle. Ideally, this increased training sample will 
+cover a larger portion of the parameter space in which the machine can learn. 
+With additional subjects spanning all of the parameter space, 
 the machine can quickly achieve its maximum performance. 
+
+In the future we will create a more sophisticated feedback mechanism whereby we 
+can send particularly challenging subjects to super-users for identification (where 
+these users can be identified by their high confusion matrix values as determined by SWAP,
+ see section~\ref{sec: SWAP}). Additionally we can perform periodic spot-checks 
+to confirm the machine's performance by cross-checking with humans for label consistency. 
 
 
 \begin{comment}
@@ -989,52 +993,77 @@ providing the machine with a larger sample space in which to learn.
 %%   RESULTS 
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
 \section{Results} \label{sec: results}
-How well does the overall human/machine system perform together? 
-
-When does the machine kick in? How quickly does it learn? 
-
-Efficency of classification increased by order of magnitude. 
-
-We perform a full run incorporating both SWAP and the machine using the fiducial SWAP run.
-The machine attempts its first training on Day 7 of the run. The machine attempts several 
-additional nights of training, with a larger training sample each night. By Day 13, 
-the machine \textit{agent} has assessed that the machine is suitably prepared to 
-analyze the test sample. At that point, SWAP has already retired ~68K subjects 
-(this is the machine's training sample). The machine predicts classes for the remaining
-subjects, approximately 200K. Of those, the machine strongly predicts classes for 
-nearly 70K subjects, thus dramatically increasing the overall sample of retired 
-subjects for the run. As the simulation progresses, retirement by both SWAP and
-the machine tapers off. We end the simulation after 23 days, having sufficiently 
+We perform a full GZX simulation incorporating both SWAP and the machine using the
+ fiducial SWAP run discussed in section~\ref{sec: fiducial}. 
+The machine attempts its first training on Day XXX of the run with an initial training
+sample of XXX.  The machine undergos several additional nights of training, each time
+with a larger training sample. 
+By Day XXX, the machine's \textit{agent} has assessed that the machine is suitably trained. 
+At this point, SWAP has now provided XXX subjects as a training sample. 
+The machine predicts classes for the remaining XXX GZ2 subjects. 
+Of those, the machine strongly predicts classes for nearly XXX subjects, thus dramatically 
+increasing the overall sample of retired subjects. 
+As the simulation progresses, retirement by both SWAP and
+the machine tapers off. We end the simulation after XX days, having sufficiently 
 classified over 200K subjects. 
 
 %%%-------------------------------------------------------
 %%%  FIGURE:    FULL GZX PERFORMANCE
 %%%-------------------------------------------------------
 \begin{figure}[t!]
-\includegraphics[width=3.65in]{figures/moneyplot.png}
+\includegraphics[width=3.65in]{figures/GZ2_sup_PLPD5_p5_flipfeature2b_RF_accuracy_redo_raw_combo_moneyplot.png}
 \caption{Incorporating the machine reduces the total time to classify over 200K subjects in the GZ2 sample to 23 days. \label{fig: money}}
 \end{figure}
 
-The bottom panel of Fig~\ref{fig: money} compares  Galaxy Zoo Express, 
-SWAP only, and Galaxy Zoo 2 subject retirement.
+The bottom panel of Figure~\ref{fig: money} shows the power of GZX (red) 
+compared to SWAP only (light blue) and GZ2 subject retirement (dark blue). 
 By dynamically generating a training sample
-through a more sophisticated analysis of human classifications, we are able
-to retire over 200K GZ2 subjects in 23 days.  With SWAP alone, we retired this
-many subjects in 60 days. GZ2 took 9 months to retire as many and 14 months 
-to classify the entire catalog of 295K subjects. 
+through a more sophisticated analysis of human classifications coupled with a 
+simple feedback mechanism, we are able to retire over 200K GZ2 subjects in 2X days.  
+SWAP alone retires as many subjects in 6-7X days. GZ2 took XX \textit{months} to retire
+as many and 14 months to classify the entire catalog of 285K subjects. 
+GZX thus provides\textit{a full order of magnitude decrease in classification time} 
+over the traditional crowd-sourced approach. Overall, the humans and the 
+machine each contribute approximately half of the overall retired subjects. 
 
-The top panel of Fig~\ref{fig: money} shows our usual quality metrics for both 
-SWAP-only and GZX.  Even incorporating such a simplistic model as a RF allows
-us to dramatically increase our classification efficiency without sacrificing much 
-in terms of quality. Accuracy for the combined system remains above 90\%, while
+The top panel of Figure~\ref{fig: money} shows our usual quality metrics for both 
+SWAP-only and GZX, again using the GZ2 labels for comparison.  
+Accuracy for the combined system remains around 95\%, while
 purity and completeness remain above 85\%. Furthermore, we note that 
 incorporating the machine yields similar over-all quality metrics as when we 
-allow SWAP to handle the entirety of the sample. Both yield purity ~85\%. 
-Instead we seem to make a small sacrifice in the completeness of the sample
-when incorporating the machine: whereas SWAP alone provides nearly perfect
-completeness, the machine cannot keep up with that.
+allow SWAP to handle the entirety of the sample, each yielding purity of ~85\% 
+for a similar-sized subject set. 
+Instead we make a small sacrifice in the completeness of the~\feat~sample
+when incorporating the machine. Whereas SWAP alone provides nearly perfect
+completeness, the machine cannot perform at that level for reasons we discuss below.
 
-\subsection{Identifying the Point of No Classification}
+When considering the machine's performance alone, we turn to figure
+~\ref{fig: machine accuracy} which shows the accuracy of the machine-retired
+ (high probability) subjects in red along with the number of machine-retired subjects (black). 
+We see that the first application yields exceptionally good accuracy considering
+the machine of choice. However, this accuracy of drops to 75\% by the end of the simulation.
+We note also that the machine retires X times more subjects on its first 
+application to the test sample but never again retires as many on subsequent nights. 
+Of those it does retire, the machine predominately classifies~\notfeat~(`Smooth') subjects
+far better both in terms of the number it can classify and in the quality of those classifications. 
+These are obvious symptoms of an unbalanced sample. 
+
+
+\subsection{Verifying our Decision Engine}
+
+
+
+
+
+
+\subsection{Machine mis-classifications}
+Separate what is particular to THIS MACHINE versus what is generalizable to ALL MACHINES.
+
+ALL Machines: 1. unbalanced sample will make classification difficult, 2. we're comparing labels
+that aren't necessarily apples to apples because we're asking the machine \textbf{a different question with different data!} 3. Not necessarily true that the set of 
+
+THIS Machine: 1. is particularly terrible at spotting \feat~ for some reason
+
 We now turn to a discussion of what subjects can and can't be classified and why. 
 We argue that our method provides a quick way to determine which subjects will
 inevitably be suitable for either visual or machine classification and which subjects
@@ -1042,10 +1071,8 @@ simply provide too little information for robust classification. This knowledge,
 with the fast classification rate will enable large scale surveys to efficiently and effectively
 tackle morphological classification tasks. 
 
- \textbf{Why is the machine so bad? If we're getting completeness for the machine ~70\% it's not better than just assuming the the majority-class.... I need to dig into this a bit more.}
 
-
-
+\begin{comment}
 %%%-------------------------------------------------------
 %%%  FIGURE:    Machine Accuracy
 %%%-------------------------------------------------------
@@ -1053,23 +1080,12 @@ tackle morphological classification tasks.
 \includegraphics[width=3.65in]{figures/MLevaluation_GZ2_sup_PLPD5_p5_flipfeature2b_RF_accuracy.png}
 \caption{Incorporating the machine reduces the total time to classify over 200K subjects in the GZ2 sample to 23 days. \label{fig: machine accuracy}}
 \end{figure}
+\end{comment}
 
-\textbf{What does the Machine get wrong? Why?}  In Fig~\ref{fig: machine accuracy} 
-we show the accuracy of the machine classifier for the 10 days it predicts on the test sample. 
-We see that the first application yields exceptionally good accuracy considering
-the machine of choice. However, that accuracy drops down to 75\% by the end of the simulation.
-We examine in the size-magnitude plane those  subjects retired by machine as 
-shown in Fig~\ref{fig: machine classified}.  We see see the first classification by
-the machine includes a healthy mix of both `Featured` and `Not' subjects over a 
-broad range of magnitude and sizes. These subjects are "easy to classify" as they are
-large and bright. However, by the end of the run the machine (combined with SWAP)
-have classifed the easiest subjects; those with the most information stored in their images. 
-On the last day we peform the simulation, the machine is only classifying small, faint 
-subjects; all the larger and brighter subjects have been retired. Small, faint subjects are 
-notoriously difficult to classify. As such, when comparing the resulting prediction from
-the machine to the original label provided by GZ2, it is less likely that machine matches
-that prediction. Indeed, it is just as likely that the original GZ2 classifications are inherently 
-wrong themselves. \textbf{Show a random sample of original jpg images? } 
+\begin{comment}
+%We examine in the size-magnitude plane those  subjects retired by machine as shown in Fig~\ref{fig: machine classified}.  We see see the first classification by the machine includes a healthy mix of both `Featured` and `Not' subjects over a broad range of magnitude and sizes. These subjects are "easy to classify" as they are large and bright. However, by the end of the run the machine (combined with SWAP) have classifed the easiest subjects; those with the most information stored in their images.  On the last day we peform the simulation, the machine is only classifying small, faint  subjects; all the larger and brighter subjects have been retired. Small, faint subjects are notoriously difficult to classify. As such, when comparing the resulting prediction from the machine to the original label provided by GZ2, it is less likely that machine matches that prediction. Indeed, it is just as likely that the original GZ2 classifications are inherently wrong themselves. \textbf{Show a random sample of original jpg images? } 
+\end{comment}
+
 This trend can even be seen in the SWAP-only output. 
 Fig~\ref{fig: swap} shows the accuracy of the SWAP output slowly decreases 
 over the life of the project coupled with the strong tapering of classifications 
@@ -1079,10 +1095,10 @@ more difficult, if even classifiable, subjects in the queue.
 %%%-------------------------------------------------------
 %%%  FIGURE:    Machine classifies SHITTIER SUBJECTS -- OR DOES IT? 
 %%%-------------------------------------------------------
-\begin{figure}[t!]
-\includegraphics[width=3.65in]{figures/GZ2_sup_PLPD5_p5_flipfeature2b_2009-02-25_00:00:00_RF_accuracy_size-mag.png}
-\caption{You can't classify what isn't there... Lack of information leads to sub-par classifications by the machine.\textbf{Make this a GIF in the online manuscipt?} \label{fig: machine classified}}
-\end{figure}
+\begin{figure*}[t!]
+\includegraphics[width=7in]{figures/machine_compare_clssfd_not_morph_params1D.png}
+\caption{What the machine can and can't classify. \label{fig: machine classified}}
+\end{figure*}
 
 We also examine those subjects which are not classified at all, either in the SWAP-only
 run or the combine run. I am sure they will all suck but need to throw up some distributions
@@ -1099,7 +1115,7 @@ machine intervention is not practical and will not yield appropriate classificat
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
 %%   MAD RAVINGS OF THE FUTURE 
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
-\section{Implications for Future Surveys / Visions for the future}
+\section{Implications for Future Surveys / Visions for the future}\label{sec: visions}
 We've now identified several ways to suss out those subjects which require
 additional intervention. If SWAP can't classify it, then potentially these subjects 
 should be diverted to experts. If a machine can't classify it, then those subjects
@@ -1110,7 +1126,18 @@ Estimate reduction in classification time.
 
 \subsection{Short-term Visions}
 
-Immediate steps we can take to make an even stronger system. 
+Immediate steps we can take to make a stronger system.
+
+1. more sophistcated feedback mechanism
+
+2. more sophisticated machine (deep learning? LDA? )
+
+3. larger feature vector
+
+4. ultimate ensemble classifiers where machine votes are processed through their own instance of SWAP!
+
+5. SWAP that allows for a 3-way confusion matrix
+
 
 \textbf{Classifications are not debiased.}  
 It is a known issue that any visual 
