@@ -180,18 +180,19 @@ In Galaxy Zoo Express (GZX) we combine humans and machines with the goal of
 increasing galaxy morphology classification efficiency, both in terms of the rate 
 of classification over time and in the amount of human effort required. 
 Figure~\ref{fig: schematic} presents a schematic of GZX which includes section 
-numbers as a shortcut for the savvy reader. We note here that transparent portions
- of the schematic represent areas of future work. 
+numbers as a shortcut for the savvy reader. We note that transparent portions
+ of the schematic represent areas of future work which we explore in section~\ref{sec: visions}. 
 
 Any system combining human and machine classifications will have a set of generic 
 features: a group of human classifiers, at least one machine classifier, and a 
 decision engine which determines how these classifications should be combined.
 
-We first simulate human classifiers using a database of classifications 
-(described in section~\ref{sec: data}) from the Galaxy Zoo 2 (GZ2) project which
-we can draw on at will. We increase the classification rate and decrease the 
-required human effort by processing these classification using a Bayesian code first 
-developed for the Space Warps project (SWAP) described in section~\ref{sec: SWAP}.
+
+We draw from the Galaxy Zoo 2 (GZ2) classification database which allows us to 
+ create simulations of human classifiers (described in section~\ref{sec: data}).
+These classifications are used most effectively when processed with SWAP, 
+a Bayesian code described in  section~\ref{sec: SWAP}, first developed for the 
+Space Warps gravitational lens discovery project. 
 These subjects become the basis for the machine's training sample. 
 
 In section~\ref{sec: machine} we incorporate a machine classifier; where, for this
@@ -205,15 +206,15 @@ remaining galaxy sample. Images reliably classified by machine are not further c
 
 Even with this simple description, one can see that the classification process 
 will progress in three phases. At first, the machine will not yet have reached the 
-acceptable level of performance and the only galaxies retired from classification
+acceptable level of performance and the only subjects classified
  are those for which human classifiers have reached consensus. 
 Secondly, the machine will rapidly improve and both humans and machine will be 
-responsible for image retirement. Finally, improvement in the machine performance 
+responsible for classification. Finally, improvement in the machine performance 
 will slow and the remaining images will likely need to be classified by humans (if they can be 
 classified at all). These results are explored in section~\ref{sec: results}. 
 This blueprint allows even moderately successful machine learning 
-routines to be used alongside human classifiers and removes the need for 
-ever-increasing performance in machine classification.
+routines to make significant contributions alongside human classifiers and 
+removes the need for ever-increasing performance in machine classification.
 
 
 
@@ -225,21 +226,24 @@ ever-increasing performance in machine classification.
 Our simulations utilize original classifications made by volunteers during the GZ2 project. 
 These data are described in detail in~\cite{Willett2013} though we provide a brief overview here.  
 The GZ2 subject sample was designed to consist of the brightest 25\% ($r$ band magnitude $< 17$) 
-of resolved galaxies residing in the SDSS North Galactic Cap region from Data Release 7 
+of galaxies residing in the SDSS North Galactic Cap region from Data Release 7 
 and included both subjects with spectroscopic and photometric redshifts out to $z < 0.25$.
-In total, 285,962 subjects were classified in the GZ2 Main Sample catalogs (reference website?). 
+In total, 285,962 subjects were classified in the GZ2 Main Sample 
+catalogs\footnote{data.galaxyzoo.org} . 
 Of these, 243,500 have spectroscopic redshifts while 42,462 have only photometric redshifts.  
 
 Subjects were shown as color composite images via a web-based interface wherein 
 volunteers answered a series of questions pertaining to the morphology of the subject.
+With the exception of the first question, subsequent queries were 
+dependent on volunteer responses from the previous task creating a complex decision tree. 
 Using GZ2 nomenclature,  a \textit{classification} is defined as the total amount of
 information about a subject obtained by completing all tasks in the decision tree. 
 A \textit{task} represents a segment of the
 tree consisting of a \textit{question} and possible \textit{responses}. 
-With the exception of the first task, subsequent tasks were
-dependent on volunteer responses from the previous task creating a complex decision tree. 
+A subject is \textit{retired} after it has achieved a sufficient amount of classification.
 
-For the analysis in this paper we select the first question in the tree, 
+
+For the analysis in this paper we utilize the first task in the tree, 
 `Is the galaxy simply smooth and rounded, with no sign of a disk?' to which possible 
 responses include `smooth', `features or disk', or `star or artifact'. This choice
 serves two purposes: 1) this question is one of only two questions in the GZ2
@@ -248,21 +252,21 @@ we can work with, and 2) our analysis will assume a
 binary task and this question is simple enough to mold into such a form. 
 
 To force such a binary classification, we group `star or artifact' responses with `features or disk'. 
-We note that only 512 subjects in the GZ2 catalog have a majority `star or artifact' vote 
-fraction, contributing less than half a percent contamination. 
-Additionally, we must also define a set of `true' labels for each GZ2 subject to which
+Additionally, we define a set of `true' labels for each GZ2 subject to which
 we can compare labels assigned by Galaxy Zoo Express (GZX).  
 The GZ2 catalog assigns every subject three types of volunteer vote fractions: 
 raw, weighted, and debiased. 
 Debiased vote fractions are calculated to correct morphological classifications
-for redshift bias, a task that GXZ is not yet built to handle. 
+for redshift bias, a task that GZX is not yet built to handle. 
 The weighted vote fractions serve to downgrade malicious volunteers and bots, 
-a task we perform as well, however, because the mechanism for
-determining malicious volunteers is entirely different between GZ2 and GZX, we 
-use GZ2 raw vote fractions as the closest comparison. 
+a task we perform as well. However, because the mechanism for
+determining malicious volunteers is entirely different between GZ2 and GZX, 
+we use GZ2 raw vote fractions as the closest comparison. 
 Specifically, we take the majority raw vote fraction as the label for that subject. If the 
 majority resided under `star or artifact' or `feature or disk', it was labeled as \feat; 
-otherwise it was labeled~\notfeat. 
+otherwise it was labeled~\notfeat. We note that only 512 subjects in the GZ2 
+catalog have a majority `star or artifact' vote 
+fraction, contributing less than half a percent contamination. 
 
 In total, the data consist of over 16 million classifications from 83,943 individual volunteers. 
 As we discuss in Section~\ref{sec: SWAP}, the software we use requires that every 
@@ -1007,7 +1011,7 @@ classified over 200K subjects.
 %%%  FIGURE:    FULL GZX PERFORMANCE
 %%%-------------------------------------------------------
 \begin{figure}[t!]
-\includegraphics[width=3.65in]{figures/moneyplot.png}
+\includegraphics[width=3.65in]{figures/GZ2_sup_PLPD5_p5_flipfeature2b_RF_accuracy_redo_raw_combo_moneyplot.png}
 \caption{Incorporating the machine reduces the total time to classify over 200K subjects in the GZ2 sample to 23 days. \label{fig: money}}
 \end{figure}
 
@@ -1111,7 +1115,7 @@ machine intervention is not practical and will not yield appropriate classificat
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
 %%   MAD RAVINGS OF THE FUTURE 
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
-\section{Implications for Future Surveys / Visions for the future}
+\section{Implications for Future Surveys / Visions for the future}\label{sec: visions}
 We've now identified several ways to suss out those subjects which require
 additional intervention. If SWAP can't classify it, then potentially these subjects 
 should be diverted to experts. If a machine can't classify it, then those subjects
