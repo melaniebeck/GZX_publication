@@ -993,19 +993,22 @@ providing the machine with a larger sample space in which to learn.
 %%   RESULTS 
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
 \section{Results} \label{sec: results}
-We perform a full GZX simulation incorporating both SWAP and the machine using the
+We perform a full GZX simulation incorporating both SWAP and our RF machine using the
  fiducial SWAP run discussed in section~\ref{sec: fiducial}. 
-The machine attempts its first training on Day XXX of the run with an initial training
-sample of XXX.  The machine undergos several additional nights of training, each time
-with a larger training sample. 
-By Day XXX, the machine's \textit{agent} has assessed that the machine is suitably trained. 
-At this point, SWAP has now provided XXX subjects as a training sample. 
-The machine predicts classes for the remaining XXX GZ2 subjects. 
-Of those, the machine strongly predicts classes for nearly XXX subjects, thus dramatically 
-increasing the overall sample of retired subjects. 
+The machine attempts its first training on Day 8 of the run with an initial training
+sample of nearly 20K subjects.  The machine undergoes several additional nights of training, 
+each time with a larger training sample. 
+By Day 12, the machine's \textit{agent} has assessed that the machine is suitably trained. 
+At this point, SWAP has now provided over 40K subjects as a training sample. 
+The machine predicts class labels for the remaining 230K GZ2 subjects which are not 
+already retired by SWAP or part of the expertly classified sample. 
+Of those, the machine strongly predicts labels ($p_{machine} >= 0.9$ for nearly 71K subjects, 
+thus immediately and dramatically increasing the overall sample of retired subjects. 
 As the simulation progresses, retirement by both SWAP and
-the machine tapers off. We end the simulation after XX days, having sufficiently 
-classified over 200K subjects. 
+the machine tapers off though at different rates. 
+We end the simulation after 32 days, having sufficiently classified well over 200K subjects. 
+We present these results in the bottom panel of Figure~\ref{fig: money} where GZX (red) 
+is compared to our fiducial SWAP only run (light blue) and GZ2 subject retirement (dark blue). 
 
 %%%-------------------------------------------------------
 %%%  FIGURE:    FULL GZX PERFORMANCE
@@ -1015,27 +1018,64 @@ classified over 200K subjects.
 \caption{Incorporating the machine reduces the total time to classify over 200K subjects in the GZ2 sample to 23 days. \label{fig: money}}
 \end{figure}
 
-The bottom panel of Figure~\ref{fig: money} shows the power of GZX (red) 
-compared to SWAP only (light blue) and GZ2 subject retirement (dark blue). 
+The top panel of Figure~\ref{fig: money} shows our usual quality metrics for both 
+SWAP-only and GZX, again using the GZ2 labels discussed in section~\ref{sec: data}.
+Accuracy and completeness of the cumulative sample for the combined system 
+each remain around 95\% and purity remains around 85\%. We note that 
+incorporating the machine yields similar purity as when we 
+allow SWAP to handle the entirety of the sample for a similar-sized subject set. 
+Instead we seem to make a small sacrifice in the completeness of the~\feat~sample
+which, in turn, affects our accuracy. Whereas SWAP alone identifies nearly all~\feat~
+subjects it encounters,  the machine appears to miss a significant 
+portion of these thus dropping the completeness of that day's 
+cumulative sample. We discuss this behavior below.
+
 By dynamically generating a training sample
 through a more sophisticated analysis of human classifications coupled with a 
-simple feedback mechanism, we are able to retire over 200K GZ2 subjects in 2X days.  
-SWAP alone retires as many subjects in 6-7X days. GZ2 took XX \textit{months} to retire
-as many and 14 months to classify the entire catalog of 285K subjects. 
+machine classifier trained through simple feedback mechanism, we are able to 
+retire over 200K GZ2 subjects in 27 days.  SWAP alone retires as many subjects in 50 days. 
+GZ2 requires XX \textit{months} to retire as many and 14 months to retire the entire 
+catalog of 285K subjects. 
 GZX thus provides\textit{a full order of magnitude decrease in classification time} 
 over the traditional crowd-sourced approach. Overall, the humans and the 
 machine each contribute approximately half of the overall retired subjects. 
+We next explore the composition of those classifications.
 
-The top panel of Figure~\ref{fig: money} shows our usual quality metrics for both 
-SWAP-only and GZX, again using the GZ2 labels for comparison.  
-Accuracy for the combined system remains around 95\%, while
-purity and completeness remain above 85\%. Furthermore, we note that 
-incorporating the machine yields similar over-all quality metrics as when we 
-allow SWAP to handle the entirety of the sample, each yielding purity of ~85\% 
-for a similar-sized subject set. 
-Instead we make a small sacrifice in the completeness of the~\feat~sample
-when incorporating the machine. Whereas SWAP alone provides nearly perfect
-completeness, the machine cannot perform at that level for reasons we discuss below.
+
+\subsection{Who retires what, when?}  
+
+%%%-------------------------------------------------------
+%%%  FIGURE:    GZX COMPONENT CONTRIBUTIONS
+%%%-------------------------------------------------------
+\begin{figure}[t!]
+\includegraphics[width=3.65in]{figures/GZ2_sup_PLPD5_p5_flipfeature2b_RF_accuracy_redo_raw_combo_GZX_component_contributions.png}
+\caption{The relative contributions of the human and machine components of GZX are nearly equal but display very different behaviors over the course of our simulation.  \label{fig: gzx components}}
+\end{figure}
+
+How much does each contribute to the overall classification? HUMANS: 109K,  MACHINE: 98K. 
+
+How do these contributions relate to 
+each other? HUMANS: consistent number of retired subjets over the course of the simulation,
+MACHINE: huge input early on that tapers very quickly to a trickle. 
+
+Who's good at what task? HUMANS: good at recovering~\feat~subjects. 
+MACHINE: good at recovering~\notfeat~subjects. 
+
+In the next section we explore some of the properties of the machine's classifications 
+to understand the core of its performance.
+
+As expected, we see three epochs of subject retirement. In the first phase humans
+are the only contributors to the total number of retired subjects.  Once the machine
+has trained, it becomes a workhorse and takes a monstrous share of the retirement
+burden though humans also continue to retire subjects. The machine quickly reaches
+it's peak performance, classifying all the subjects it's capable of recognizing and the
+third phase is thus left to humans who again begin to dominate the the rate of 
+subject retirement. 
+
+
+\subsection{Machine-only performance}
+The results presented above considered all subjects retired by the combined GZX system:
+machine and humans. We now look specifically at the machine's contribution. 
 
 When considering the machine's performance alone, we turn to figure
 ~\ref{fig: machine accuracy} which shows the accuracy of the machine-retired
@@ -1049,14 +1089,28 @@ far better both in terms of the number it can classify and in the quality of tho
 These are obvious symptoms of an unbalanced sample. 
 
 
-\subsection{Verifying our Decision Engine}
+We're comparing all output to the GZ2 raw vote frations because we find that this is 
+the best choice for fair comparisons with SWAP output. However, the machine is different.
+It is presented with different information and learns a different way which can result in 
+a very differnet answer. We thus carefully reconsider what constitutes the truth label to
+which we should ultimately compare the machine's output. 
+
+The machine is trained with labels provided by SWAP for which we find the best comparison 
+is the GZ2 raw vote fraction discussed earlier. However, does it make sense 
+for the machine to provide those labels given the input it receives? It has a 5 dimensional 
+morphology parameter space to explore which is very different from the much higher
+dimensional space of a color jpeg that the humans see. However, these parameters are
+specifically known to correlate with various galaxy morphology properties in a more or less
+predictable way. For example, galaxies with very high ellipticity are predominantly 
+edge-on galaxies and would thus fall under the~\feat~category while galaxies with 
+high concentrations would suggest a smooth or~\notfeat~subject. 
+The question becomes: What exactly has the machine learned? And what labels are 
+most appropriate to compare what it's learned to asldfkjsldfjasd. 
+ 
+The quality metrics for the GZX in figure~\ref{fig: money} were computed using the 
+GZ2 raw vote fractions. 
 
 
-
-
-
-
-\subsection{Machine mis-classifications}
 Separate what is particular to THIS MACHINE versus what is generalizable to ALL MACHINES.
 
 ALL Machines: 1. unbalanced sample will make classification difficult, 2. we're comparing labels
@@ -1115,7 +1169,8 @@ machine intervention is not practical and will not yield appropriate classificat
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
 %%   MAD RAVINGS OF THE FUTURE 
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
-\section{Implications for Future Surveys / Visions for the future}\label{sec: visions}
+\section{Implications and Recommendations}\label{sec: visions}
+
 We've now identified several ways to suss out those subjects which require
 additional intervention. If SWAP can't classify it, then potentially these subjects 
 should be diverted to experts. If a machine can't classify it, then those subjects
