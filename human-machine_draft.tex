@@ -1032,13 +1032,12 @@ cumulative sample. We discuss this behavior below.
 
 By dynamically generating a training sample
 through a more sophisticated analysis of human classifications coupled with a 
-machine classifier trained through simple feedback mechanism, we are able to 
-retire over 200K GZ2 subjects in 27 days.  SWAP alone retires as many subjects in 50 days. 
-GZ2 requires XX \textit{months} to retire as many and 14 months to retire the entire 
-catalog of 285K subjects. 
-GZX thus provides\textit{a full order of magnitude decrease in classification time} 
-over the traditional crowd-sourced approach. Overall, the humans and the 
-machine each contribute approximately half of the overall retired subjects. 
+machine classifier trained through a simple feedback mechanism, we are able to 
+retire over 200K GZ2 subjects in 27 days.  SWAP alone retires as many subjects in 50 days
+while GZ2 requires XX \textit{months} to retire as many and 14 months to retire 
+the entire catalog of 285K subjects. 
+GZX thus provides \textit{a full order of magnitude decrease in classification time} 
+over the traditional crowd-sourced approach. 
 We next explore the composition of those classifications.
 
 
@@ -1052,25 +1051,40 @@ We next explore the composition of those classifications.
 \caption{The relative contributions of the human and machine components of GZX are nearly equal but display very different behaviors over the course of our simulation.  \label{fig: gzx components}}
 \end{figure}
 
-How much does each contribute to the overall classification? HUMANS: 109K,  MACHINE: 98K. 
+In Figure~\ref{fig: gzx components} we explore the relative contribution from both the 
+machine (blue) and SWAP (red). The solid black line shows the full GZX retirement 
+and the dashed line shows the SWAP-only fiducial run from section~\ref{sec: fiducial}. 
+Two things are immediately obvious. 
+First, we see that, over the course of our simulation, the machine retires a total of 
+$\sim100$K subjects while SWAP retires $\sim110$K subjects. Each shoulders approximately
+half of the classification burden. Secondly, the behavior in the rates of these
+retirements is clearly very different. Retirement through SWAP proceeds at a relatively
+constant rate from Days 5 through 25 before beginning to taper off. In contrast, 
+the machine contributes a massive surge in retirement during its first couple days 
+quickly overtaking the human contribution but plateaus dramatically thereafter.
+By Day 22, the human contribution through SWAP  again becomes the primary mode 
+of subject retirement. 
 
-How do these contributions relate to 
-each other? HUMANS: consistent number of retired subjets over the course of the simulation,
-MACHINE: huge input early on that tapers very quickly to a trickle. 
+Thus we clearly see  three epochs of subject retirement, as we presumed.
+In the first phase humans are the only contributors to the total number of retired subjects.  
+Once the machine has trained, it becomes a workhorse and takes a monstrous share 
+of the retirement burden though humans also contribute. 
+The machine quickly reaches it's peak performance, classifying all subjects 
+it's capable of recognizing and the third phase is thus left to humans who again dominate 
+the the rate of subject retirement. 
 
-Who's good at what task? HUMANS: good at recovering~\feat~subjects. 
-MACHINE: good at recovering~\notfeat~subjects. 
-
-In the next section we explore some of the properties of the machine's classifications 
-to understand the core of its performance.
-
-As expected, we see three epochs of subject retirement. In the first phase humans
-are the only contributors to the total number of retired subjects.  Once the machine
-has trained, it becomes a workhorse and takes a monstrous share of the retirement
-burden though humans also continue to retire subjects. The machine quickly reaches
-it's peak performance, classifying all the subjects it's capable of recognizing and the
-third phase is thus left to humans who again begin to dominate the the rate of 
-subject retirement. 
+Finally, we consider the composition of the two classifying agents. 
+Throughout the simulation, SWAP consistently retires, 38\% to 40\% of subjects
+ as~\feat~on any given night of the run. 
+In contrast, the machine labels only 14\% of retired subjects as~\feat~the first 
+night it runs and only 20\% are labeled~\feat~by the last day of the simulation. 
+Of all retired subjects, 27\% of them have a~\feat~label according to their majority
+ GZ2 raw vote fractions. This suggests that humans are more likely to identify
+obviously~\feat~galaxies while the machine seems predisposed to identify the converse.
+That humans and machine might be optimized  somewhat divergently is not surprising when 
+one considers that they are presented with different information and learn in 
+entirely distinct ways.  In the next section we explore  the machine's classifications 
+in more detail to understand the core of its performance.
 
 
 \subsection{Machine-only performance}
