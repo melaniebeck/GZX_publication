@@ -110,38 +110,38 @@ miscellaneous --- catalogs --- surveys}
 
 
 \section{Introduction} \label{sec:intro}
-The age of Big Data is upon us. Has been upon us. The astrophysics comnunity is 
-already shifting focus, preparing for the way in which our science will change and 
-the way in which we perform our science will chagne. Look at the new CasJobs -- 
-This is the type of shit we need: where analytical tools are integrated at the source
-of the data repository. Downloading datasets is a thing of the past. you can't do 
-Big Data science if you have to constantly move dem data around. 
 
-Another area we need to get ready for is how we label all that shit in the sky. 
-We absolutely love labelling things and it's damn necessary too! And the more sky
-we see both in terms of area and depth is going to grow huge AF. We need to find 
-efficient, clever ways of picking out transients, radio shits, gravitational lenses, 
-galaxy morphology, .... make a really big list with things that are rare or common
-or time-domain-y. LSST, Euclid, WFIRST are going to swamp us. 
+The age of Big Data is upon us. The astrophysics community has been  shifting focus, 
+preparing for the ways in which both science and how we perform that science will change. 
+Several stalwart astronomical data repositories have begun integrating analytical
+tools at the source, most notably CasJobs, because downloading data will become a thing 
+of the past when these data are terabytes in size. Advances in data storage, 
+telescope reduction pipelines, and data access are all required. 
+
+In addition to how we manage and compute on Big Data, we must also prepare
+for how we identify objects in the sky.  We will have access to more sky, both in terms 
+of area and depth, than ever before. Once those data have been reduced  and stored, 
+we must find efficient, clever ways of identifying transients, radio relics, gravitational lenses, 
+galaxy morphologies, and more, all while allowing for an unprecedented amount of new
+serendipitous discoveries. If not,  LSST, Euclid, WFIRST will overwhelm us. 
 
 In this paper we consider the particular problem of galaxy morphology. This 
-challenge is actually several combined because it necessitates the need to 
+challenge is actually several combined because it encapsulates the need to 
 identify the mundane from the unique or rare and, ideally, requires an incredible
 amount of detail in order to withdraw useful science. Additionally, morphology is
 a great place to start because we can already begin to plan for the future by 
-considering the Data of Today. The imaging techniques of future surveys will 
+considering the data we currently have. The imaging techniques of future surveys will 
 change mostly in resolution and depth; things we can account for. 
-
-Another great reason to use morphology as an example is that we can draw on 
+Another reason galaxy morphology is a useful example is that we can draw on 
 vast, well-established citizen science projects which have contributed to several 
-past publications and have lead to serenditious discovery on multiple occasions. 
-There is no doubt that to spurn this resource would be a disservice to science!!!!
+past publications and have lead to serendipitous discovery on multiple occasions. 
+There is no doubt that to spurn this resource would be a disservice to science. 
 
-So then. Morphology it is. And don't think that morphology is just a waste of time
-either. While there is certainly always room for improvement in our classification 
-system including the fact that our categories were made up 100 years ago and only 
-work for the local universe... putting galaxies into categories helps us learn 
-about the way dem galaxies be living their lives. 
+Of course, galaxy morphology has drawbacks as well. The community firmly clings to 
+a classification system developed nearly 100 years ago which works well only for 
+galaxies in the local universe.  However, the endeavor has merit as understanding 
+the nature of galactic structure provides us with a means to disentangle galactic 
+evolution.  
 
 %%%-------------------------------------------------------
 %%% FIGURE:     GZ EXPRESS Schematic
@@ -152,27 +152,25 @@ about the way dem galaxies be living their lives.
 \caption{Schematic of our hybrid system. Human classifiers are shown images of galaxies via the Galaxy Zoo web interface. These  classifications are recorded and processed according to section XXX. As a result of the processing, those subjects whose probabilties cross the classification thresholds are passed to the machine classifier as a training sample. The trained machine is then applied to the remaining subjects in the database (test sample). Those subjects which the machine classifies with high confidence are removed from the sample and considered fully classified. The rest remain in the database to be seen by human classifiers. \label{fig: schematic}}
 \end{figure*}
 
-The idea of combing human and machine classifications IS NOT NEW. That shit's
-old AF and a big topic of study in computer science circles; circles we astronomers
-have never been invited to but of which we should still be aware. \textbf{Citations
-from Chris go here!} So this idea is not novel. What IS novel is one of the first practical
-applications and the ability to explore the repercussions of such a system by 
+In this paper we present a framework for combining human and machine intelligence 
+for morphology classification tasks. This idea is not new in computer science circles as
+several studies have been done, many on Galaxy Zoo data 
+\textbf{[Microsoft research guy, Chris: citations, plz.]} 
+However, these studies are generally unknown to the astrophysics community and
+are, in some cases, impractical. The novelty of our approach lies in its
+practicality, simplicity, and in our ability to explore the repercussions of our system by 
 simulating various outcomes on previously collected data. 
 
-
-In this paper we consider visual classifications from both citizen scientists through
-the use of Galaxy Zoo data as well as expert visual classifications from various 
-published catalogs as well as visual classifications from within our own team. We 
-will combine these with various parameters which originally sought to automatically
-classifiy galaxy morphology. parameters like the Gini coefficient, M20, CAS, etc. 
-We'll wrap this all up in a neat little package by throwing it all in the 
-supervised machine learning algorithm black box which I'll actually explain.
-And out will pop some sweet classifications! 
-
-With all that said, start the paper! Section blah will be the components of the method. Section blah will be detail about post-processing visual classifications. Section blah will be about the machine algorithm. Section blah will be testing the method in various circumstances. Section blah will be results. Section blah will be Discussion/Conclusions. 
-
-
-
+We draw on visual classifications from the Galaxy Zoo project. We implement an 
+algorithm first developed for the Space Warps Zooniverse project and demonstrate
+for the first time that this algorithm is well suited to galaxy morphology classification
+and significantly increases the rate of classification compared to Galaxy Zoo. 
+We measure standard galaxy morphology indicators and use these as a feature
+vector for an implementation of a Random Forest machine learning algorithm. 
+We develop a decision engine with dictates how human and machine classifications 
+are combined and show that our approach achieves a full order of magnitude increase
+in the classification rate without sacrificing the quality of those classifications. 
+We begin with an overview of the Galaxy Zoo Express framework. 
 
 
 \section{Galaxy Zoo Express Overview}
