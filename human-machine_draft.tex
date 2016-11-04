@@ -421,6 +421,7 @@ volunteers who saw only one subject (say,~\feat), their probability in the
 other (\notfeat) remains unchanged.
 
 
+
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
 %%   Subsection: specifics of SWAP in context of simulations (sans Machine)
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -921,7 +922,7 @@ cross-validations score remains within 1\% on three consecutive nights,
 we deem the machine's performance acceptable. 
 
 
-\subsection{The Machine Shop}
+\subsection{The Machine Shop}\label{sec: machine shop}
 We can now describe a full GZX simulation. A typical run begins with human classifications 
 processed through SWAP for several days. During that time, humans `train' on the 
 gold standard sample and then begin classifying the main sample.  Once they retire 
@@ -1095,7 +1096,7 @@ applied to the test sample each night does deserve deeper consideration.
 In the next section we explore the machine's retirement to understand the core of its performance.
 
 
-\subsection{Machine-only performance}
+\subsection{Machine-only performance}\label{sec: machine performance}
 
 \begin{comment}
 %%%-------------------------------------------------------
@@ -1228,29 +1229,133 @@ desired. This choice should be motivated by the science goals of the project.
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
 \section{Implications and Recommendations}\label{sec: visions}
 
-We've now identified several ways to suss out those subjects which require
-additional intervention. If SWAP can't classify it, then potentially these subjects 
-should be diverted to experts. If a machine can't classify it, then those subjects
-can be relegated back to humans. Thus we have a cute little chain of command!
+We've demonstrated the first practical framework for combining human and machine
+ intelligence in galaxy morphology classifications tasks. By reprocessing the original
+Galaxy Zoo 2 classifications with SWAP, incorporating a supervised machine learning
+algorithm, and a simple decision engine which guides how these two agents interact, 
+we achieve an order of magnitude increase in the classification rate. Furthermore, 
+this is achieved while maintaining accurate identification of both~\feat~galaxies 
+those which are~\notfeat~to over 95\% when considering the mixed GZ2 labels
+discussed in the previous section. Additionally, we recover nearly 95\% of those
+galaxies dubbed~\feat~with contamination at a modest 15\%. In this section we 
+discuss our road map for the future including immediate steps we can take to further
+strengthen GZX, implications and practicalities for citizen science, and implications
+for upcoming massive surveys such as LSST, Euclid and WFIRST. 
 
-Apply all these performance metrics to the datasets expected from Euclid, LSST, etc. 
-Estimate reduction in classification time. 
+%%----------------------------------------------------------------------------------------------------------------------------------------------------
+%%  VISIONS FOR THE NEAR FUTURE
+%%----------------------------------------------------------------------------------------------------------------------------------------------------
+\subsection{Visions for the Near Future}
 
-\subsection{Short-term Visions}
+GZX represents the simplest and perhaps most intuitive way to combine human
+and machine intelligence. That it performs as well as it does gives the authors goosebumps
+and motivates a higher level of sophistication. Here we discuss a handful of the most 
+straightforward steps we will take to achieve that next level, implementation
+that we believe will not only further improve the rate of classification but also 
+the overall quality of those classifications. 
 
-Immediate steps we can take to make a stronger system.
+\textbf{A more sophisticated feedback mechanism.}
+As we mentioned in section~\ref{sec: machine shop}, our feedback mechanisms is 
+entirely passive in that no decisions are made about which subjects provide that 
+feedback. This was due to the obvious constraints of our simulations. 
+However, with SWAP we can leverage the most skilled volunteers as a means 
+of spot-checking that the machine is performing as expected. This could additionally
+provide a timely warning: if the machine consistently fails the spot-checking, a new
+algorithm could instead take its place. 
 
-1. more sophistcated feedback mechanism
+\textbf{A more sophisticated machine learning algorithm.} 
+We have demonstrated that dramatic results can be gained using a simple random 
+forest algorithm. This machine has several desirable qualities. 
+One can understand the machine's performance
+directly by examining the distribution of output in each of the input features as we 
+have done in section~\ref{sec: machine performance}. Thus one can monitor that 
+performance and make further decisions based on it (does the machine need additional
+training? should a different machine be used? etc.). Secondly, this algorithm can 
+inherently output probabilities associated with each prediction and identify which
+features were most important to that prediction. Finally, this machine is very fast
+to train. Even with a considerable cross-validation, the RF can train on 75K subjects
+in under and hour with an 2.9GHz 8-core laptop. 
 
-2. more sophisticated machine (deep learning? LDA? )
+That being said, a RF is still a very simplistic machine. It is highly sensitive to outliers
+in the feature vector space. It cannot accept measurement error on features. And it 
+can only accept distinct class labels (though it can certainly handle more than 2 as we
+have done here!). One way to better utilize all available information would be to 
+implement an algorithm that could accept a continuous distribution as a label since 
+this is precisely what SWAP outputs for every subject. Furthermore, providing a 
+probability distribution of possible output labels would also be wise as there are 
+galaxies that exhibit both~\feat~and~\notfeat~properties (S0 galaxies, anyone?). 
+Galaxy morphology is only distinct at the far ends of the spectrum with a great 
+many subjects wading in the middle, exhibiting a mixed set of features. Luckily, 
+algorithms exist that have these capabilities including deep convolutional neural
+networks (CNN) such as  Google's TensorFlow or Python's Theano, 
+and Latent Dirichlet allocation (LDA), an algorithm that is frequently used in 
+document processing. It is already known that CNNs can accurately predict 
+galaxy morphology labels but application of LDA to this type of task has never 
+been attempted, to our knowledge. 
 
-3. larger feature vector
+\textbf{A larger feature vector for each subject.} 
+Our choice of feature vector stems from work on ZEST~\citep{Scarlata2007} who 
+used the same set of features in a Principal Component Analysis to classify 120K 
+galaxies in the COSMOS field. Though G, M20, C, A, e have been well studied for
+decades and known to correlate with physical properties of galaxies. There are 
+additional morphological parameters that correlate with galaxy properties which 
+a machine algorithm could find more informative than the features we provide here. 
+In particular, the MID statistics of~\cite{Freeman2013} have been shown to correlate
+well for higher redshift galaxies and are less sensitive to noise. Our current features
+coupled with the MID statistics are all non-parametric indicators and could easily be implemented
+as basic measurements in upcoming survey reduction pipelines. Additionally, 
+information could be gained by the inclusion of parametric features such as 
+ Sersic index and bulge to total ratio, though these are more time consuming to 
+measure in bulk. 
 
-4. ultimate ensemble classifiers where machine votes are processed through their own instance of SWAP!
+We note that the morphology indicators we have discussed so far are geared towards
+ distinguishing between early- and late-type galaxies. However, our framework is applicable
+ to far more than just~\feat~or~\notfeat. A different question would require a  set of
+ features that appropriately identify the morphology of interest. 
+It is well known in machine-learning circles that choosing an appropriate feature 
+vector is more of an art than a science, thus these choices should be tested on a 
+ subsample prior to implementation in GZX. 
 
-5. SWAP that allows for a 3-way confusion matrix
+\textbf{A larger confusion matrix for SWAP.}
+Our simulations considered a binary classification task as this is how SWAP was 
+originally built. It was created with the goal of identifying rare events to which 
+it was only necessary to ask if the image in question contained a gravitational lens
+or not. We have demonstrated that SWAP can be used for pure classification and 
+for a task which is perhaps the most common question in the local Universe. 
+And though much can be gained from simple binary tasks, there will always be 
+occasion for a more complex classification. Specifically, any morphology task
+concerned with the strength of a feature (i.e., How pronounced is the galactic bulge, 
+if one exists?) will be difficult to force into a binary box. 
+
+The core of SWAP revolves around the confusion matrix that an agent assigns to each
+volunteer who classifies. Implementing SWAP3D, extending the confusion matrix to
+three dimensions should be relatively straightforward. Higher dimensions than this
+will quickly grow in complexity without much in additional gain. We note that most 
+questions in the Galaxy Zoo decision tree currently have or could be easily modified
+to consist of three responses.
 
 
+\textbf{On-the-fly machine ensembles.}
+Less straightforward than the previous tasks on our to-do list, this is nevertheless 
+the next logical extension of GZX. SWAP allows aggregation of the crowd to produce 
+meaningful subject classification. We see no reason why this same procedure could 
+not be applied to an ensemble of machine classifiers as hinted at in Figure~\ref{fig: schematic}.
+In this scheme, several disparate machine algorithms could train on the same training sample
+simultaneously and their predictions aggregated with SWAP. We have already 
+implemented an agent which is assigned to our machine classifier. This agent
+tracks the machine's performance over time and could, in principle, be used in 
+exactly the same way as agents assigned to human classifiers. 
+
+There is much work in the machine learning community concerning ensemble algorithms \textbf{[citations?]}
+and, in fact, a Random Forest is such an algorithm. These types of algorithms,
+and RF specifically, are created to reduce variance (sensitivity to small fluctuations
+in the training set) without increasing bias (error induced by erroneous assumptions
+in the learning algorithm, i.e., missing relevant relations between features). 
+It remains to be tested whether SWAP aggregation of a group of machines algorithms
+ will yield similar fruit. 
+
+
+\begin{comment}
 \textbf{Classifications are not debiased.}  
 It is a known issue that any visual 
 classification will be biased by several effects, especially redshift and size. 
@@ -1265,35 +1370,6 @@ these vote fractions because SWAP processes the original votes and does not
 have functionality to debias these votes. Thus, this step must still be done 
 after subjects are retired or the project completes. 
 
-
-\textbf{Where does the gold standard sample come from?}
-Of utmost importance to GZX is the establishment of a gold standard sample. 
-We utilized this sample both to provide "training" for volunteers and to provide 
-validation for the machine. Applications of GZX to other surveys and projects will
-require PIs to develop appropriate gold standard samples of their own data. 
-How should these samples be developed?
-How should the labels be applied? Luckily, the Zooniverse Project Builder is an 
-open source, free to use, web based service which allows teams to build and classify
-their own data.
- How large should the sample be?  Unfortunately, it is outside the scope of this paper
-to produce a larger gold standard sample for testing purposes. However, we have 
-unequivocally demonstrated that with a sample of ~3500 subjects, we are able to 
-achieve adequate results. 
-\textbf{It would be soooo cool to run SWAP again with fewer gold standard subjects; 
-or play around with how the classifications on gold standard subjects are distributed throughout the data. :(}
-
-
-\textbf{We didn't actually train volunteers.}
-The Space Warps project provided feedback to volunteers after their classification
-of simulated data thus providing practical training for their volunteers. We stress 
-that, although we have strived to mimic this process, we are reprocessing data and
-thus could not provide feedback in real time. The extent of this effect outside the scope
-of this paper, however, results of an application of SWAP to a live project 
-are explored in Wright2016, in prep \ref{Wright2016}. 
-\textbf{Notes: Fewer users trained. Fewer training images. 
-Less front-loading (how far apart can the training images be staggered and still produce good results?)}
-
-
 \textbf{Low redshift regime -- what can we do for higher z data?}
 GZ2 is a low redshift sample of galaxies, those to which the Hubble tuning fork 
 could be applied. At higher redshift, these class labels break down. 
@@ -1305,82 +1381,149 @@ We could easily extend our machine to perform on high redshift samples
 by incorporating the MID statistics \ref{Freedman2013}. Another future
 test will be to examine how GZX performs on Galaxy Zoo: Hubble and 
 Galaxy Zoo: CANDELS datasets. 
+\end{comment}
 
-\textbf{Naive machinery -- RF is too simplistic}
-Fig~\ref{fig: machine too simple} shows the pseudo-learning curve for fiducial
-GZX simulation. We note that it is not a true learning curve because the RF 
-model is not fixed for each night of training, though the range of hyperparameters
-found does not vary drastically. \textbf{My Prediction:} As in the example shown
-in Fig~\ref{fig: other figure}, we see that the cross-validation score increases as a
-function of training sample size (which is a proxy for project time) while the training score decreases. 
-
-That these two curves meet and plateau is a strong indication that this particular
-model is simply unable to adequately reflect the data. A more sophisticated model 
-should instead of used, however, this is beyond the scope of this paper. 
-
-In principle, any desired machine could be used including deep neural networks such 
-as that provided by Google's TensorFlow or Python's Theano. Though the standard 
-complications remain concerning the interpretation of CNNs, crowd-sourcing with
-SWAP provides a convenient and efficient way to quickly accumulate the large training 
-samples that CNNs require.  
+%%----------------------------------------------------------------------------------------------------------------------------------------------------
+%%  VISIONS FOR CITIZEN SCIENCE
+%%----------------------------------------------------------------------------------------------------------------------------------------------------
+\subsection{Visions for Citizen Science}
+The work presented here has provided us with unprecedented insight into the Galaxy
+Zoo project and, by extension, citizen science projects. Here we present a few of 
+our thoughts and suggestions for maximizing the wisdom of the crowd. 
 
 
-\subsection{My Vision for Galaxy Zoo / Citizen Science}
-Every iteration since the original Galaxy Zoo project has adopted a decision tree
-which yield dozens of individual class labels from several tasks asked of their users. 
-This was adopted for several reasons (I am assuming): 1. Maximizing the information 
-that could be gathered for each subject, 2. Minimizing the effort volunteers must 
-spend on each classification. To ``not waste time", most tasks in the decision tree
-are directly dependent on the preceding task and only ask volunteers questions that
-are sensible for the subject at hand, i.e., not asking whether a subject has spiral arms
-when the volunteer classified it as `Smooth'. The downside to this structure is the 
-complications in both analysis of the volunteer votes for the creation of GZ catalogs
-and the ability and extent to which one can use a GZ catalog. True 
-statistical samples cannot be created because not all subjects are asked the same 
-question. Users of the GZ catalogs can mine for purity but cannot hope to achieve
-completeness. Selecting samples for scientific analysis requires a slew of cuts on 
-every task in the GZ decision tree preceding the question of interest. 
+\textbf{Don't waste volunteers' time.} A core tenant of the Citizen Science Alliance (?)/
+citizen science 
+ is not wasting human effort. If a project can be accomplished by a small 
+group of experts, by an automated task, or a combination of both, citizen scientists
+should not be tapped. SWAP alone presents a means to reduce the required 
+effort from citizen scientists by a factor of 4-5. After incorporating a machine, we 
+reduce human effort by XXX. Human eyes thus remain crucial to classification tasks
+as training samples don't generate themselves, but the burden can and should be reduced. 
 
-To alleviate these concerns, our vision for the future of Galaxy Zoo classifications
-would consist of several, simple, binary questions. Each question would be tracked by a 
-separate version of SWAP and, if appropriate, a machine (or several). The questions
-themselves would need to be redesigned though the spirit could remain unchanged. 
-An answer of `Featured` = Yes would automatically provide an answer of  `No' to every 
-subsequent question down the `Smooth' path of the decision tree. 
-If a volunteer answers "Could this be an edge on disk?" with "Yes", a series of `No's 
-would be entered for the questions which would have followed, had the volunteer answered 'No'.
-In this way, volunteers will still only see questions which they believe are pertinent to the 
-subject but the various SWAP agent(s) assigned to this user will interpret and 
-extrapolate their answers such that ALL questions in the ``tree" are answered thus
-providing statistical reliability, ease of classification analysis, and straightforward 
-data products.  
+Towards that end, the Zooniverse has plans and is currently developing
+several of the techniques presented here into their online platform. Though we 
+note that our framework doesn't necessarily require Galaxy Zoo or the Zooniverse, 
+it is the largest citizen science web platform in the world. Once SWAP has been
+implemented on their back end, they are an obvious choice for handling at least
+the crowd-sourcing aspect of classification tasks. 
+\textbf{[Chris: feel free to adjust/add/subtract from this section as you see fit!]}
 
-Additional modification of the existing SWAP software will be necessary to achieve
-these goals. First, SWAP3D will need to be developed in order to handle questions to 
-which a binary option doesn't make sense, i.e. "How many spiral arms...". It should be 
-relatively trivial to extend SWAP's confusion matrices into the third dimension. 
-Secondly, architecture will need to be put in place to  allow agents assigned to a 
-volunteer in one task to communicate the anti-answer to agents in another task. 
-Alternatively, the architecture could be redistributed such that a single agent is
-still assigned to a volunteer but participates in several analysis chains independently. 
 
-Each thread or task can also be assigned different machine learning algorithms. 
-It is important to keep in mind that different machines will achieve various 
-performance levels depending on what they train on. Our particular machine would
-not be able to answer the question "Is there a bar or not?" because G, M20, CAS, etc.
-are not suited for detecting bars. Providing the machine with information 
-pertinent to the subject will be crucial. This is an area where deep learning 
-techniques could lend additional benefits. 
+\textbf{Engagement = More votes = faster classification.}
+Nearly every Zooniverse project has a surge of volunteer effort within the first 
+few days of a project's inception. The results we present here are due in large 
+part to this phenomenon. If one looks at the rate of incoming volunteer classifications
+for the original Galaxy Zoo 2 project, it peaks on day 2-3 at over 400K! Within one
+week of GZ2's inception, XXX classifications were made by XXX volunteers. 
+ After the initial excitement dies down, most projects receive
+a greatly reduced but steady stream of classifications. Therefore, take advantage
+ of this initial peak in classifications by generating excitement with emphasis on 
+volunteer engagement. This leads to a greater the surge in volunteer classifications 
+at the outset of a project, and allows SWAP and the machine to tackle substantial data sets.  
 
-\subsection{Long-term Visions -- Data Deluge}
 
-How well will our system be able to tackle the challenges of LSST, Euclid, etc? 
+\textbf{Train your volunteers.}
+The Space Warps Zooniverse project was one of the first citizen science projects
+to demonstrate that humans could be trained in a similar way as machine algorithms, 
+and that this effect could be substantial and quantified.  Although we have strived to 
+mimic this process, we obviously could not provide feedback in real time. We have, 
+however compared the classifications of the top 5 most skilled GZ2 volunteers
+(as quantified by SWAP) to our expert classifications for the sample of 3500 galaxies 
+we described in section~\ref{sec: training sample}. We find that even the most
+skilled volunteers are still biased towards classifying galaxies as~\notfeat.
+We surmise this is due, in part, to the fact that GZ2 did not provide a training 
+program which precluded volunteers from discerning S0-Sa galaxies, a task at 
+which experts are more sensitive.  
 
-Incorporating mutliple machines
+Applications of GZX to other projects will require PIs to develop appropriate 
+gold standard samples for their data. We suggest that this expert sample could be
+developed using the Zooniverse Project Builder, an open source, free to use, web based 
+service which allows science teams to build and classify their own data.
+ How large should the sample be?  Unfortunately, this question is outside the scope 
+of this paper. However, our sister publication~\citep{Wright2016, submitted}, uses 
+SWAP in a live project classifying XXX and discusses the 
+%Alternatively, the first question in Galaxy Zoo could be reworded to exclude the concept of `disk' which is never explained. 
 
-Incorporating more clever machines
 
-Different strategies for different types of data -- Darryl's paper 
+\textbf{Decision Trees versus Volunteer Experience}
+Every iteration of Galaxy Zoo, with the exception of the the original project, has 
+adopted a decision tree yielding dozens of possible class labels from several tasks.
+The downside to this structure is the complications arising in both aggregation of  
+volunteer votes and the ease of which one can use the resulting GZ catalogs. True 
+statistical samples cannot be created because the same questions are not asked 
+of every subject. GZ catalogs can be used to identify pure samples at the expense
+of completeness, where these samples are generated through a series of cuts on 
+every task in the decision tree preceding the question of interest. 
+
+Our vision for the future of Galaxy Zoo and other projects which utilize decision trees
+would have an instance of SWAP for each task in the tree and, if appropriate, 
+one or several machine classifiers.  The volunteer would still see a sensible subsequent
+question depending on her response but SWAP would appropriate a negative response 
+for every subsequent task down the path she \textit{doesn't} take. For example, 
+if she answered~\feat~to the first question, SWAP would automatically record a 
+negative response to every subsequent question down the `Smooth' path of the decision tree. 
+This would allow every subject in the sample to receive an answer for every question
+ in the decision tree thus providing statistical reliability, easier vote aggregation analysis, 
+and straightforward data products.  
+
+This would require additional SWAP architecture such that a single agent assigned
+to a volunteer would have the additional directive to participate in several instances of SWAP
+at once, where that volunteer is assigned as many confusion matrices as questions in the tree.
+These suggestions are motivated, in part, due to observed volunteer experience. 
+ Separating the decision tree into several distinct tasks has been shown to fall short 
+in compelling volunteers to carry on the project \textbf{[Chris: citations? comments?]}. 
+It seems volunteers prefer more integrated tasks. This is 
+important because it relates to engagement which in turn can encourage additional
+volunteers and classifications as discussed above. 
+
+
+%%----------------------------------------------------------------------------------------------------------------------------------------------------
+%%  IMPLICATIONS FOR UPCOMING LARGE-SCALE SURVEYS
+%%----------------------------------------------------------------------------------------------------------------------------------------------------
+\subsection{Dealing with the Data Deluge}
+The work in this paper has been motivated by the need for increased speed in the 
+face of several large surveys to come online in the next 5 years. These projects
+promise to deliver more raw data per night than we have accumulated in the past 
+decade. We briefly discuss how GZX might handle the data deluge.
+
+\textbf{Is an order of magnitude enough?} We've demonstrated that we can achieve
+an order of magnitude increase the rate of subject retirement for galaxy morphology
+tasks. But is this enough? Some some predictions, Euclid is expected to obtain
+measurable morphology with VIS for $\sim10^8$ galaxies, more than has ever been 
+classified before. \textbf{[Claudia: help here?]} Galaxy Zoo is currently able to classify
+roughly 400 images per day \textbf{verify!}. At that rate, it would take over 3000 years
+to classify the entire Euclid sample.  
+
+Similarly, LSST promises to deliver XXX galaxies with measurable morphology each year. 
+\textbf{[Chris help. I know nothing of LSST.]}
+
+With GZX, we conceivably reduce classification time by an order of magnitude 
+which puts us on the timescale of dozens to hundreds of years. 
+Still a long time to wait for suitable catalogs.
+However, we are within arms reach of an adequate solution. 
+The slack will have to be made up by machines with the exploration and implementation of more sophisticated machine algorithms with more robust feature vectors as previously discussed.
+
+The Euclid collaboration is already considering which morphology indicators will
+be built into their reduction pipeline for galaxy morphology studies and we suggest
+that LSST do likewise \textbf{[Are they already?]}. 
+Not only are these suitable for galaxy studies themselves, 
+they provide the framework and feedback by which we can judge a machine classifier's 
+performance. 
+
+\textbf{Is the performance enough?} We've demonstrated that GZX as implemented
+here can provide classifications with accuracy around 95\%. But 95\% of a billion
+still leaves us 50 million galaxies with unreliable classifications, a daunting projection.
+Deep learning can provide a solution at the expense of interpretability if volunteers
+can be trained to produce classifications that are less biased. In addition, ensembles
+of machine classifiers aggregated through SWAP could provide another promising avenue.
+A third solution is presented in our sister publication~\ref{Wright2016} whereby 
+accuracy is dramatically increased through an entirely different human-machine 
+combination. In that paper we explore the effects of combining the human 
+classification with the machine's directly and find that an average of the two yields
+the most reliable classification. 
+
+
 
 
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1388,47 +1531,36 @@ Different strategies for different types of data -- Darryl's paper
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
 \section{Conclusions}
 
-We outline and test a novel, new system for efficiently classifying galaxy morphologies, 
-a task that will surly prove difficult with the onset of such surveys as LSST, Euclid, 
-and WFIRST. Our system incorporates the native ability of the human mind to identify
-the abstract and novel with machine learning algorithms who provide speed and 
-brute force. These, coupled with a more sophisticated analysis of volunteer votes 
-through SWAP and a decision engine which delegates tasks between human and 
-machine combine to create a classification system which is more than an order of
-magnitude faster than anything presented before. Efficiency is achieved through 
-the dynamic generation in real time of a training sample by human classifiers which
-allows the machine to quickly understand the parameter space. 
+We outline and test Galaxy Zoo Express, a novel system for the efficient classification 
+of galaxy morphology tasks.  Our system incorporates the native ability of the human 
+mind to identify the abstract and novel with machine learning algorithms which provide
+ speed and brute force.  
 
-Classification efficiency is achieved in three ways: 
+We demonstrate for the first time that the SWAP algorithm, 
+originally developed to identify rare gravitational lenses in the Space Warps project, 
+is robust for use in galaxy morphology classification. We show that by implementing
+SWAP on Galaxy Zoo 2 classification data we can increase the rate of classification by a factor
+of 4-5, requiring only 90 days of project time to sufficiently classify nearly 80\% of the
+entire Galaxy Zoo 2 galaxy sample. 
 
-1. sophisticated analysis of human visual classifications; reducing the amount of time
-humans would be required to contribute. 
+Furthermore, we have implemented and tested a simple Random Forest algorithm 
+and developed a decision engine that delegates tasks between human and 
+machine.  We show that even a simple machine is capable of providing significant 
+gains in the rate of classification allowing us to retire over 70\% of GZ2 galaxies in 
+just 32 days of GZ2 project time. This is an order of magnitude decrease in the time 
+required compared to the original Galaxy Zoo 2 project. This is achieved without 
+sacrificing the quality of classifications as we maintain accuracy well above 90\% 
+throughout our simulations. 
+Additionally, this machine, though simplistic, can provide valuable insight to the 
+classification process because it learns on a 5-dimensional parameter space consisting 
+of a variety of traditional non-parametric morphology identifiers. 
 
-2. Sharing the burden of classification with a work-horse machine learning algorithm, 
-in this case, a simple Random Forest. This quick and easy algorithm is fast to train, 
-requiring little in the way of computation time, yet accounts for more than 50\% of 
-the overall subject retirement count. 
+The gain in classification speed allow us to come within reach of being able to 
+handle the massive amounts of data that upcoming large-scale surveys like LSST, 
+Euclid, and WFIRST promise to provide. With a few modest upgrades to our GZX 
+framework we are confident this method will be able to handle the gargantuan 
+task of morphology classification of the billions of galaxies soon to be cataloged. 
 
-3. Rapid identification of subjects for which classifications, visual or machine, are
-unrealistic. 
-
-
--- We demonstrate that even a simplistic and naive machine can still provide a 
-significant boost to classification efficiency without dramatically deteriorating 
-classification quality. Furthermore, simple machines are quick and easy to train. 
-
--- This doesn't have to be done on the Zooniverse platform. The code is (will be) 
-publicly available and free to use or incorporate as the user sees fit. It can be used
-with small groups of experts or with your favorite citizen scientists. However, 
-work has already begun by Zooniverse developers to incorporate these techniques
-into the backend of their existing, stable platform. They have a well-defined base 
-of volunteers, significant funding and nearly ten years of expertise in citizen science. 
-
-
--- Take advantage of the initial peak of classifications characteristic of every
-Zooniverse project. The larger the excitement generated for the project, the greater
-the surge in volunteer classifications at the outset, the more quickly SWAP and
-machine can tackle substantial data sets. 
 
 
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
