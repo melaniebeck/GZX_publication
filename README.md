@@ -17,8 +17,8 @@
 
 ## Needed Figures
 1. Machine Learning Curve -- justify "learned" decision
-2. Machine FAILS on what?
-3. Machine training/learning performance
+2. ~~Machine FAILS on what?~~ -- Can't answer that. :(
+3. ~~Machine training/learning performance~~
 
 
 ## Figures that need desparate tweaking
@@ -26,9 +26,9 @@
 2. ~~SWAP fiducial model: "GZExpress" = "SWAP"~~
 3. ~~SWAP vote distributions: Need to verify these are even from the correct simulation~~
 4. ~~SWAP FAILED: this whole thing is hideous~~
-5. Machine only performance: X axis is incorrect -- those are dates; not days!
+5. ~~Machine only performance: X axis is incorrect -- those are dates; not days!~~
 6. Show that the UNCLASSIFIED don't have a strong peak anywhere in probability space \\
-    (i.e. changing the p_machine from 0.9 won't really help a lot)
+    (i.e. changing the p_machine from 0.9 won't really help a lot) -- don't think this is useful anymore
 
 ## Why do you need a machine at all?
 SHOW CUTS ON MORPHOLOGY PARAMETERS ALONE ARE NOT ENOUGH TO MATCH THE 
