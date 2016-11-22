@@ -147,7 +147,7 @@ While Galaxy Zoo has provided a solution that scales visual classification for c
 One solution is full automation. One approach is to define a set of features which describe the morphology in an N-dimensional space. Decision boundaries within this space define morphological types for each galaxy. Learning these decision boundaries can be achieved through machine learning techniques such as support vector machines \citep{HuertasCompany2008} or principal component analysis \citep{Scarlata2007}.  Another approach is through deep learning, a machine learning technique that attempts to model high level abstractions. Algorithms like convolutional neural networks have been used with impressive accuracy \citep{Dieleman2015, HuertasCompany2015}. However, a drawback to all automated classification techniques is the need for standardized training data, with more complex algorithms requiring more data. Furthermore, that data must be consistent for each survey as differences in resolution and depth can be inherently learned by the algorithm making their application to disparate surveys challenging.  
 
 
-In this work we seek a  system which preserves the best features of both human and automatic classifications, developing for the first time a system which brings both human and machine intelligence to the task of galaxy morphology in a way that can tackle the scale and scope of next generation data. We demonstrate the effectiveness of such a system through a 
+In this work we seek a system which preserves the best features of both human and automatic classifications, developing for the first time a system which brings both human and machine intelligence to the task of galaxy morphology in a way that can tackle the scale and scope of next generation data. We demonstrate the effectiveness of such a system through a 
 re-analysis of visual galaxy morphology classifications collected during the Galaxy Zoo 2
 project, and combine these classifications with a suite of non-parametric 
 morphology indicators widely used for automated morphologies. Our method 
@@ -504,7 +504,7 @@ space in Appendix~\ref{sec: tweaking swap}.
 %%%  FIGURE:   SWAP failures
 %%%-------------------------------------------------------
 \begin{figure}[t!]
-\includegraphics[width=3.65in]{figures/swapgetsitwrong_test.png}
+\includegraphics[width=3.2in]{figures/swapgetsitwrong_cropped.png}
 \caption{The right panel shows the distribution of GZ2 `features or disk' + `star or artifact'  raw vote fractions for subjects identified as false positives (blue) and false negatives (red). The solid distribution represents all subjects retired by SWAP. Vote fractions between 0.4 and 0.6 indicate that volunteers were uncertain on the nature of those subjects.  That SWAP doesn't assign a matching label is not surprising.  \label{fig: SWAP sucks}}
 \end{figure}
 %Furthermore, it is unsurprising that these same subjects are physically more difficult to classify being, on average, smaller and fainter than the sample as a whole as shown in the right panel. 
@@ -661,6 +661,14 @@ Where $f_i$ is the $i$th subject's feature value, $\mu$ is the mean of the entir
 \end{comment}
 
 
+
+%%%-------------------------------------------------------
+%%%  FIGURE:   LEARNING CURVE
+%%%-------------------------------------------------------
+\begin{figure}[t!]
+\includegraphics[width=3.25in]{figures/learning_curve_RF.png}
+\caption{Learning curve for a Random Forest with fixed hyperparameters (maximum depth of tree, number of trees, etc.). The training score is the accuracy of the trained machine applied to its own training sample. The cross-validation score is the accuracy of the machine computed during the cross-validation process. When the training sample size is small, the machine is able to accurately identify its own training sample but is unable to generalize to unseen data, as evidenced by a low cross-validation score. As the training sample size increases, the cross-validation score increases demonstrating that the machine is more adept at generalization. This behavior plateaus indicating that larger training sample sizes provide little in additional performance. \label{fig: learning curve}}
+\end{figure}
 %\subsection{Training and Validation Samples}
 %The training sample again for the machine is dynamically generated through SWAP-retired
 %subjects as discussed in detail in section~\ref{sec: SWAP}. 
@@ -697,14 +705,6 @@ In practice, a much larger training size is required for the machine to learn th
 true parameter space. There is no hard rule for choosing this number, but a RF 
 is a simple model so we initially require at least 10K subjects before attempting the first training session. 
 
-
-%%%-------------------------------------------------------
-%%%  FIGURE:   SWAP failures
-%%%-------------------------------------------------------
-\begin{figure}[t!]
-\includegraphics[width=3.25in]{figures/learning_curve_RF.png}
-\caption{Learning curve for a Random Forest with fixed hyperparameters (maximum depth of tree, number of trees, etc.). The training score is the accuracy of the trained machine applied to its own training sample. The cross-validation score is the accuracy of the machine computed during the cross-validation process. When the training sample size is small, the machine is able to accurately identify its own training sample but is unable to generalize to unseen data, as evidenced by a low cross-validation score. As the training sample size increases, the cross-validation score increases demonstrating that the machine is more adept at generalization. This behavior plateaus indicating that larger training sample sizes provide little in additional performance. \label{fig: learning curve}}
-\end{figure}
 
 \textbf{When has the machine trained enough?} 
 We assess the machine's training by considering a learning curve, 
@@ -891,6 +891,16 @@ its first couple days, quickly overtaking the human contribution, but plateaus t
 By Day 22, the human contribution through SWAP again becomes the primary mode 
 of subject retirement. 
 
+
+%%%-------------------------------------------------------
+%%%  FIGURE:    MACHINE GETS IT RIGHT!!!
+%%%-------------------------------------------------------
+\begin{figure*}[t!]
+\centering
+\includegraphics[width=6in]{figures/machine_false_positives_jpgs.png}
+\caption{Galaxies the machine identifies as~\feat~but which the majority of human classifiers labeled as~\notfeat. The number in the lower left corner is the GZ2 smooth vote fraction, that is, the fraction of volunteers who classified the subject as `smooth'. \label{fig: machine false pos}}
+\end{figure*}
+
 We thus clearly see three epochs of subject retirement, as we presumed.
 In the first phase, humans are the only contributors to the total number of retired subjects.  
 Once the machine has trained, it immediately contributes as much to subject retirement as humans.
@@ -936,10 +946,10 @@ applied to the test sample each night does deserve deeper consideration.
 In the next section we explore the machine's retirement to understand the core of its performance.
 \end{comment}
 
-
 \subsection{Machine performance}\label{sec: machine performance}
 
-
+%%%%%%%%%%%% COMMENTED OUT %%%%%%%%%%%%%%%%%%
+\begin{comment}
 %%%-------------------------------------------------------
 %%%  FIGURE:    MACHINE METRICS VARY WITH LABEL
 %%%-------------------------------------------------------
@@ -947,15 +957,50 @@ In the next section we explore the machine's retirement to understand the core o
 \includegraphics[width=3.5in]{figures/GZ2_sup_PLPD5_p5_flipfeature2b_RF_accuracy_redo_raw_combo_machine_metrics_comparison.png}
 \caption{The performance of our RF algorithm varies depending on which set of GZ2 labels are provided as `truth'. Each panel shows the accuracy, purity, and completeness computed on the cumulatively retired subject set retired by that day in the simulation for three different sets of GZ2 labels: the raw vote fractions used throughout the analysis thus far, the debiased vote fractions, and a combination of the two described in the text. \label{fig: machine metrics}}
 \end{figure}
+\end{comment}
 
-The analysis of the results thus far have assumed that~\raw~labels  are the 
-best `truth' for both the machine and SWAP's output. 
-This was the best choice for SWAP since our goal was to directly compare 
+
+The analysis of the results thus far have assumed that~\raw~labels are ground
+ truth for every GZ2 subject. These labels were the best choice to estimate the
+quality of SWAP since we were directly comparing 
 human consensus through two different aggregation algorithms.
 However, the machine does not learn in the same way, nor is it presented with the 
-same information that humans are given. 
-% It is thus reasonable to explore the possibility that the machine and humans are biased in different ways. For example,
+same information. We argue that the machine classifications are, in fact, valid 
+and complimentary to human classifications. 
 
+We visually examine a portion of subjects that
+were deemed false positives according to their~\raw~labels. 
+Figure~\ref{fig: machine false pos} shows a random sample of images we inspected. 
+The value in the lower left corner is the GZ2 smooth vote fraction, that is, the
+fraction of volunteers who classified that subject as~\notfeat. The sample
+consists primarily of edge-on disks and disk galaxies with low surface brightness
+features. 
+
+That the machine is apparently sensitive to a different information space and 
+can identify~\feat~galaxies that humans classify as~\notfeat~likely has two 
+ contributing factors: 
+1) the first question of the GZ2 decision tree asks a very specific question; one which doesn't necessarily correlate with a split between early- and late-type galaxies, and 
+ 2) the machine learns on morphology diagnostics that are very different from visual inspection. 
+The first point is a recognition that humans will interpret a task quite literally. 
+Many of the subjects in Figure~\ref{fig: machine false pos} could be argued to 
+have a `smooth' quality. Furthermore, this behavior could be modified by providing
+actual training images and live feedback as performed in \cite{Marshall2016}. 
+The second point suggests that the morphology indicators we measure are 
+sufficient for the machine to recognize~\feat~galaxies regardless of the labels humans provide. 
+It remains to be seen whether this generalizes to other machine algorithms.
+We note that most of these galaxies are labeled as~\feat~after GZ2's debiasing process. 
+
+In our system, the machine classifies subjects which are not seen by humans. 
+However, the disagreement between human and machine is an area ripe for 
+discovery. The complementary nature of human and machine classification can 
+best be utilized by a feedback mechanism in which a portion of machine-retired
+subjects are reviewed by humans. Subjects that display excessive disagreement
+should be verified by an expert (or expert-user).  In the same way that 
+humans increase the machine's training sample over time, subjects which the
+machine properly identifies can become part of the humans' training sample. 
+ 
+%%%%%%%%%%%% COMMENTED OUT %%%%%%%%%%%%%%%%%%
+\begin{comment}
 Figure~\ref{fig: machine metrics} examines the quality of the classifications made by 
 the machine during the course of the simulation. The black lines represent our 
 standard quality metrics computed from~\raw~labels. The red lines are the same 
@@ -972,18 +1017,12 @@ We solidify this idea by computing the blue lines in Figure~\ref{fig: machine me
 wherein we apply~\deb~labels to the sample of false positives and~\raw~labels otherwise. 
 The quality of the machine classifications improves in all categories. 
 
-This behavior indicates that the machine is sensitive to a different information space 
-and is able to identify~\feat~galaxies that humans originally classify as~\notfeat; 
-labels which were ultimately recovered through GZ2's debiasing process. 
 We see this explicitly by examining the morphology distributions for subsamples of
  machine-retired galaxies as shown in Figure~\ref{fig: morph params}.
  The top row shows the difference between these distributions for 
 the~\feat~and~\notfeat~samples, while the middle row shows the false positive 
 and false negative samples. We see that the morphology distributions for the 
 false positive sample are nearly identical to the morphology distributions for the~\feat~sample. 
-This suggests that this combination of morphology indicators, specifically 
-Gini, concentration, and ellipticity, are enough for the machine to recognize~\feat~galaxies 
-regardless of what labels humans provide.  
 
 Why then doesn't the machine identify all galaxies that are ultimately
 labeled as~\feat~by~\deb~labels? We know it does not as evidenced by the paltry
@@ -994,20 +1033,19 @@ which match~\raw~labels to 95\%. We would expect a higher level of completeness
 
 The machine is retiring more~\feat~galaxies than~\raw~labels suggest but not all that 
 the~\deb~labels suggest. 
-We thus conclude that two effects contribute to the disparity in the retirement 
-ratios of~\feat~galaxies between humans and machines indicated in Figure~\ref{fig: gzx components}. 
 
-1.) The machine learns on different information in a different way than humans, and
+%%%-------------------------------------------------------
+%%%  FIGURE:   CAS DISTRIBUTIONS 
+%%%-------------------------------------------------------
+\begin{figure*}[t!]
+\centering
+\includegraphics[width=7in]{figures/GZ2_sup_PLPD5_p5_flipfeature2b_RF_accuracy_redo_raw_combo_morph_params_raw_labels_4paper.png}
+\caption{What the machine can and can't classify. \label{fig: morph params}}
+\end{figure*}
 
-2.) The machine trains on labels which have not yet been debiased. 
+\end{comment}
+%%%%%%%%%%%%  END COMMENT %%%%%%%%%%%%%%%%%%
 
-The first is largely the result 
-of the particular machine and feature vector we have chosen, though it remains to be
-seen if this generalizes to other machine algorithms. The second is a consequence
-of the current state of our human+machine combination and advocates for a dynamical
-debiasing process to be performed after SWAP aggregation and before labels are passed
-to the machine. This would likely provide the best sample purity and completeness, 
-however, such work is beyond the scope of this paper.  
 
 %It is well known that visual classifications are sensitive to a galaxy's redshift and surface brightness. For this reason,~\cite{Willett2013} compute corrections to the volunteer vote fractions. These debiased vote fractions effectively increase the number of~\feat~galaxies in the GZ2 sample. 
 
@@ -1030,16 +1068,6 @@ however, such work is beyond the scope of this paper.
 %could indicate that the machine needs at least 3 parameters to strongly predict a~\feat~label.
 
 
-%%%-------------------------------------------------------
-%%%  FIGURE:    Machine classifies SHITTIER SUBJECTS -- OR DOES IT? 
-%%%-------------------------------------------------------
-\begin{figure*}[t!]
-\centering
-\includegraphics[width=7in]{figures/GZ2_sup_PLPD5_p5_flipfeature2b_RF_accuracy_redo_raw_combo_morph_params_raw_labels_4paper.png}
-\caption{What the machine can and can't classify. \label{fig: morph params}}
-\end{figure*}
-
-
 %Another desirable quality of the RF algorithm is its interpretability. The trees in the forest each split on values for every dimension of the feature vector where  splits that reduce the prediction error are preferred. From this one can reconstruct which features are most important for determining class predictions. Unsurprisingly, our machine puts a great deal of weight on the Gini coefficient which is clearly evident in the decisive separation between subject subsets  in the top two rows of Figure~\ref{fig: morph params}. The RF next places nearly equal weight on Concentration and ellipticity.  \textbf{double check this and values}
 
 %We recognize that deep learning algorithms are becoming increasingly popular and incredibly powerful at accurate prediction. However, a core drawback to these algorithms is their black box quality. Not only is it difficult to interpret which features they identify, it has yet to be shown how or if these features directly relate to the physical  properties of galaxies. Furthermore, while huertas-company, deilman ( and others?) have demonstrated that these algorithms can be trained to very accurately predict just as humans would, we know that human classification is inherently biased (moreso for the general public, but even experts disagree!). By using a simple off-the-shelf random forest we may not achieve the same level of accuracy as a deep learning algorithm, however we argue this is due to the fact that this machine can be optimized to, in a sense, counteract human bias. 
@@ -1056,39 +1084,35 @@ however, such work is beyond the scope of this paper.
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
 %%   MAD RAVINGS OF THE FUTURE 
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
-\section{Looking Forward}\label{sec: visions}
+\section{Looking Forward and wrapping up}\label{sec: visions}
 
-We've demonstrated the first practical framework for combining human and machine
- intelligence in galaxy morphology classifications tasks. By reprocessing the original
-Galaxy Zoo 2 classifications with SWAP, incorporating a supervised machine learning
-algorithm, and implementing a simple decision engine which guides how these two agents interact, 
-we achieve an order of magnitude increase in the classification rate. 
+We have demonstrated the first practical framework for combining human and machine
+ intelligence in galaxy morphology classifications tasks. 
+%By reprocessing the original Galaxy Zoo 2 classifications with SWAP, incorporating a supervised machine learningalgorithm, and implementing a simple decision engine which guides how these two agents interact, we achieve an order of magnitude increase in the classification rate. 
 %This is achieved while maintaining accurate identification of both~\feat~and~\notfeat~
 %galaxies to over 95\%. Additionally, we recover nearly 95\% of~\feat~galaxies with contamination at a modest 15\%. We now discuss our road map for the future including implications for upcoming massive surveys such as LSST or Euclid. 
-Our results have implications for the future of citizen science in general and Galaxy Zoo in particular, 
-however we focus here on a brief discussion of our next steps and potential applications to large upcoming surveys. 
+Our results have implications for the future of citizen science in general and 
+Galaxy Zoo in particular, however we focus instead on a brief discussion of our next 
+steps and potential applications to large upcoming surveys. 
 
-%%----------------------------------------------------------------------------------------------------------------------------------------------------
-%%  VISIONS FOR THE NEAR FUTURE
-%%----------------------------------------------------------------------------------------------------------------------------------------------------
-\subsection{From Simple to Sophisticated}
-
+%\subsection{From Simple to Sophisticated}
 GZX represents perhaps one of the simplest ways to combine human
 and machine intelligence. Its impressive performance motivates a higher 
-level of sophistication. Here we discuss a handful of the most 
-straightforward steps that will advance GZX to the next level, implementation
-that will not only further improve the rate of classification but also 
-the overall quality of those classifications. 
+level of sophistication. We presen tthree of the most 
+straightforward steps that will advance our system to the next level, implementation
+that will improve both the rate of quality of morphology classifications. 
 
-\textbf{A more sophisticated feedback mechanism.}
-As we mentioned in section~\ref{sec: machine shop}, our feedback mechanisms is passive. 
-However,  SWAP allows us to leverage the most skilled volunteers to field those 
-galaxies which are the most difficult for either human or machine classify. 
+First, our current system contains only a passive feedback mechanism. However,  
+we envision multiple forms of active feedback.  SWAP allows us to leverage the 
+most skilled volunteers to review those galaxies which are the most difficult for either
+ human or machine classify. Additionally, a portion of subjects classified by machine 
+should subsequently be reviewed by humans since we have shown that disagreements 
+between these two agents could signify to experts that something interesting is afoot. 
+
 %This could additionally provide a timely warning: if the machine consistently fails the spot-checking, a new algorithm could instead take its place. as a means of spot-checking that the machine is performing as expected as well 
 
-\textbf{A more sophisticated machine learning algorithm.} 
-The random forest algorithm is not easily adapted to handle measurement errors or
-class labels with continuous distributions. To fully utilize the information provided by
+Secondly, the random forest algorithm is not easily adapted to handle measurement 
+errors or class labels with continuous distributions. To fully utilize the information provided by
 SWAP, algorithms which can handle continuous distributions for the input and output 
 subject labels should be explored. 
 These include deep convolutional neural networks (CNN) or Latent Dirichlet allocation (LDA), 
@@ -1125,12 +1149,7 @@ an algorithm that is frequently used in document processing.
 
 %Our simulations considered a binary classification task as this is how SWAP was originally built. It was created with the goal of identifying rare events to which it was only necessary to ask if the image in question contained a gravitational lens or not. We have demonstrated that SWAP can be used for pure classification and for a task which is perhaps the most common question in the local Universe. And though much can be gained from simple binary tasks, there will always be occasion for a more complex classification. Specifically, any morphology task concerned with the strength of a feature (i.e., How pronounced is the galactic bulge, if one exists?) will be difficult to force into a binary box. 
 
-
-\textbf{On-the-fly machine ensembles.}
-Less straightforward than the previous tasks on our to-do list, this is nevertheless 
-the next logical extension of GZX. SWAP allows aggregation of the crowd to produce 
-meaningful subject classification. We see no reason why this same procedure could 
-not be applied to an ensemble of machine classifiers as hinted at in Figure~\ref{fig: schematic}.
+Finally, we envision another instance of SWAP to aggregate an ensemble of machine classifiers in a similar fashion to the human counterparts as hinted at in Figure~\ref{fig: schematic}.
 In this scheme, several disparate machine algorithms could train simultaneously 
 on the same training sample with their predictions aggregated through SWAP. 
 %We have already implemented an agent which is assigned to our machine classifier. This agent tracks the machine's performance over time and could, in principle, be used in exactly the same way as agents assigned to human classifiers. 
@@ -1240,17 +1259,15 @@ volunteers and classifications as discussed above.
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
 %%  IMPLICATIONS FOR UPCOMING LARGE-SCALE SURVEYS
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
-\subsection{Dealing with the Data Deluge}
-The work in this paper is motivated by the need for increased speed in the 
-face of several large surveys coming online in the next 5 years. These projects
-promise to deliver more raw data per night than we have accumulated in the past 
-decade. Though these efforts are concentrated on probing dark energy, we can
-maximize the science output of these surveys. 
-We thus briefly discuss how GZX might handle the data deluge.
+%\subsection{Dealing with the Data Deluge}
+%The work in this paper is motivated by the need for increased speed in the face of several large surveys coming online in the next 5 years. These projects promise to deliver more raw data per night than we have accumulated in the past  decade. Though these efforts are concentrated on probing dark energy, we briefly discuss how GZX might handle the data deluge to maximize the science output of these surveys.
 
-\textbf{Is an order of magnitude enough?} We've demonstrated that we can achieve
-an order of magnitude increase in the rate of subject retirement for galaxy morphology
-tasks. Is this enough?  By some estimates, Euclid is expected to obtain
+%\textbf{Is an order of magnitude enough?} 
+%We've demonstrated that we can achieve an order of magnitude increase in the rate of subject retirement for galaxy morphology tasks. Is this enough?  
+With the above upgrades implemented, we expect performance of both the
+classification rate and quality to increase. However, even with our current 
+implementation we can envision coping with the upcoming data deluge. 
+By some estimates, Euclid is expected to obtain
 measurable morphology with VIS for approximately $10^6 - 10^7$ galaxies.
 Traditional visual classification at the rate achieved today through Galaxy Zoo 
 would require approximately 300 years to classify such a large dataset. 
@@ -1258,8 +1275,7 @@ GZX as currently implemented could  classify the brightest 20\% of the full
 Euclid sample within the six years of its observing mission. 
 We predict this is a lower limit as more sophisticated machine learning algorithms
 will undoubtedly be capable of further efficiency. 
-%Our method would allow us to classify At the current rate of  Galaxy Zoo is currently able to classify
-%roughly 400 images per day. At that rate, it would take over 3000 years
+%Our method would allow us to classify At the current rate of  Galaxy Zoo is currently able to classify roughly 400 images per day. At that rate, it would take over 3000 years
 %to classify the entire Euclid sample.  
 
 %The Euclid collaboration is already considering which morphology indicators will
@@ -1269,19 +1285,8 @@ will undoubtedly be capable of further efficiency.
 %they provide the framework and feedback by which we can judge a machine classifier's 
 %performance. 
 
-\textbf{Is the performance enough?} GZX as implemented
-here can provide accuracy around 95\%. That would leave us with hundreds of thousands
-of galaxies with unreliable classifications. Such a dataset will provie a wealth of 
-information for a slew of science cases, however, to extract the most from these
-datasets, additional gains in performance may be required. 
-One solution is to incorporate deep learning algorithms which can provide higher 
-quality classifications at the expense of interpretability.
-Ensembles of machine classifiers aggregated through SWAP could provide another promising avenue.
-A third solution is presented in our sister publication (Wright et al. 2016, submitted) whereby 
-accuracy is dramatically increased through an entirely different human-machine 
-combination. In that paper we explore the effects of averaging the human and 
-machine classification scores and find that the combined score yields
-the most reliable classification. 
+%\textbf{Is the performance enough?} 
+%As currently implemented, we can obtain accuracy around 95\%. That could leave us with hundreds of thousands of galaxies with unreliable classifications. Such a dataset will provide a wealth of information for a slew of science cases, however, to extract the most from these datasets, additional gains in performance may be required. One solution is to incorporate deep learning algorithms which can provide higher quality classifications at the expense of interpretability. Ensembles of machine classifiers aggregated through SWAP could provide another promising avenue. A third solution is presented in our sister publication (Wright et al. 2016, submitted) whereby accuracy is dramatically increased through an entirely different human-machine combination. In that paper we explore the effects of averaging the human and machine classification scores and find that the combined score yields the most reliable classification. 
 
 
 
@@ -1289,37 +1294,35 @@ the most reliable classification.
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
 %%   CONCLUSIONS 
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
-\section{Conclusions}
+\subsection{Conclusions}
 
-We outline and test Galaxy Zoo Express, a novel system for the efficient classification 
-of galaxy morphology tasks.  Our system incorporates the native ability of the human 
+We test a novel system for the efficient classification 
+of galaxy morphology tasks that integrates the native ability of the human 
 mind to identify the abstract and novel with machine learning algorithms which provide
  speed and brute force.  
 
 We demonstrate for the first time that the SWAP algorithm, 
 originally developed to identify rare gravitational lenses in the Space Warps project, 
 is robust for use in galaxy morphology classification. We show that by implementing
-SWAP on Galaxy Zoo 2 classification data we can increase the rate of classification by a factor
+SWAP on GZ2 classification data we can increase the rate of classification by a factor
 of 4-5, requiring only 90 days of project time to sufficiently classify nearly 80\% of the
-entire Galaxy Zoo 2 galaxy sample. 
+entire GZ2 galaxy sample. 
 
 Furthermore, we have implemented and tested a simple Random Forest algorithm 
 and developed a decision engine that delegates tasks between human and 
-machine.  We show that even a simple machine is capable of providing significant 
+machine.  We show that even this simple machine is capable of providing significant 
 gains in the rate of classification allowing us to retire over 70\% of GZ2 galaxies in 
-just 32 days of GZ2 project time. This is an order of magnitude decrease in the time 
-required compared to the original Galaxy Zoo 2 project. This is achieved without 
+just 32 days of GZ2 project time, representing an order of magnitude increase in the
+classification rate compared to the original Galaxy Zoo 2 project. This is achieved without 
 sacrificing the quality of classifications as we maintain accuracy well above 90\% 
 throughout our simulations. 
-Additionally, this machine, though simplistic, can provide valuable insight to the 
-classification process because it learns on a 5-dimensional parameter space consisting 
-of a variety of traditional non-parametric morphology identifiers. 
-
-The gain in classification speed allow us to come within reach of being able to 
-handle the massive amounts of data that upcoming large-scale surveys like LSST, 
-Euclid, and WFIRST promise to provide. With a few modest upgrades to our GZX 
-framework we are confident this method will be able to handle the gargantuan 
-task of morphology classification of the billions of galaxies soon to be cataloged. 
+Additionally, we have shown that training on a 5-dimensional parameter space of 
+traditional non-parametric morphology indicators allows the
+machine to identify subjects which humans miss, providing  a complementary 
+approach to visual classification. 
+The gain in classification speed allows us to tackle the massive amounts of data soon
+to be forthcoming from large surveys like LSST, Euclid, and WFIRST. 
+%With a few modest upgrades to our GZX framework we are confident this method will be able to handle the gargantuan task of morphology classification of the billions of galaxies soon to be cataloged. 
 
 
 
