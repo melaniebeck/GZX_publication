@@ -84,16 +84,17 @@
 
 %% Authors with the same affiliation can be grouped in a single
 %% \author and \affil call.
-\author{Melanie Beck, Claudia Scarlata, Lucy F. Fortson}
-\author{Chris J. Lintott}
-\author{Melanie A. Galloway, Kyle W. Willett}
-\author{B. D. Simmons}
-\author{Karen L. Masters}
-\author{Hugh Dickinson}
-\author{Phil Marshall}
-\author{Darryl Wright}
+\author{Melanie Beck, Author2, Author3, etc.}
+%, Claudia Scarlata, Lucy F. Fortson}
+%\author{Chris J. Lintott}
+%\author{Melanie A. Galloway, Kyle W. Willett}
+%\author{B. D. Simmons}
+%\author{Karen L. Masters}
+%\author{Hugh Dickinson}
+%\author{Phil Marshall}
+%\author{Darryl Wright}
 
-\affil{Department of Physics, University of Oxford, Oxford OX1 3RH}
+%\affil{Department of Physics, University of Oxford, Oxford OX1 3RH}
 \affil{Minnesota Institute for Astrophysics, University of Minnesota, Minneapolis, MN 55454}
 %\affil{San Diego, CA}
 %\affil{Portsmouth, UK}
@@ -898,7 +899,7 @@ of subject retirement.
 \begin{figure*}[t!]
 \centering
 \includegraphics[width=6in]{figures/machine_false_positives_jpgs.png}
-\caption{Galaxies the machine identifies as~\feat~but which the majority of human classifiers labeled as~\notfeat. The number in the lower left corner is the GZ2 smooth vote fraction, that is, the fraction of volunteers who classified the subject as `smooth'. \label{fig: machine false pos}}
+\caption{Galaxies the machine identifies as~\feat~but which the majority of human classifiers labeled as~\notfeat. The number in the lower left corner is the GZ2 smooth vote fraction, that is, the fraction of volunteers who classified the subject as `smooth'. These values are typically between 0.5 and 0.65 indicating that humans do not reach a strong consensus.  \label{fig: machine false pos}}
 \end{figure*}
 
 We thus clearly see three epochs of subject retirement, as we presumed.
@@ -969,7 +970,7 @@ same information. We argue that the machine classifications are, in fact, valid
 and complimentary to human classifications. 
 
 We visually examine a portion of subjects that
-were deemed false positives according to their~\raw~labels. 
+were deemed false positives, i.e., galaxies retired as~\feat~by the machine which have~\notfeat~\raw~labels. 
 Figure~\ref{fig: machine false pos} shows a random sample of images we inspected. 
 The value in the lower left corner is the GZ2 smooth vote fraction, that is, the
 fraction of volunteers who classified that subject as~\notfeat. The sample
@@ -981,18 +982,18 @@ can identify~\feat~galaxies that humans classify as~\notfeat~likely has two
  contributing factors: 
 1) the first question of the GZ2 decision tree asks a very specific question; one which doesn't necessarily correlate with a split between early- and late-type galaxies, and 
  2) the machine learns on morphology diagnostics that are very different from visual inspection. 
-The first point is a recognition that humans will interpret a task quite literally. 
-Many of the subjects in Figure~\ref{fig: machine false pos} could be argued to 
-have a `smooth' quality. Furthermore, this behavior could be modified by providing
+% is a recognition that many humans will interpret a task quite literally, 
+Regarding the first point, we see that GZ2 smooth vote fractions are generally
+ between 0.5 and 0.65 for this sample indicating that volunteers have not 
+reached a strong consensus. This behavior could be modified by providing
 actual training images and live feedback as performed in \cite{Marshall2016}. 
 The second point suggests that the morphology indicators we measure are 
 sufficient for the machine to recognize~\feat~galaxies regardless of the labels humans provide. 
 It remains to be seen whether this generalizes to other machine algorithms.
 We note that most of these galaxies are labeled as~\feat~after GZ2's debiasing process. 
 
-In our system, the machine classifies subjects which are not seen by humans. 
-However, the disagreement between human and machine is an area ripe for 
-discovery. The complementary nature of human and machine classification can 
+%In our system, the machine classifies subjects which are not seen by humans. However, the disagreement between human and machine is an area ripe for discovery. 
+The complementary nature of human and machine classification can 
 best be utilized by a feedback mechanism in which a portion of machine-retired
 subjects are reviewed by humans. Subjects that display excessive disagreement
 should be verified by an expert (or expert-user).  In the same way that 
@@ -1084,7 +1085,7 @@ the~\deb~labels suggest.
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
 %%   MAD RAVINGS OF THE FUTURE 
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
-\section{Looking Forward and wrapping up}\label{sec: visions}
+\section{Looking Forward}\label{sec: visions}
 
 We have demonstrated the first practical framework for combining human and machine
  intelligence in galaxy morphology classifications tasks. 
@@ -1388,7 +1389,7 @@ In total, we measure morphological indicators for 282,350 SDSS galaxies. The rel
 %% -------------------------------------------------------------------------------
 \includegraphics[width=3.25in]{figures/SWAP_ROC_curve_4paper.png}
 \includegraphics[width=3.55in]{figures/morph_params_entire_GZ2_sample.png}
-\caption{Identifying~\feat~subjects is independent of identifying~\notfeat~subjects.  Both ROC curves use all subjects processed by SWAP where the score used to create the ROC curve is simply each subject's achieved posterior probability. The Featured curve demonstrates how well we identify~\feat~subjects with a threshold of 0.99, while the Not Featured curve demonstrates how well we identify~\notfeat~subjects with a threshold of 0.004. Typically, best performance is achieved with scores that lie closest to the upper left corner.  Our~\feat~threshold is nearly as optimumal as possible though our~\notfeat~threshold could have been slightly better. \label{fig: retirement thresholds}}
+\caption{\textit{Left.} Identifying~\feat~subjects is independent of identifying~\notfeat~subjects.  Both ROC curves use all subjects processed by SWAP where the score used to create the ROC curve is simply each subject's achieved posterior probability. The Featured curve demonstrates how well we identify~\feat~subjects with a threshold of 0.99, while the Not Featured curve demonstrates how well we identify~\notfeat~subjects with a threshold of 0.004. Typically, best performance is achieved with scores that lie closest to the upper left corner.  Our~\feat~threshold is nearly as optimumal as possible though our~\notfeat~threshold could have been slightly better. \textit{Right.} Relation between morphology diagnostics measured for more than 280K SDSS galaxies classified during the GZ2 project. \label{fig: retirement thresholds}}
 \label{fig: morph thresh}
 %\caption{That's a lot of parameters! \label{fig: machine classified}}
 \end{figure*}
@@ -1409,7 +1410,7 @@ In total, we measure morphological indicators for 282,350 SDSS galaxies. The rel
 %\caption{GZX/SWAP output as a function of GZ2 project days for a range of initial
 %confusion matrix values.  \label{fig: confusionMatrixAnalysis}}
 \includegraphics[width=3.35in]{figures/GZX_eval_and_retirement_prior_spread_4paper_v2.png}
-\caption{GZX/SWAP output as a function of GZ2 project days for a range of subject prior probabilities.  \label{fig: tweak swap}}
+\caption{SWAP output does not dramatically change for a range of SWAP parameters.  \textit{Left.} The quality (top) and retirement rate (bottom) when different values of agent confusion matrix are assigned. \textit{Right.} Same as the left panel but for various values of the subject prior probability. Changing the confusion matrix has little impact on the quality of the labels but varies the total number of subjects retired during the run. In contrast, changing the subject prior is more likelyt o affect the quality of the retirement labels rather than the total number retired. \label{fig: tweak swap}}
 \end{figure*}
 
 \textbf{Initial agent confusion matrix.} 
@@ -1507,7 +1508,7 @@ of subjects in GZ2, we would not expect that 80\% of them are~\feat. Indeed,
 the best performance is achieved when~\p = 0.35.  This reflects the actual 
 distribution of~\feat~subjects in the GZ2 sample as well as being similar to the 
 expected proportion of~\feat~galaxies in the local universe, depending on your
-definition\textbf{ (cite studies of distribution of early and late type gals in local universe?). }
+definition.
 Thus, the take-away here is to choose your prior wisely since a value far from the correct
 value can have a significant impact on the quality of your classifications.
  
