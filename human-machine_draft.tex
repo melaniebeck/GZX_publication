@@ -444,11 +444,10 @@ the cumulatively retired subject set  to the~\raw~labels for each day of
 the simulation. 
 %Using the~\raw~labels as truth, we compute the above metrics on the 
 %subject set retired by that day of the GZ2 project.
-For example, Figure~\ref{fig: fiducial run} shows that by Day 20, 
+For example, Figure~\ref{fig: fiducial run} shows that, by Day 20, 
 SWAP retired 120K subjects. Comparing those SWAP labels to~\raw~labels, 
 we find that the sample is 96\% accurate, 99.7\% complete, and 92\% pure. 
-Furthermore, the metrics computed on the final day of the simulation
-reflect the quality of the full SWAP-retired sample. 
+%Furthermore, the metrics computed on the last day of the simulation reflect the quality of the full SWAP-retired sample. 
 %(that is, of all the subjects we retire up to that point, we successfully identify all that are~\feat),and 92\% pure. 
 
 Figure \ref{fig: fiducial run} shows the results of our fiducial SWAP simulation
@@ -458,10 +457,12 @@ By the end of our simulation, GZ2 retires $\sim$50K subjects while SWAP retires
 more than 225K. 
 We thus classify 80\% of the entire GZ2 sample in three months. 
 As the original GZ2 project took approximately a year to complete, this
-represents a factor of four increase in the rate of classification. 
-%We thus achieve a factor of four increase in the rate of classification. 
+represents a factor of four increase in the rate of classification.  
+The right axis of Figure~\ref{fig: fiducial run} corresponds to the quality of 
+those classifications and establishes that our full SWAP-retired sample
+is 95.7\% accurate, 99\% complete, and 86.7\% pure as detailed in Table~\ref{tab: summary}.
 
-We also consider the reduction in human effort required to classify
+Finally, we consider the reduction in human effort required to classify
 this subject set. Figure~\ref{fig: swap vote distributions} shows the 
 distribution of the number of volunteer classifications per subject 
 achieved through SWAP (light blue) and GZ2 (dark blue). 
