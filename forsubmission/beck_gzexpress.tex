@@ -1,6 +1,6 @@
 
 %% using aastex version 6
-\documentclass[twocolumn]{aastex6}%, linenumbers, trackchanges,
+\documentclass[twocolumn,  trackchanges,]{aastex6}%, linenumbers, trackchanges,
 
 % These are the available options:
 %   manuscript	: onecolumn, doublespace, 12pt fonts
@@ -43,6 +43,7 @@
 \newcommand{\feat}{`Featured'}
 \newcommand{\notfeat}{`Not'}
 \newcommand{\raw}{GZ2$_{\text{raw}}$}
+\newcommand{\weighted}{GZ2$_{\text{weighted}}$}
 \newcommand{\deb}{GZ2$_{\text{debiased}}$}
 \newcommand{\pmachine}{$p_{\mathrm{machine}}$}
 \newcommand{\ffeat}{$f_{\mathrm{featured}}$}
@@ -119,12 +120,10 @@ through an integration of visual and automated classifications, preserving the
 best features of both human and machine. We demonstrate the effectiveness of 
 such a system through a re-analysis of visual galaxy morphology classifications 
 collected during the Galaxy Zoo 2 (GZ2) project.
-\replaced{reprocessed}
-{We reprocess the top-level question of the GZ2 decision tree} 
+We reprocess the top-level question of the GZ2 decision tree
 with a Bayesian classification aggregation algorithm dubbed SWAP, originally developed 
 for the Space Warps gravitational lens project. 
-\replaced{Incorporating the SWAP algorithm increases the classification rate by a factor of 4.7, classifying 226,124 galaxies in 92 days of GZ2 project time. GZ2 classified  $\sim$$48$K in the same time period. The quality of these classifications remains high as we maintain 95.7\% accuracy as compared to GZ2 published data. }
-{Through a simple binary classification scheme we increase the classification rate nearly 5-fold classifying 226,124 galaxies in 92 days of GZ2 project time while reproducing labels derived from GZ2 classification data with 95.7\% accuracy.} 
+Through a simple binary classification scheme we increase the classification rate nearly 5-fold classifying 226,124 galaxies in 92 days of GZ2 project time while reproducing labels derived from GZ2 classification data with 95.7\% accuracy.
 
 We next combine this with a Random Forest machine 
 learning algorithm that learns on a suite of non-parametric morphology indicators 
@@ -237,11 +236,10 @@ handle the scale and scope of next generation data. We demonstrate the
 effectiveness of such a system through a re-analysis of visual galaxy morphology
  classifications collected during the Galaxy Zoo 2 project, and combine these with a 
 Random Forest machine learning algorithm that trains on a suite of non-parametric
- morphology indicators widely used for automated morphologies. 
-\added{In this paper we focus on the first question of the Galaxy Zoo 
-decision tree.} \replaced{Our}{We demonstrate that our} method 
+ morphology indicators widely used for automated morphologies. \added{The primary goal of this paper is to generalize how such a system would work in the context of upcoming surveys like LSST and Euclid.}
+\replaced{In this paper}{As a proof of concept,} we focus on the first question of the Galaxy Zoo 
+decision tree \added{, however we briefly discuss how such a method can be implemented for more complex tasks}. We demonstrate that our \replaced{method}{current implementation} 
 provides a factor of 11.4 increase in the rate of galaxy morphology classification
-\deleted{,and a factor of 10 reduction in human effort, }
  while maintaining at least 93.5\% classification accuracy as compared to Galaxy Zoo 2 published data. 
 We first present an overview of our framework, which also serves as a blueprint for this paper. 
 
@@ -271,11 +269,11 @@ These subjects provide the machine's training sample.
 In Section~\ref{sec: machine}, we incorporate a machine classifier. We have 
 developed a Random Forest algorithm that trains on measured morphology 
 indicators such as Concentration, Asymmetry, Gini coefficient and 
-\M{20}\added{, well-suited for the top-level question of the GZ2 decision tree, 
-discussed below}. After a sufficient number of subjects have been classified 
+\M{20}, well-suited for the top-level question of the GZ2 decision tree, 
+discussed below. After a sufficient number of subjects have been classified 
 by humans,  the machine is trained and its performance assessed through 
 cross-validation. This procedure is repeated nightly and the machine's performance 
-increases with size of the training sample, albeit with a performance limit. 
+increases with the size of the training sample, albeit with a performance limit. 
 Once the machine reaches an acceptable level of performance it is applied to the 
 remaining galaxy sample. 
 
@@ -306,7 +304,7 @@ Subjects were shown as colour composite images via a web-based
  interface\footnote{\url{www.galaxyzoo.org}} wherein volunteers answered a 
 series of questions pertaining to the morphology of the subject. With the exception 
 of the first question, subsequent queries were dependent on volunteer responses 
-from the previous task creating a complex decision tree\added{\footnote{A visualization of this decision tree can be found at \url{https://data.galaxyzoo.org/gz_trees/gz_trees.html}}}. Using GZ2 nomenclature, 
+from the previous task creating a complex decision tree\footnote{A visualization of this decision tree can be found at \url{https://data.galaxyzoo.org/gz_trees/gz_trees.html}}. Using GZ2 nomenclature, 
  a \textit{classification} is the total amount of information about a subject 
 obtained by completing all tasks in the decision tree. A subject is \textit{retired} 
 after it has achieved a sufficient number of classifications.
@@ -315,19 +313,18 @@ after it has achieved a sufficient number of classifications.
 
 For our current analysis, we choose the first task in the tree: ``Is the galaxy simply 
 smooth and rounded, with no sign of a disk?" to which possible responses include 
-``smooth", ``features or disk", or ``star or artifact". This \added{choice} serves 
+``smooth", ``features or disk", or ``star or artifact". This choice serves 
 two purposes: 1) this is one of only two questions in the GZ2 decision tree that 
 is asked of every subject thus maximizing the amount of data we have to work with, 
 and 2) our analysis assumes a binary task and this question is simple enough to cast as such.
- \added{Specifically, we combine ``star or artifact" responses with ``features or disk" responses.}
+Specifically, we combine ``star or artifact" responses with ``features or disk" responses.
 
-\replaced{
-By combining the ``star or artifact" vote fraction, $f_{artifact}$, with the ``features or disk" vote fraction, $f_{features}$ we obtain a binary response. Here, a vote fraction is simply the fraction of volunteers who voted for a particular response.  We define a label for each GZ2 subject as the majority vote fraction, that is, if \ffeat+\fstar~$ >$ \fsmooth, the galaxy is labelled~\feat, otherwise it is labelled~\notfeat.}
-{We assign each subject a descriptive label in order to compare our classification output with GZ2. GZ2 classifications are composed of volunteer vote fractions for each response to every task in the decision tree, denoted as $f_{\mathrm{response}}$. They are derived from the fraction of volunteers who voted for a particular response and are thus approximately continuous. A common technique is to place a threshold on these vote fractions to select samples with an emphasis on purity or completeness, depending on the science case. For our current analysis we choose a threshold of 0.5, that is, if \ffeat+\fstar~$ >$ \fsmooth, the galaxy is labelled~\feat, otherwise it is labelled~\notfeat.  Though naive, we will demonstrate that this threshold produces adequate results, though a more sophisticated mechanism will be explored in a future publication.} 
- We note that only 512 subjects in the GZ2 catalogue have a majority \fstar, contributing less than half a percent contamination \added{by combining the ``star or artifact" with ``features or disk" responses}.
+We assign each subject a descriptive label in order to validate our classification output with GZ2. GZ2 classifications are composed of volunteer vote fractions for each response to every task in the decision tree, denoted as $f_{\mathrm{response}}$. They are derived from the fraction of volunteers who voted for a particular response and are thus approximately continuous. A common technique is to place a threshold on these vote fractions to select samples with an emphasis on purity or completeness, depending on the science case. For our current analysis we choose a threshold of 0.5, that is, if \ffeat+\fstar~$ >$ \fsmooth, the galaxy is labelled~\feat, otherwise it is labelled~\notfeat. We note that only 512 subjects in the GZ2 catalogue have a majority \fstar, contributing less than half a percent contamination when combining the ``star or artifact" with ``features or disk" responses.
 
 %We note that this threshold is not much different from the suggested 0.430 threshold in \cite{Willett2013} that produces a well-sampled subset of~\feat~galaxies.
-The GZ2 catalogue \replaced{assigns every subject three types  of volunteer vote fractions: }{publishes three types of vote fractions for each subject:} raw, weighted, and debiased. Debiased vote fractions are calculated to correct for redshift bias, a task that GZX does not perform. The weighted vote fractions account for inconsistent volunteers.\deleted{, a task we perform as well.} \replaced{However, because our mechanism is entirely different from GZ2,}{The SWAP algorithm (described below) also has a mechanism to weight volunteer votes, however, the two methods are in stark contrast. For consistency,} we derive labels from the raw vote fractions (\raw) \added{that have received no post-processing whatsoever.} In total, the data consist of over 16 million classifications from 83,943 individual volunteers. 
+The GZ2 catalogue publishes three types of vote fractions for each subject: raw, weighted, and debiased. Debiased vote fractions are calculated to correct for redshift bias, a task that GZX does not perform. The weighted vote fractions account for inconsistent volunteers. The SWAP algorithm (described below) also has a mechanism to weight volunteer votes, however, the two methods are in stark contrast. For consistency, we derive labels from the raw vote fractions (\raw) that have received no post-processing whatsoever. In total, the data consist of over 16 million classifications from 83,943 individual volunteers. 
+
+\added{The labels we compute from GZ2 vote fractions are used solely to validate our classification method. We thus consider these labels as ``ground truth'' though, of course, this is subjective. Varying the threshold on which we define \feat~from \notfeat, or choosing a different type of GZ2 vote fraction will yield slightly different results for the quality metrics we compute throughout this paper. However, we envision this method being applied to never-before-classified image sets and in such a case, no ``ground truth'' classification would yet exist. Rather than re-classifying GZ2 subjects, we instead endeavour to provide a general sense of the quality of our classifier in the context of the well-known quality of the GZ2 catalogue. In Appendix~\ref{sec: explore metrics} we show how different choices of our descriptive GZ2 labels changes the perceived quality of our classification system and demonstrate that our method yields robust galaxy classifications.}
 
 
 %%----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -350,18 +347,18 @@ consisting of simulated lensing events.  We provide a brief overview here.
 The algorithm assigns each volunteer an \textit{agent} which interprets that 
 volunteer's classifications. Each agent assigns a 2$\times$2 confusion matrix 
 to their volunteer which encodes that volunteer's probability of correctly 
-identify feature \A~given that the subject \deleted{actually}exhibits feature \A; 
+identify feature \A~given that the subject exhibits feature \A; 
 and the probability of correctly identifying the absence of feature 
-\A~\added{(denoted \N)} given that the subject does not exhibit that feature. 
+\A~(denoted \N) given that the subject does not exhibit that feature. 
 The agent updates these probabilities by estimating them as 
 
 \begin{equation}
 P(``X" | X, \mathbf{d}) \approx \frac{\mathcal{N}_{``X"}}{\mathcal{N}_{X}}
 \end{equation}
-\added{where $X$ is the true classification of the subject and ``$X$" is the classification made by the volunteer upon viewing the subject. Thus} $\mathcal{N}_{``X"}$ is the number of classifications the volunteer labelled as type $X$, 
+where $X$ is the true classification of the subject and ``$X$" is the classification made by the volunteer upon viewing the subject. Thus $\mathcal{N}_{``X"}$ is the number of classifications the volunteer labelled as type $X$, 
 $\mathcal{N}_X$ is the number of subjects the volunteer has seen that were actually of type $X$,
 and $\mathbf{d}$ represents the history of the volunteer, i.e., all subjects they have seen.
-\added{Therefore the confusion matrix for a single volunteer goes as}
+Therefore the confusion matrix for a single volunteer goes as
 
 \begin{eqnarray}
 \mathcal{M} & = & \left[
@@ -370,17 +367,15 @@ and $\mathbf{d}$ represents the history of the volunteer, i.e., all subjects the
 		P(``N"|N, \mathbf{d})~~& P(``N"|A, \mathbf{d}) \\[0.3em]
 	\end{array}\right]
 \end{eqnarray}
-\added{where probabilities are normalised such that $P(``A"|A) = 1- P(``N" | A) $.}
+where probabilities are normalised such that $P(``A"|A) = 1- P(``N" | A) $.
 
 Each subject is assigned a prior probability that it exhibits feature \A: $P(A) = p_0$. 
-When a volunteer makes a classification, Bayes' theorem is used to \replaced{derive}{compute} how 
+When a volunteer makes a classification, Bayes' theorem is used to compute how 
 that subject's prior probability should be updated into a posterior using elements
 of the agent's confusion matrix. 
-As the project progresses, \replaced{each subject's probability is continually updated}{each subject's posterior probability is updated after every volunteer classification},
+As the project progresses, each subject's posterior probability is updated after every volunteer classification, 
  nudged higher or lower depending on volunteer input. 
-\replaced{Probability thresholds can be set such that subjects crossing a threshold
-are highly likely to exhibit the feature of interest or the absence thereof. 
-These subjects are then considered retired.}{Upper and lower probability thresholds can be set such that when a subject's posterior crosses the upper threshold it is highly likely to exhibit feature \A; if it crosses the lower threshold it is highly likely that feature \A~is absent. Subjects whose posteriors cross either of these thresholds are considered retired.}
+Upper and lower probability thresholds can be set such that when a subject's posterior crosses the upper threshold it is highly likely to exhibit feature \A; if it crosses the lower threshold it is highly likely that feature \A~is absent. Subjects whose posteriors cross either of these thresholds are considered retired.
 
 
 \subsection{Gold-standard sample}\label{sec: training sample}
@@ -393,9 +388,7 @@ allowing that volunteer's agent time to update before classifying real data.
 Volunteers were provided feedback in the form of a pop-up comment after
 classifying a training image. GZ2 did not train volunteers in such a way, presenting
  a challenge when applying SWAP to GZ2 classifications. 
-\replaced{We describe how we engineer the GZ2 data to mimic the Space 
-Warps system.}
-{Though we cannot retroactively train GZ2 volunteers, we develop a gold standard sample and arrange the order of gold standard classifications in order to mimic the Space Warps system.}
+Though we cannot retroactively train GZ2 volunteers, we develop a gold standard sample and arrange the order of gold standard classifications in order to mimic the Space Warps system.
 
 
 %% -------------------------------------------------------------------------------
@@ -403,7 +396,7 @@ Warps system.}
 %% -------------------------------------------------------------------------------
 \begin{figure}[t!]
 \includegraphics[width=3.45in]{f2.pdf}
-\caption{Confusion matrices for 1000 randomly selected GZ2 volunteers after fiducial SWAP assessment. Circle size is proportional to the number of gold standard subjects each volunteer classified. The histograms on top and right represent the distribution of each component of the confusion matrix for all volunteers.  A quarter of GZ2 volunteers are ``Astute"; \replaced{they are adept at correctly identifying both~\feat~and~\notfeat~subjects.}{they correctly identify both \feat~and \notfeat~subjects more than 50\% of the time.} The peaks at 0.5 in both distributions are due primarily to volunteers who see only one training image: only half of their confusion matrix is updated. \label{fig: volunteer training}}
+\caption{Confusion matrices for 1000 randomly selected GZ2 volunteers after fiducial SWAP assessment. Circle size is proportional to the number of gold standard subjects each volunteer classified. The histograms on top and right represent the distribution of each component of the confusion matrix for all volunteers.  A quarter of GZ2 volunteers are ``Astute"; they correctly identify both \feat~and \notfeat~subjects more than 50\% of the time. The peaks at 0.5 in both distributions are due primarily to volunteers who see only one training image: only half of their confusion matrix is updated. \label{fig: volunteer training}}
 \end{figure}
 
 
@@ -420,15 +413,13 @@ We create a gold standard sample by selecting 3496 SDSS galaxies representative
 of the relative abundance of T-Types, a numerical index of a galaxy's stage along 
 the Hubble sequence, at $z\sim0$ by considering galaxies that overlap 
 with the~\cite{NairAbraham2010} catalogue, a collection of $\sim$14K galaxies 
-classified by eye into T-Types. 
-\replaced{Expert classifications were obtained}
-{We generate expert labels for these galaxies that are consistent with the labels we defined for GZ2 classifications. These are obtained} 
+classified by eye into T-Types. We generate expert labels for these galaxies that are consistent with the labels we defined for GZ2 classifications. These are obtained
 through the Zooniverse platform\footnote{The Project Builder template facility can be found at \url{http://www.zooniverse.org/lab.}}  
 from 15 professional astronomers, including members of the Galaxy Zoo science team. 
- The question posed was identical to the original \added{top-level} GZ2 question 
+ The question posed was identical to the original top-level GZ2 question 
 and at least five experts classified each galaxy. 
 Votes are aggregated and a simple majority provides an expert label for each subject. 
-\added{This ensures that our expert labels are defined in exactly the same manner as the labels we assign the rest of the GZ2 sample.}
+This ensures that our expert labels are defined in exactly the same manner as the labels we assign the rest of the GZ2 sample.
 Our final dataset consists of the GZ2 classifications made 
 by those volunteers who classify at least one of these gold standard subjects. 
 We thus retain for our simulation 12,686,170 classifications from 30,894 unique volunteers. 
@@ -453,8 +444,8 @@ When running SWAP, classifications of gold standard subjects are always processe
 \subsection{Fiducial SWAP simulation}\label{sec: fiducial}
 
 Before we run a simulation, a number of SWAP parameters must be chosen: 
- the initial confusion matrix for each volunteer's agent, \added{(\Pf, \Pn)};
-the subject prior probability, \added{\p}; and the retirement thresholds, \added{\tf~and \tn}. 
+ the initial confusion matrix for each volunteer's agent, (\Pf, \Pn);
+the subject prior probability, \p; and the retirement thresholds, \tf~and \tn. 
 For our fiducial  simulation, we initialize all confusion matrices at (0.5, 0.5), 
 and set the subject prior probability, \p~$= 0.5$. 
 We set the~\feat~threshold, \tf, i.e., the minimum probability for a subject to be retired as~\feat, to $0.99$. Similarly, we set the~\notfeat~threshold, \tn~$= 0.004$. 
@@ -472,9 +463,9 @@ gold standard subjects each volunteer classified.
 The histograms represent the distribution of each component
 of the confusion matrix for all volunteers.
  Nearly 25\% of volunteers are considered ``Astute"  indicating
-they \replaced{are generally good at correctly identifying both~\feat~and~\notfeat~subjects.}{correctly identify both \feat~and \notfeat~subjects more than 50\% of the time. 
+they correctly identify both \feat~and \notfeat~subjects more than 50\% of the time. 
 Furthermore, as long as a volunteer's confusion matrix is different from random, 
-they provide useful information to the project.}
+they provide useful information to the project.
 The spikes at $0.5$ in the histograms are due to volunteers who see only one 
 gold standard subject (i.e.,~\feat), leaving their probability in the 
 other (\notfeat) unchanged.
@@ -482,7 +473,7 @@ Additionally, 4\% of volunteers have a confusion matrix of (0.5, 0.5) indicating
 volunteers classified two gold standard subjects of the same type, one correctly and 
 one incorrectly. 
 
-\added{
+
 Figure~\ref{fig: subject probabilities} (adapted from Figure 5 of \citealt{Marshall2016}) 
 demonstrates how subject posterior probabilities are updated with each classification. 
 The arrow in the top panel denotes the prior probability, \p~$=0.5$. 
@@ -492,7 +483,7 @@ The blue and orange lines show the trajectories of a random sample of \feat~and
 trajectories of a random sample of GZ2 subjects that were not part of the 
 gold standard  sample. The similarly coloured vertical dashed lines correspond to the
  retirement thresholds, \tf~and \tn. The lower panel shows the full distribution of 
-GZ2 subject posteriors at the end of our simulation, where the y-axis has been truncated to show detail. An overwhelming majority of subjects cross one of these retirement thresholds. }
+GZ2 subject posteriors at the end of our simulation, where the y-axis has been truncated to show detail. An overwhelming majority of subjects cross one of these retirement thresholds.
 
 Our goal is to increase the efficiency of galaxy classification. We therefore
  use as a metric the cumulative number of retired subjects
@@ -503,19 +494,34 @@ In contrast, a subject is considered SWAP-retired once its posterior
 probability crosses either of the retirement thresholds defined above. 
 
 
+\begin{figure}[t!] 
+\centering
+\includegraphics[width=3.2in]{confusionmatrix.pdf}
+\caption{Confusion matrix for comparing GZ2 classifications to our method.  True Positives and True Negatives indicate that both our method and GZ2 predict a given subject as being \feat~or \notfeat, respectively. When our method predicts a subject as being \feat~(\notfeat) that GZ2 classified as \notfeat~(\feat), the result is a False Negative (Positive). This allows us to easily compute quality metrics like accuracy, completeness, and purity with respect to GZ2 labels as shown in Equations \ref{eqn: metrics}.} \label{fig: confusionmatrix}
+\end{figure}
+
 However, it is important not to prioritize efficiency at the expense of quality. 
-We thus also consider the metrics of accuracy, 
-purity and completeness as a function of GZ2 project time.  
+\replaced{We thus also consider the metrics of accuracy, 
+purity and completeness as a function of GZ2 project time
 These are defined as follows: accuracy is the number of correctly
 identified subjects divided by the total number retired; completeness is the number of 
 correctly identified~\feat~subjects divided by the number of actual~\feat~retired; 
 and purity is the number of correctly identified~\feat~subjects divided by 
-the number of subjects retired as~\feat. Thus, a complete sample has no false
-negatives whereas a pure sample has no false positives. 
-We compute these metrics by comparing the SWAP-assigned labels of the cumulatively 
-retired subject set to the~\raw~labels for each day of the simulation. 
+the number of subjects retired as~\feat.}{Because we have a binary classification we can construct a confusion matrix from which we can compute the quality metrics of accuracy, completeness and purity as a function of GZ2 project time by comparing our predicted labels to the \raw~labels. Figure~\ref{fig: confusionmatrix} graphically depicts the elements of this confusion matrix. From this we compute: } 
+ 
+ \begin{align*}\label{eqn: metrics}
+\mathrm{accuracy} &= \frac{TP + TN}{TP + FP + TN + FN} \\
+\mathrm{completeness} &= \frac{TP}{TP +FN }\tag{3} \\
+\mathrm{purity} &= \frac{TP}{TP + FP}
+ \end{align*}
+
+\replaced{Thus, a complete sample has no false
+negatives whereas a pure sample has no false positives.}{Thus, a complete sample recovers \textit{all} subjects labelled \feat~by GZ2, whereas a pure sample recovers \textit{only} subjects labelled \feat~by GZ2.}
+%We compute these metrics by comparing the SWAP-assigned labels of the cumulatively 
+%retired subject set to the~\raw~labels for each day of the simulation. 
 For example, by Day 20, SWAP retires 120K subjects with 96\% accuracy,
  99.7\% completeness, and 92\% purity. 
+ 
 
 Figure \ref{fig: fiducial run} and Table~\ref{tab: summary} detail the results of 
 our fiducial SWAP simulation compared to the original GZ2 project. 
@@ -523,17 +529,21 @@ The bottom panel shows the cumulative number of retired subjects as a function o
 GZ2 project time. By the end of our simulation, GZ2 (dashed dark blue)
  retires $\sim$50K subjects while SWAP (solid light blue) retires 226,124 subjects.  
 We thus classify 80\% of the entire GZ2 sample in three months. 
-\replaced{The original GZ2 project took approximately one year to classify as many subjects, 
-representing a factor of four increase in the classification rate. }
-{Here we consider the number of classifications logged each day and not the length 
+Here we consider the number of classifications logged each day and not the length 
 of time spent on a single classification.  Under the assumption that collapsing the 
 GZ2 decision tree to a single question would not have decreased the number of 
 classifications  collected each day during the GZ2 project, processing volunteer classifications 
-through SWAP presents a striking increase in classification efficiency.}
+through SWAP presents a striking increase in classification efficiency.
 The top panel of Figure~\ref{fig: fiducial run} demonstrates the quality of 
 those classifications as a function of time and establishes that our full 
 SWAP-retired sample is 95.7\% accurate, 99\% complete, and 86.7\% pure. 
-\added{We discuss these small discrepancies in Section~\ref{sec: swap gz2 disagree}.}
+We discuss these small discrepancies in Section~\ref{sec: swap gz2 disagree}.
+
+\added{\subsection{What about the GZ2 decision tree?}}
+Our results thus far have compared the increased efficiency achieved for the top-level question of the GZ2 decision tree. However, it can be argued that this comparison is unfair since GZ2 needed additional classifications in order to populate the lower levels of the decision tree. In order to put this comparison on more equal footing, we explore what would have happened in GZ2 had instead asked only the first question, presumably requiring fewer classifications overall to achieve the same results. 
+
+To do this we compute the raw vote fractions (\ffeat, \fsmooth, and \fstar) for every subject in the GZ2 sample from the first $N$ classifications for $N \in [15, 20, 25, 30, 35]$. From these vote fractions we then compute the binary descriptive label as described in Section \ref{sec: data}. Comparing these new labels to those 
+
 
 %%%-------------------------------------------------------
 %%%  FIGURE:   SWAP vote distributions
@@ -542,25 +552,11 @@ SWAP-retired sample is 95.7\% accurate, 99\% complete, and 86.7\% pure.
 \centering
 \includegraphics[width=3.5in]{f4.pdf}
 \caption{
-\replaced{SWAP requires 4-5 times less human effort than GZ2 as evidenced by the distribution of the number of classifications a subject requires for retirement for the 226,124 subjects retired during our fiducial run.  The GZ2 distribution peaks around 45 classifications per subject with 98.6\% having at least 30 volunteer votes. In contrast, most subjects need only 9 classifications when processing with SWAP. Furthermore, `easy' subjects can reach retirement in as few as 3-4 classifications.}
-{SWAP's volunteer-weighting mechanism provides a factor of three reduction in the human effort required to retire GZ2 subjects. The filled histograms show the number of volunteer classifications per subject achieved from our simulation of GZ2 data broken down by class label, where the solid black line is the total. The dashed histograms are results from our toy model in which we simulate volunteers with fixed confusion matrices, effectively disengaging SWAP's volunteer-weighting mechanism. These broad distributions require $\sim$3 times more classifications per subject to reach the same retirement thresholds.}  } \label{fig: swap vote distributions}
+SWAP's volunteer-weighting mechanism provides a factor of three reduction in the human effort required to retire GZ2 subjects. The filled histograms show the number of volunteer classifications per subject achieved from our simulation of GZ2 data broken down by class label, where the solid black line is the total. The dashed histograms are results from our toy model in which we simulate volunteers with fixed confusion matrices, effectively disengaging SWAP's volunteer-weighting mechanism. These broad distributions require $\sim$3 times more classifications per subject to reach the same retirement thresholds.  } \label{fig: swap vote distributions}
 \end{figure}
 
-\added{\subsection{Reducing human effort}}
-\replaced{
-There is also a reduction in the human effort required to perform this classification task.
-  Figure~\ref{fig: swap vote distributions} shows the distribution of the number 
-of volunteer classifications per subject achieved through SWAP (light blue) 
-and GZ2 (dark blue) for the 226K subjects retired in our fiducial run. 
-GZ2's distribution peaks at $\sim$45 indicating that, on average,
-45 unique volunteers classify each subject. On the other hand, SWAP's
-distribution peaks around 9 classifications per subject. 
-Furthermore, subjects that are `easy' to classify (i.e.,~\feat) require
-even fewer classifications to reach strong consensus. 
-More precisely, SWAP processes $2.3 \times 10^6$ volunteer 
-classifications while GZ2 records $\sim$$10^7$ for the same subject set. 
-SWAP reduces human effort by more than a factor of four. }
-{The SWAP algorithm effectively weights volunteers according to how many gold 
+\subsection{Reducing human effort}
+The SWAP algorithm effectively weights volunteers according to how many gold 
 standard subjects they correctly identify. This mechanism provides a reduction 
 in the amount of human effort required to perform this classification task. 
 To see this, we consider a toy model wherein we simulate volunteers with fixed 
@@ -572,9 +568,9 @@ We generate volunteer classifications based on this confusion matrix
 (i.e., volunteers will correctly identify \feat~subjects 63\% of the time) 
 and update the subject's posterior probability with each classification. 
 We track how many classifications are required for each subject's posterior to 
-cross either the \feat~or \notfeat~retirement thresholds. } 
+cross either the \feat~or \notfeat~retirement thresholds. 
 
-\added{The results are presented in Figure~\ref{fig: swap vote distributions}. 
+The results are presented in Figure~\ref{fig: swap vote distributions}. 
 The filled blue and orange histograms show the number of volunteer classifications 
 per subject achieved from our simulation of GZ2 data, where volunteer agent confusion
  matrices are those from Figure~\ref{fig: volunteer training}. The dashed blue 
@@ -583,15 +579,15 @@ for volunteer skill, most subjects are retired with between 6 and 15 votes, with
 a median of 9 votes. In contrast, when every volunteer is given equal weighting, 
 subjects require 16 to 45 votes with a median of 30 votes before crossing one of 
 the retirement thresholds. Thus the volunteer weighting scheme embedded in 
-SWAP can reduce the amount of human effort required to retire subjects by a factor of three.}
+SWAP can reduce the amount of human effort required to retire subjects by a factor of three
 
-\added{This reduction will be, in part, a function of the number of gold standard 
+This reduction will be, in part, a function of the number of gold standard 
 subjects each volunteer sees.  Our gold standard sample was chosen to be 
 representative of morphology rather than evenly distributed among GZ2 volunteers. 
 We thus find that half of our volunteers classify only one or two gold standard subjects. 
 That we achieve a factor of three reduction when only half of our volunteer pool 
 has seen $\ge 2$ gold standard subjects suggests that an additional reduction of
-  human effort is possible with more extensive volunteer training.}
+  human effort is possible with more extensive volunteer training.
 
 %%%-------------------------------------------------------
 %%%  FIGURE:   SWAP failures
@@ -599,7 +595,8 @@ has seen $\ge 2$ gold standard subjects suggests that an additional reduction of
 \begin{figure}[t!]
 \includegraphics[width=3.5in]{f5.pdf}
 \caption{Distribution of GZ2 \ffeat+\fstar~vote fractions for subjects correctly identified by SWAP (dotted grey), along with those identified as false positives (solid purple), and false negatives (dashed teal). 
-The false positives and false negatives are scaled by factors of 10 and 100 respectively for easier comparison. From Section~\ref{sec: data}, subjects with values $> 0.5$ are defined as~\feat, however, the teal distribution indicates that SWAP labels them as~\notfeat. This is not a flaw of SWAP: 68.9\% of incorrectly identified subjects have $0.4 \le $~\ffeat +\fstar~$ \le 0.6$ suggesting that~\raw~labels are simply too uncertain. The overlap between the false positives and negatives is due to subjects that are exactly 50-50; by default these are labelled~\notfeat. \label{fig: SWAP sucks}}
+The false positives and false negatives are scaled by factors of 10 and 100 respectively for easier comparison. From Section~\ref{sec: data}, subjects with values $> 0.5$ are defined as~\feat, however, the teal distribution indica
+tes that SWAP labels them as~\notfeat. This is not a flaw of SWAP: 68.9\% of incorrectly identified subjects have $0.4 \le $~\ffeat +\fstar~$ \le 0.6$ suggesting that~\raw~labels are simply too uncertain. The overlap between the false positives and negatives is due to subjects that are exactly 50-50; by default these are labelled~\notfeat. \label{fig: SWAP sucks}}
 \end{figure}
 
 
@@ -609,17 +606,15 @@ Galaxy Zoo's strength comes from the consensus of dozens of volunteers voting on
 Processing votes with SWAP reduces the number of classifications to reach consensus. 
 Though we typically recover the~\raw~label, SWAP disagrees about 5\% of the time. 
 We thus examine the false positives (subjects SWAP labels as~\feat~but~\raw~labels as~\notfeat) and false negatives (subjects SWAP labels as~\notfeat~but~\raw~labels as~\feat).
-\added{We explore these subjects in redshift, magnitude, physical size, and concentration. We find no correlation with any of these variables, suggesting that, at least for this galaxy sample, the reliability of morphology depends on factors that are not captured by these coarse measurements.
-This is perhaps unsurprising since GZ2 subjects were selected from the larger GZ1 sample to be the brightest, largest and nearest galaxies:  precisely those subjects most accessible for visual classification. }
+We explore these subjects in redshift, magnitude, physical size, and concentration. We find no correlation with any of these variables, suggesting that, at least for this galaxy sample, the reliability of morphology depends on factors that are not captured by these coarse measurements.
+This is perhaps unsurprising since GZ2 subjects were selected from the larger GZ1 sample to be the brightest, largest and nearest galaxies:  precisely those subjects most accessible for visual classification. 
 
-\replaced{We find the majority of these disagreements are due to uncertainties in 
-the~\raw~label.}{Instead we consider the stochastic nature of GZ2 vote fractions, which can be estimated as binomial. Let success be a response of ``smooth'' and failure be any other response. The $68\%$ confidence interval on a subject with \fsmooth~$=0.5$ is then $(0.42, 0.57)$ assuming 40 classifications, each with a probability of 0.5.}
+Instead we consider the stochastic nature of GZ2 vote fractions, which can be estimated as binomial. Let success be a response of ``smooth'' and failure be any other response. The $68\%$ confidence interval on a subject with \fsmooth~$=0.5$ is then $(0.42, 0.57)$ assuming 40 classifications, each with a probability of 0.5.
 Figure~\ref{fig: SWAP sucks} shows the distribution of~\ffeat+\fstar~for the false positives (solid purple), and the false negatives (dashed teal) compared to the
  subjects where SWAP and GZ2 agree (dotted grey).  
 Recall that if this value is greater than 0.5, the subject is labelled~\feat.  
-The majority of \replaced{incorrectly labelled}{disagreements between SWAP and GZ2 are for} 
-subjects that have $0.4 <$~\ffeat+\fstar~$< 0.6$. \replaced{indicating that 
-the GZ2 raw vote fractions are simply too uncertain to provide high quality labels.}{It is thus unsurprising that SWAP and GZ2 disagree most within the approximate confidence interval of our selected GZ2 threshold.} 
+The majority of disagreements between SWAP and GZ2 are for
+subjects that have $0.4 <$~\ffeat+\fstar~$< 0.6$. It is thus unsurprising that SWAP and GZ2 disagree most within the approximate confidence interval of our selected GZ2 threshold.
 We note that the distribution overlap between false positives and false negatives is due to subjects that do not have a majority;
 these are labelled~\notfeat~by default. 
 
@@ -631,7 +626,7 @@ Second, disagreement arises due to expert-level volunteers whose confusion
 matrices are close to 1.0. These volunteers are essentially more 
 strongly weighted, allowing that subject's posterior to cross a retirement threshold
 in as few as two classifications. In rare cases, despite training, some expert-level 
-volunteers get it wrong \added{compared to the gold-standard labels}. These issues can be mitigated by requiring each subject reach 
+volunteers get it wrong compared to the gold-standard labels. These issues can be mitigated by requiring each subject reach 
 a minimum number of classifications in addition to its probability crossing a
 retirement threshold, thus combining the best qualities of GZ2 and SWAP. 
 
@@ -650,7 +645,7 @@ classification efficiency while maintaining 95\% accuracy, nearly perfect
 completeness of~\feat~subjects, and with a purity that can be controlled by careful 
 selection of input parameters to be better than 90\% (see Appendix~\ref{sec: tweaking swap}).
 Exploring those subjects wherein SWAP and GZ2 disagree, we conclude that 
-the majority of this disagreement stems from \replaced{uncertainty in}{the stochastic nature of}~\raw~labels.
+the majority of this disagreement stems from the stochastic nature of~\raw~labels.
 We now turn our focus towards incorporating a machine
 classifier utilizing these SWAP-retired subjects as a training sample. 
 
@@ -730,7 +725,7 @@ measured from SDSS DR12 $i$-band imaging (see Appendix \ref{sec: measuring morph
 Coupled with SExtractor's measurement of ellipticity \citep{sextractor}, 
 we provide the machine with a $D=5$ dimensional morphology parameter space.
 These non-parametric diagnostics have long been used to
-\replaced{quantify galaxy morphology} {distinguish between early- and late-type galaxies } 
+distinguish between early- and late-type galaxies 
 in an automated fashion \cite[e.g.,][]{Abraham1996, Bershady2000, Conselice2000, Abraham2003, Conselice2003, Lotz2004, Snyder2015}.
 Because the RF algorithm handles a variety of input formats, the only pre-processing 
 step we perform is the removal of poorly-measured morphological indicators, i.e. catastrophic failures.
@@ -740,7 +735,7 @@ step we perform is the removal of poorly-measured morphological indicators, i.e.
 %%%-------------------------------------------------------
 \begin{figure}[t!]
 \includegraphics[width=3.25in]{f6.pdf}
-\caption{Learning curve for a Random Forest with fixed hyperparameters. \replaced{The training score is the accuracy of the trained machine applied to its own training sample. The cross-validation score is the accuracy of the machine computed during the cross-validation process.}{These curves show the mean accuracy computed during cross-validation and on the training sample, where the shaded regions denote the standard deviation.} When the training sample size is small, the machine accurately identifies its own training sample but is unable to generalize to unseen data as evidenced by a low cross-validation score. As the training sample size increases, the cross-validation score increases. This behaviour plateaus indicating that larger training samples provide little in additional performance. \label{fig: learning curve}}
+\caption{Learning curve for a Random Forest with fixed hyperparameters. These curves show the mean accuracy computed during cross-validation and on the training sample, where the shaded regions denote the standard deviation. When the training sample size is small, the machine accurately identifies its own training sample but is unable to generalize to unseen data as evidenced by a low cross-validation score. As the training sample size increases, the cross-validation score increases. This behaviour plateaus indicating that larger training samples provide little in additional performance. \label{fig: learning curve}}
 \end{figure}
 
 
@@ -824,8 +819,8 @@ In addition to the class prediction, the RF algorithm computes the probability f
 each subject to belong to each class.  This probability is simply the average of
  the probabilities of each individual decision tree, where the probability of a 
 single tree is determined as the fraction of subjects of class X on a leaf node.  
-Only subjects that receive a class prediction \added{of \feat} with 
-$p_{\mathrm{machine}} \ge 0.9$ \added{($p_{\mathrm{machine}} \le 0.1$ for \notfeat)} 
+Only subjects that receive a class prediction of \feat with 
+$p_{\mathrm{machine}} \ge 0.9$ ($p_{\mathrm{machine}} \le 0.1$ for \notfeat)
 are considered retired. 
 The remaining subjects have the possibility of being classified by humans 
 or the machine on a future night of the simulation. 
@@ -868,8 +863,7 @@ By dynamically generating a training sample through a more sophisticated analysi
 human classifications coupled with a machine classifier, we retire more than 200K 
 GZ2 subjects in just 27 days.  Visual classification through SWAP alone retires as 
 many in 50 days, while GZ2 requires a full year.  
-\replaced{GZX thus provides an order of magnitude increase in the rate of classification
-over the traditional crowd-sourced approach.}{Though our analysis considers only the top-level task of GZ2's decision tree, GZX suggests a tantalizing potential to increase the classification rate by an order of magnitude over the traditional crowd-sourced approach.}
+Though our analysis considers only the top-level task of GZ2's decision tree, GZX suggests a tantalizing potential to increase the classification rate by an order of magnitude over the traditional crowd-sourced approach.
 We next explore the composition of those classifications.
 
 
@@ -895,6 +889,7 @@ In the first phase, humans are the only contributors to subject retirement.
 Once the machine is optimized, it immediately contributes more to retirement than humans.
 However, the machine's performance plateaus quickly;  the third 
 phase is again dominated by human classifications.
+
 
 %%%-------------------------------------------------------
 %%%  FIGURE:    GZX COMPONENT CONTRIBUTIONS
@@ -956,23 +951,15 @@ or in the human-machine combination implemented here.
 Throughout our analysis we have defined~\feat~and~\notfeat~subjects by 
 their~\raw~labels as this was the most compatible choice for comparison with SWAP output.  
 However, the machine does not learn in the same way, nor is it presented with the 
-same information. \replaced{We argue that the machine classifications are valid 
-and complimentary to human classifications.}{Machine and human classifications 
-each provide valuable and complementary information for identifying \feat~galaxies.}
+same information. Machine and human classifications 
+each provide valuable and complementary information for identifying \feat~galaxies.
 
-\replaced{Of the 6127 subjects that were deemed false positives, i.e., galaxies retired by the 
-machine as~\feat~that have~\notfeat~\raw~labels,}
-{We isolate the 6127 subjects that were deemed false positives, i.e., galaxies 
+We isolate the 6127 subjects that were deemed false positives, i.e., galaxies 
 retired by the machine as~\feat~that have~\notfeat~\raw~labels, a sample that
-comprises only 6.25\% of all subjects the machine retires.} 
+comprises only 6.25\% of all subjects the machine retires.
 We visually examine several hundred
 and assess that, to the expert eye, a majority are, in fact, \feat.  
-A random sample is shown in Figure~\ref{fig: machine false pos}. \deleted{where the value 
-in the lower left corner is the raw GZ2 featured vote fraction, \ffeat; 
-the fraction of volunteers who classified that subject as \feat. 
-This small sample consists predominantly of edge-on disks and disk 
-galaxies with low surface brightness features. }
-
+A random sample is shown in Figure~\ref{fig: machine false pos}. 
 
 %%%-------------------------------------------------------
 %%%  FIGURE:   CAS DISTRIBUTIONS 
@@ -983,11 +970,10 @@ galaxies with low surface brightness features. }
 \caption{The RF is trained on a 5-dimensional morphology parameter space. We show the distribution of each morphology indicator for machine-retired~\feat~(blue) and~\notfeat~(orange) subjects compared to the full GZ2 subject sample (black). The difference between~\feat~and~\notfeat~subjects is in stark contrast for all distributions except, perhaps, \M{20}.  \label{fig: morph params}}
 \end{figure*}
 
-\deleted{That the machine can identify~\feat~galaxies that humans classify as~\notfeat~has two contributing factors: 1) the first task of the GZ2 decision tree asks a very specific question that does not necessarily correlate with a split between early- and late-type galaxies, and  2) the machine learns on morphology diagnostics that are very different from visual inspection. Regarding the first point, the full sample of false positives has  $\langle f_{\mathrm{smooth}} \rangle = 0.645 \pm 0.106$  with 56.7\%  having \fsmooth~$\le 0.65$. This indicates that volunteers have not reached a strong consensus for a majority  of these subjects; behaviour that could be modified by providing actual training images and live feedback as performed in Marshall et al. (2016). We note that 71.7\% of these galaxies are labelled~\feat~after GZ2's debiasing process.}
 
 %\cite{Marshall2016}.  Note to self:  \deleted{} doesn't like having citation brackets inside... but for some reason math brackets are okay. Stupid aastex6!!
 
-\added{That the machine strongly identifies these galaxies as \feat~
+That the machine strongly identifies these galaxies as \feat~
 (\pmachine~$\ge 0.9$) where humans instead classify them as \notfeat~(\ffeat~$< 0.5$) 
 has several contributing factors: 1) as discussed in Section~\ref{sec: swap gz2 disagree}, 
 the threshold we chose carries with it a confidence interval such that subjects with 
@@ -995,9 +981,9 @@ $0.4 <$~\ffeat+\fstar~$< 0.6$ are most likely to receive disagreeing labels from
 other classifying agents, 2) the first task of the GZ2 decision tree asks a 
 question that does not necessarily correlate with a split between early- and
  late-type galaxies, and 3) the machine learns on morphology diagnostics
- that are very different from visual inspection.}
+ that are very different from visual inspection.
 
-\added{We find that 41.4\% of these false positives have $0.4 \le$~\ffeat+\fstar$<0.5$ 
+We find that 41.4\% of these false positives have $0.4 \le$~\ffeat+\fstar$<0.5$ 
 indicating that the disagreement between humans and machine is likely due to the 
 labels we assign at our given threshold. However, we also find that 43.5\% of false 
 positives have \ffeat+\fstar~$\le0.35$, and this discrepancy is not as easily explained. 
@@ -1009,7 +995,7 @@ Whether this is the reason the majority of volunteers classify these objects as
 modified by providing actual training images and live feedback as performed in
  \cite{Marshall2016}. We suggest that, at least for this particular question, 
 if either human or machine identifies a subject as \feat, it is likely the subject 
-is discy and worth further investigation.}
+is discy and worth further investigation.
 
 
 %%%-------------------------------------------------------
@@ -1356,6 +1342,26 @@ Finally, we use the ellipticity, $\epsilon = 1 - b/a$, of the light distribution
 
 In total, we measure morphological indicators for 282,350 SDSS galaxies. The relations between these diagnostics for the full sample is shown in the right panel of Figure~\ref{fig: morph thresh}. The code developed to clean and compute these morphology indicators is open source and can be found at \url{https://github.com/melaniebeck/measure_morphology}.
 
+
+\section{Exploring the quality of Galaxy Zoo: Express}
+\label{sec: explore metrics}
+
+\added{In this section we consider the robustness of GZX by computing several sets of ``ground truth'' labels from the GZ2 catalogue. We recalculate the quality metrics of accuracy, purity, and completeness on the final sample of retired galaxies from the full GZX simulation (SWAP+RF) for a range of thresholds and for each type of GZ2 vote fractions. Specifically, we define labels such that any subject with \ffeat+\fstar $\ge t$ is labelled \feat, otherwise it is labelled \notfeat. This is performed for a range of threshold values, $t = [0.2, 0.3, 0.4, 0.5]$, and using each type of GZ2 vote fraction: raw, weighted, and debiased. }
+
+
+\begin{figure}[t!]
+\includegraphics[width=7in]{GZX_quality_comparison.pdf}
+\caption{Quality metrics computed on the subjects retired during the GZX simulation for a range of thresholds and GZ2 vote fraction types. }
+\label{fig: quality}
+\end{figure}
+
+\added{In Figure~\ref{fig: quality} we show how the perceived quality of GZX changes as a function of threshold and GZ2 vote fraction type. 
+GZX classifications are quite robust, with accuracy fluctuating by only a couple percent for GZ2 labels computed using a threshold between 0.3 and 0.5. Though accuracy remains relatively flat for this range of thresholds, we see the trade off between purity and completeness. Decreasing the threshold on which labels are computed (i.e., more subjects are given a \feat~label) results in higher purity but lower completeness. 
+}
+
+\added{That the \deb~labels perform poorly is not surprising. These vote fractions are computed after considerable post-processing of the raw volunteer votes in order to remove the effects of redshift and surface brightness. As with any set of visual classifications, these biases must be accounted for and this is traditionally done retrospectively.  It is also unsurprising that the \raw~and \weighted~classifications are in such tight agreement. \weighted~vote fractions are computed by down-weighting inconsistent volunteers of which there are relatively few. These two sets of vote fractions are thus very similar. }
+
+\added{When applying GZX to future imaging programs, there will be no ``ground truth'' labels for comparison. In some sense, these thresholds can be interpreted as a prior for the SWAP \p~value, the initial probability for a subject to be \feat. As we showed in Appendix~\ref{sec: } changing the prior has little affect on the retirement rate but does result in considerable variability in the completeness and purity of the resulting classifications. When applying GZX to a future sample, science teams will need to determine between prioritizing between these which will be dependent on the particular science case. Additionally, }
 
 
 
